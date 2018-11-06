@@ -11,22 +11,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-
-import com.company.project.core.Result;
-import com.company.project.core.ResultCode;
-import com.company.project.core.ServiceException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,6 +32,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.company.project.core.Result;
+import com.company.project.core.ResultCode;
+import com.company.project.core.ServiceException;
+import com.company.project.unit.IdWorker;
+import com.company.project.unit.SystemLocal;
 
 /**
  * Spring MVC 配置
@@ -45,6 +52,14 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 	private final Logger logger = LoggerFactory.getLogger(WebMvcConfigurer.class);
 	@Value("${spring.profiles.active}")
 	private String env;// 当前激活的配置文件
+
+	@Value("${IdWorker.workerId}")
+	private Long workerId;
+	@Value("${IdWorker.dataCenterId}")
+	private Long dataCenterId;
+
+	@Value("${System.local}")
+	private String local;
 
 	// 使用阿里 FastJson 作为JSON MessageConverter
 	@Override
@@ -100,7 +115,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 	// 解决跨域问题
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		// registry.addMapping("/**");
+		registry.addMapping("/**").allowedOrigins("*").allowedMethods("*").allowedHeaders("*").allowCredentials(true)
+				.exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L);
 	}
 
 	// 添加拦截器
@@ -190,5 +206,36 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		}
 
 		return ip;
+	}
+
+	@Bean(name = "idWorker")
+	public IdWorker initIdWorker() {
+		logger.info("Init Id Worker {}, {}", workerId, dataCenterId);
+		IdWorker worker = new IdWorker(workerId, dataCenterId);
+		return worker;
+	}
+
+	@Bean(name = "systemLocal")
+	public SystemLocal initSystemLocal() {
+		SystemLocal systemLocal = new SystemLocal();
+		systemLocal.init(local);
+		return systemLocal;
+	}
+
+	public void MethodArgumentNotValidException(Exception ex, HttpServletRequest request,
+			HttpServletResponse response) {
+		MethodArgumentNotValidException c = (MethodArgumentNotValidException) ex;
+		List<ObjectError> errors = c.getBindingResult().getAllErrors();
+		StringBuffer errorMsg = new StringBuffer();
+		errors.stream().forEach(x -> errorMsg.append(x.getDefaultMessage()).append(";"));
+		pouplateExceptionResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, errorMsg.toString());
+	}
+
+	private void pouplateExceptionResponse(HttpServletResponse response, HttpStatus errorCode, String errorMessage) {
+		try {
+			response.sendError(errorCode.value(), errorMessage);
+		} catch (IOException e) {
+			logger.error("failed to populate response error", e);
+		}
 	}
 }

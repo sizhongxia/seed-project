@@ -1,24 +1,3 @@
-
-                                                           
-                                                           
-   SSSSSSSSSSSSSSS ZZZZZZZZZZZZZZZZZZZXXXXXXX       XXXXXXX
- SS:::::::::::::::SZ:::::::::::::::::ZX:::::X       X:::::X
-S:::::SSSSSS::::::SZ:::::::::::::::::ZX:::::X       X:::::X
-S:::::S     SSSSSSSZ:::ZZZZZZZZ:::::Z X::::::X     X::::::X
-S:::::S            ZZZZZ     Z:::::Z  XXX:::::X   X:::::XXX
-S:::::S                    Z:::::Z       X:::::X X:::::X   
- S::::SSSS                Z:::::Z         X:::::X:::::X    
-  SS::::::SSSSS          Z:::::Z           X:::::::::X     
-    SSS::::::::SS       Z:::::Z            X:::::::::X     
-       SSSSSS::::S     Z:::::Z            X:::::X:::::X    
-            S:::::S   Z:::::Z            X:::::X X:::::X   
-            S:::::SZZZ:::::Z     ZZZZZXXX:::::X   X:::::XXX
-SSSSSSS     S:::::SZ::::::ZZZZZZZZ:::ZX::::::X     X::::::X
-S::::::SSSSSS:::::SZ:::::::::::::::::ZX:::::X       X:::::X
-S:::::::::::::::SS Z:::::::::::::::::ZX:::::X       X:::::X
- SSSSSSSSSSSSSSS   ZZZZZZZZZZZZZZZZZZZXXXXXXX       XXXXXXX
-                                                           
-                                                           
-                                                           
-                                                           
+///////////////////////////////////////////////////////////
+                   Pro. Seed-V1.0
 ///////////////////////////////////////////////////////////

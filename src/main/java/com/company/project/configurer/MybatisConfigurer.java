@@ -64,6 +64,8 @@ public class MybatisConfigurer {
 
         return mapperScannerConfigurer;
     }
+    
+    
 
 }
 
