@@ -29,8 +29,8 @@ public class JwtHelper {
 	/**
 	 * 构建jwt
 	 */
-	public static String createJWT(String name, String userId, String role, String audience, String issuer,
-			long TTLMillis, String base64Security) {
+	public static String createJWT(String name, String userId, String role, String flagKey, String audience,
+			String issuer, long TTLMillis, String base64Security) {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 		long nowMillis = System.currentTimeMillis();
@@ -41,8 +41,8 @@ public class JwtHelper {
 		Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
 		// 添加构成JWT的参数
-		JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT").claim("role", role).claim("unique_name", name)
-				.claim("userid", userId).setIssuer(issuer).setAudience(audience)
+		JwtBuilder builder = Jwts.builder().setHeaderParam("typ", "JWT").claim("role", role).claim("flag_key", flagKey)
+				.claim("unique_name", name).claim("userid", userId).setIssuer(issuer).setAudience(audience)
 				.signWith(signatureAlgorithm, signingKey);
 		// 添加Token过期时间
 		if (TTLMillis >= 0) {

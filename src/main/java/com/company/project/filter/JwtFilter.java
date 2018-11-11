@@ -2,7 +2,6 @@ package com.company.project.filter;
 
 import java.io.IOException;
 
-import javax.crypto.IllegalBlockSizeException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -18,7 +17,6 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.company.project.configurer.Audience;
 import com.company.project.core.ServiceException;
-import com.company.project.unit.AesUtil;
 import com.company.project.unit.JwtHelper;
 
 import io.jsonwebtoken.Claims;
@@ -44,8 +42,7 @@ public class JwtFilter extends GenericFilterBean {
 	 * @throws ServletException
 	 */
 	@Override
-	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
-			throws IOException, ServletException {
+	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) throws ServiceException, IOException, ServletException {
 
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
@@ -58,37 +55,34 @@ public class JwtFilter extends GenericFilterBean {
 			chain.doFilter(req, res);
 		} else {
 
-			if (authHeader == null || !authHeader.startsWith("yeetong")) {
-				throw new ServiceException("无效的Token");
+			if (authHeader == null || !authHeader.startsWith("YeeTong")) {
+				throw new ServiceException("请先登录");
 			}
 
 			final String token = authHeader.substring(7);
 
-			try {
-				if (audience == null) {
-					BeanFactory factory = WebApplicationContextUtils
-							.getRequiredWebApplicationContext(request.getServletContext());
-					audience = (Audience) factory.getBean("audience");
-				}
-				final Claims claims = JwtHelper.parseJWT(token, audience.getBase64Secret());
-				if (claims == null) {
-					throw new ServiceException("Token已失效");
-				}
-
-				Object userid = claims.get("userid");
-				if (userid == null || StringUtils.isBlank(userid.toString())) {
-					throw new ServiceException("Token已失效");
-				}
-				String userId = AesUtil.desEncrypt(userid.toString());
-				if (StringUtils.isBlank(userId)) {
-					throw new ServiceException("Token已失效");
-				}
-				request.setAttribute("userId", userId);
-			} catch (IllegalBlockSizeException e) {
-				throw new ServiceException("Token已失效");
-			} catch (Exception e) {
-				throw new ServiceException("Token已失效");
+			if (audience == null) {
+				BeanFactory factory = WebApplicationContextUtils
+						.getRequiredWebApplicationContext(request.getServletContext());
+				audience = (Audience) factory.getBean("audience");
 			}
+			final Claims claims = JwtHelper.parseJWT(token, audience.getBase64Secret());
+			if (claims == null) {
+				throw new ServiceException("为了您的账号安全，请重新登录");
+			}
+
+			if (!"yeetong".equals(claims.getIssuer())) {
+				throw new ServiceException("非法签名，你提交的数据可能已被篡改");
+			}
+
+			Object role = claims.get("role");
+			Object userid = claims.get("userid");
+			if (userid == null || role == null || StringUtils.isBlank(userid.toString())
+					|| StringUtils.isBlank(role.toString())) {
+				throw new ServiceException("当前登录信息时效");
+			}
+			request.setAttribute("userId", userid);
+			request.setAttribute("role", role);
 
 			chain.doFilter(req, res);
 		}
