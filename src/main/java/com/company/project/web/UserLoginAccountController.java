@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.company.project.annotation.TokenCheck;
 import com.company.project.configurer.Audience;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
@@ -136,6 +137,7 @@ public class UserLoginAccountController {
 		return ResultGenerator.genSuccessResult(data);
 	}
 
+	@TokenCheck
 	@PostMapping("/refreshToken")
 	public Result<?> refreshToken(HttpServletRequest request) {
 		Map<String, String> data = new HashMap<>();

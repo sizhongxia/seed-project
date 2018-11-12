@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.HandlerMethod;
@@ -26,12 +27,14 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.company.project.Interceptor.TokenCheckInterceptor;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ServiceException;
@@ -88,6 +91,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 					result.setCode(ResultCode.NOT_FOUND).setMessage("接口 [" + request.getRequestURI() + "] 不存在");
 				} else if (e instanceof ServletException) {
 					result.setCode(ResultCode.FAIL).setMessage(e.getMessage());
+				} else if (e instanceof HttpMessageNotReadableException) {
+					result.setCode(ResultCode.FAIL).setMessage("未读取到请求数据");
 				} else {
 					result.setCode(ResultCode.INTERNAL_SERVER_ERROR)
 							.setMessage("接口 [" + request.getRequestURI() + "] 内部错误，请联系管理员");
@@ -114,6 +119,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedOrigins("*").allowedMethods("*").allowedHeaders("*").allowCredentials(true)
 				.exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L);
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new TokenCheckInterceptor());
+		super.addInterceptors(registry);
 	}
 
 	private void responseResult(HttpServletResponse response, Result<?> result) {
@@ -173,6 +184,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		// 添加需要拦截的url
 		List<String> urlPatterns = Lists.newArrayList();
 		urlPatterns.add("/unit/**");
+		urlPatterns.add("/dictionary/**");
+		urlPatterns.add("/sys/**");
 		registrationBean.addUrlPatterns(urlPatterns.toArray(new String[urlPatterns.size()]));
 		return registrationBean;
 	}

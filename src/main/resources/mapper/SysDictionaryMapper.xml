@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SysDictionaryMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.SysDictionary">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="value" jdbcType="INTEGER" property="value" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+  </resultMap>
+  
+  <select id="selectAllTypes" resultType="java.lang.String">
+  	 select type from sys_dictionary GROUP BY type
+  </select>
+  
+  <select id="selectTypeName" parameterType="java.lang.String" resultType="java.lang.String">
+  	 select remarks from sys_dictionary where type = #{type} and remarks != "" limit 0, 1
+  </select>
+</mapper>

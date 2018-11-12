@@ -19,12 +19,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.company.project.annotation.TokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitDepartment;
 import com.company.project.model.om.UnitDepartmentModel;
 import com.company.project.model.param.DepartmentSearchParam;
 import com.company.project.model.returns.Pagination;
+import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitDepartmentService;
 import com.company.project.unit.UuidUtil;
 import com.github.pagehelper.Page;
@@ -41,14 +44,15 @@ public class UnitDepartmentController {
 
 	@Resource
 	private UnitDepartmentService unitDepartmentService;
+	@Resource
+	private UnitCompanyService unitCompanyService;
 
+	@TokenCheck
 	@PostMapping("/data")
 	public Result<?> data(@RequestBody DepartmentSearchParam param) {
 		logger.info("company search param:{}", param.toString());
 
 		Map<String, Object> data = new HashMap<>();
-
-		List<Map<String, Object>> list = new ArrayList<>();
 
 		Condition condition = new Condition(UnitDepartment.class);
 		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
@@ -58,8 +62,16 @@ public class UnitDepartmentController {
 			criteria.andLike("deptname", String.format("%%%s%%", keyword));
 		}
 		String deptUuid = param.getDeptUuid();
+		String deptName = null;
 		if (StringUtils.isNotBlank(deptUuid)) {
 			criteria.andEqualTo("deptuuid", deptUuid);
+			UnitCompany unitCompany = unitCompanyService.findBy("uuid", deptUuid);
+			if (unitCompany == null) {
+				return ResultGenerator.genFailResult("链接可能已失效");
+			}
+			deptName = unitCompany.getCompanyname();
+		} else {
+			return ResultGenerator.genFailResult("无效的链接");
 		}
 		String parentUuid = param.getParentUuid();
 		if (StringUtils.isNotBlank(parentUuid)) {
@@ -77,6 +89,7 @@ public class UnitDepartmentController {
 		PageHelper.startPage(page, size);
 		Page<UnitDepartment> _list = (Page<UnitDepartment>) unitDepartmentService.findByCondition(condition);
 
+		List<Map<String, Object>> list = new ArrayList<>();
 		List<UnitDepartment> result = _list.getResult();
 		if (result != null && result.size() > 0) {
 			Map<String, Object> item = null;
@@ -88,6 +101,8 @@ public class UnitDepartmentController {
 				list.add(item);
 			}
 		}
+
+		data.put("deptName", deptName);
 		data.put("list", list);
 
 		Pagination pagination = new Pagination();
@@ -98,6 +113,7 @@ public class UnitDepartmentController {
 		return ResultGenerator.genSuccessResult(data);
 	}
 
+	@TokenCheck
 	@PostMapping("/getById")
 	public Result<?> getById(@RequestBody UnitDepartmentModel model) {
 
@@ -118,6 +134,7 @@ public class UnitDepartmentController {
 		return ResultGenerator.genSuccessResult(item);
 	}
 
+	@TokenCheck
 	@PostMapping("/deleteById")
 	public Result<?> deleteById(@RequestBody UnitDepartmentModel model) {
 
@@ -137,6 +154,7 @@ public class UnitDepartmentController {
 		return ResultGenerator.genSuccessResult();
 	}
 
+	@TokenCheck
 	@PostMapping("/save")
 	public Result<?> save(@Validated @RequestBody UnitDepartmentModel model, BindingResult bindingResult,
 			HttpServletRequest request) {
@@ -170,6 +188,7 @@ public class UnitDepartmentController {
 		return ResultGenerator.genSuccessResult();
 	}
 
+	@TokenCheck
 	@PostMapping("/update")
 	public Result<?> update(@Validated @RequestBody UnitDepartmentModel model, BindingResult bindingResult,
 			HttpServletRequest request) {

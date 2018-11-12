@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.company.project.annotation.TokenCheck;
 import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
@@ -44,6 +45,7 @@ public class UnitCompanyController {
 	@Autowired
 	private QiniuConstant qiniuConstant;
 
+	@TokenCheck
 	@PostMapping("/data")
 	public Result<?> data(@RequestBody CompanySearchParam param) {
 		logger.info("company search param:{}", param.toString());
@@ -100,6 +102,7 @@ public class UnitCompanyController {
 		return ResultGenerator.genSuccessResult(data);
 	}
 
+	@TokenCheck
 	@PostMapping("/getById")
 	public Result<?> getById(@RequestBody UnitCompanyModel model) {
 
@@ -127,6 +130,7 @@ public class UnitCompanyController {
 		return ResultGenerator.genSuccessResult(item);
 	}
 
+	@TokenCheck
 	@PostMapping("/deleteById")
 	public Result<?> deleteById(@RequestBody UnitCompanyModel model) {
 
@@ -146,6 +150,7 @@ public class UnitCompanyController {
 		return ResultGenerator.genSuccessResult();
 	}
 
+	@TokenCheck
 	@PostMapping("/save")
 	public Result<?> save(@Validated @RequestBody UnitCompanyModel model, BindingResult bindingResult,
 			HttpServletRequest request) {
@@ -181,6 +186,7 @@ public class UnitCompanyController {
 		return ResultGenerator.genSuccessResult();
 	}
 
+	@TokenCheck
 	@PostMapping("/update")
 	public Result<?> update(@Validated @RequestBody UnitCompanyModel model, BindingResult bindingResult,
 			HttpServletRequest request) {

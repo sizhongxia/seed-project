@@ -38,7 +38,7 @@ public class CodeGenerator {
 
 	public static void main(String[] args) {
 		// genCode("sys_user");
-		genCodeByCustomModelName("unit_company", "UnitCompany");
+		genCodeByCustomModelName("sys_area", "SysArea");
 
 	}
 
