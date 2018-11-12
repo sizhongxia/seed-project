@@ -24,8 +24,11 @@ import com.company.project.core.ResultGenerator;
 import com.company.project.model.SysArea;
 import com.company.project.model.om.AreaModel;
 import com.company.project.model.param.AreaSearchParam;
+import com.company.project.model.returns.Pagination;
 import com.company.project.service.SysAreaService;
 import com.company.project.unit.AesUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -52,8 +55,11 @@ public class AreaController {
 		}
 		String pinyin = param.getPinyin();
 		if (StringUtils.isNotBlank(pinyin)) {
-			criteria.andLike("pinyin", String.format("%%%s%%", pinyin)).orEqualTo("jianpin",
-					String.format("%%%s%%", pinyin));
+			criteria.andLike("pinyin", String.format("%%%s%%", pinyin));
+		}
+		String jianpin = param.getJianpin();
+		if (StringUtils.isNotBlank(jianpin)) {
+			criteria.andLike("jianpin", String.format("%%%s%%", jianpin));
 		}
 		String code = param.getCode();
 		if (StringUtils.isNotBlank(code)) {
@@ -63,15 +69,26 @@ public class AreaController {
 		if (StringUtils.isNotBlank(pcode)) {
 			criteria.andEqualTo("pcode", pcode);
 		}
+
+		Integer page = param.getPage();
+		if (page == null || page.intValue() < 1) {
+			page = 1;
+		}
+		Integer size = param.getSize();
+		if (size == null || size.intValue() < 1) {
+			size = 10;
+		}
 		condition.setOrderByClause("code asc");
-		List<SysArea> result = sysAreaService.findByCondition(condition);
+		PageHelper.startPage(page, size);
+		Page<SysArea> _list = (Page<SysArea>) sysAreaService.findByCondition(condition);
+		List<SysArea> result = _list.getResult();
 		List<Map<String, Object>> list = new ArrayList<>();
 		if (result != null && result.size() > 0) {
 			Map<String, Object> item = null;
 			for (SysArea i : result) {
 				item = new HashMap<>();
 				try {
-					item.put("id", AesUtil.encrypt(i.getId().toString()));
+					item.put("key", AesUtil.encrypt(i.getId().toString()));
 				} catch (Exception e) {
 					logger.error(e.getMessage());
 					return ResultGenerator.genFailResult("系统错误");
@@ -81,10 +98,21 @@ public class AreaController {
 				item.put("pcode", i.getPcode());
 				item.put("pinyin", i.getPinyin());
 				item.put("jianpin", i.getJianpin());
+				item.put("lng", i.getLng());
+				item.put("lat", i.getLat());
 				list.add(item);
 			}
 		}
-		return ResultGenerator.genSuccessResult(list);
+
+		Map<String, Object> data = new HashMap<>();
+		data.put("list", list);
+		Pagination pagination = new Pagination();
+		pagination.setTotal(_list.getTotal());
+		pagination.setCurrent(_list.getPageNum());
+		pagination.setPageSize(_list.getPageSize());
+		data.put("pagination", pagination);
+
+		return ResultGenerator.genSuccessResult(data);
 	}
 
 	@TokenCheck
@@ -124,24 +152,38 @@ public class AreaController {
 	@PostMapping("/deleteById")
 	public Result<?> deleteById(@RequestBody AreaModel model) {
 
-		if (StringUtils.isBlank(model.getUuid())) {
-			return ResultGenerator.genFailResult("无效的表单");
+		if (StringUtils.isNotBlank(model.getUuid())) {
+			String id = null;
+			try {
+				id = AesUtil.desEncrypt(model.getUuid());
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				return ResultGenerator.genFailResult("无效的表单01");
+			}
+			SysArea area = sysAreaService.findBy("id", Integer.parseInt(id.trim()));
+			if (area == null) {
+				return ResultGenerator.genFailResult("无效的表单02");
+			}
+			sysAreaService.deleteById(area.getId());
+			return ResultGenerator.genSuccessResult();
+		} else if (model.getIds() != null && model.getIds().length > 0) {
+			String[] ids = model.getIds();
+			for (String id : ids) {
+				try {
+					id = AesUtil.desEncrypt(id);
+				} catch (Exception e) {
+					logger.error(e.getMessage());
+					return ResultGenerator.genFailResult("无效的表单03");
+				}
+				SysArea area = sysAreaService.findBy("id", Integer.parseInt(id.trim()));
+				if (area == null) {
+					return ResultGenerator.genFailResult("无效的表单04");
+				}
+				sysAreaService.deleteById(area.getId());
+			}
+			return ResultGenerator.genSuccessResult();
 		}
-		String id = null;
-		try {
-			id = AesUtil.desEncrypt(model.getUuid());
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResultGenerator.genFailResult("无效的表单");
-		}
-
-		SysArea area = sysAreaService.findBy("id", Integer.parseInt(id.trim()));
-		if (area == null) {
-			return ResultGenerator.genFailResult("无效的表单");
-		}
-
-		sysAreaService.deleteById(area.getId());
-		return ResultGenerator.genSuccessResult();
+		return ResultGenerator.genFailResult("无效的表单");
 	}
 
 	@TokenCheck

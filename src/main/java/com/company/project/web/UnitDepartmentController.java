@@ -52,8 +52,6 @@ public class UnitDepartmentController {
 	public Result<?> data(@RequestBody DepartmentSearchParam param) {
 		logger.info("company search param:{}", param.toString());
 
-		Map<String, Object> data = new HashMap<>();
-
 		Condition condition = new Condition(UnitDepartment.class);
 		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
 
@@ -102,9 +100,9 @@ public class UnitDepartmentController {
 			}
 		}
 
+		Map<String, Object> data = new HashMap<>();
 		data.put("deptName", deptName);
 		data.put("list", list);
-
 		Pagination pagination = new Pagination();
 		pagination.setTotal(_list.getTotal());
 		pagination.setCurrent(_list.getPageNum());

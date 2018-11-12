@@ -46,8 +46,6 @@ public class DictionaryController {
 	public Result<?> data(@RequestBody DictionartSearchParam param) {
 		logger.info("company search param:{}", param.toString());
 
-		Map<String, Object> data = new HashMap<>();
-
 		Condition condition = new Condition(SysDictionary.class);
 		Criteria criteria = condition.createCriteria();
 
@@ -92,8 +90,9 @@ public class DictionaryController {
 				list.add(item);
 			}
 		}
+		
+		Map<String, Object> data = new HashMap<>();
 		data.put("list", list);
-
 		Pagination pagination = new Pagination();
 		pagination.setTotal(_list.getTotal());
 		pagination.setCurrent(_list.getPageNum());

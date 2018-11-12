@@ -5,6 +5,9 @@ import org.hibernate.validator.constraints.NotBlank;
 public class AreaModel {
 
 	private String uuid;
+
+	private String[] ids;
+
 	@NotBlank(message = "请输入区域名称")
 	private String name;
 	@NotBlank(message = "请输入区域名称拼音")
@@ -23,6 +26,14 @@ public class AreaModel {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String[] getIds() {
+		return ids;
+	}
+
+	public void setIds(String[] ids) {
+		this.ids = ids;
 	}
 
 	public String getName() {

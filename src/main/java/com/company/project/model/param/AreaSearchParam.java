@@ -8,6 +8,9 @@ public class AreaSearchParam {
 	private String pcode;
 	private String code;
 
+	private Integer page;
+	private Integer size;
+
 	public String getName() {
 		return name;
 	}
@@ -48,10 +51,26 @@ public class AreaSearchParam {
 		this.code = code;
 	}
 
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
+	}
+
 	@Override
 	public String toString() {
 		return "AreaSearchParam [name=" + name + ", pinyin=" + pinyin + ", jianpin=" + jianpin + ", pcode=" + pcode
-				+ ", code=" + code + "]";
+				+ ", code=" + code + ", page=" + page + ", size=" + size + "]";
 	}
 
 }

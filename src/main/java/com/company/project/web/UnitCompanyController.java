@@ -50,9 +50,6 @@ public class UnitCompanyController {
 	public Result<?> data(@RequestBody CompanySearchParam param) {
 		logger.info("company search param:{}", param.toString());
 
-		Map<String, Object> data = new HashMap<>();
-
-		List<Map<String, Object>> list = new ArrayList<>();
 
 		Condition condition = new Condition(UnitCompany.class);
 		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
@@ -74,6 +71,7 @@ public class UnitCompanyController {
 		Page<UnitCompany> _list = (Page<UnitCompany>) unitCompanyService.findByCondition(condition);
 
 		List<UnitCompany> result = _list.getResult();
+		List<Map<String, Object>> list = new ArrayList<>();
 		if (result != null && result.size() > 0) {
 			Map<String, Object> item = null;
 			for (UnitCompany i : result) {
@@ -92,8 +90,8 @@ public class UnitCompanyController {
 				list.add(item);
 			}
 		}
+		Map<String, Object> data = new HashMap<>();
 		data.put("list", list);
-
 		Pagination pagination = new Pagination();
 		pagination.setTotal(_list.getTotal());
 		pagination.setCurrent(_list.getPageNum());
