@@ -7,7 +7,7 @@ public class UnitDepartmentModel {
 
 	@NotBlank(message = "请输入部门名称")
 	private String deptname;
-	@NotBlank(message = "请请选择一个公司/工地")
+	@NotBlank(message = "请选择一个公司/工地")
 	private String deptuuid;
 	private String parentuuid;
 

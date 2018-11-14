@@ -183,9 +183,11 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		registrationBean.setFilter(new JwtFilter());
 		// 添加需要拦截的url
 		List<String> urlPatterns = Lists.newArrayList();
+		urlPatterns.add("/check");
 		urlPatterns.add("/unit/**");
 		urlPatterns.add("/dictionary/**");
 		urlPatterns.add("/sys/**");
+		urlPatterns.add("/loginaccount/**");
 		registrationBean.addUrlPatterns(urlPatterns.toArray(new String[urlPatterns.size()]));
 		return registrationBean;
 	}

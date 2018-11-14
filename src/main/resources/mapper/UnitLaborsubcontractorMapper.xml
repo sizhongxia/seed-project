@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.UnitLaborsubcontractorMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.UnitLaborsubcontractor">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="proUuid" jdbcType="VARCHAR" property="prouuid" />
+    <result column="companyUuid" jdbcType="VARCHAR" property="companyuuid" />
+    <result column="addTime" jdbcType="BIGINT" property="addtime" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+  </resultMap>
+</mapper>

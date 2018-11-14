@@ -57,13 +57,13 @@ public class UnitDepartmentController {
 
 		String keyword = param.getKeyword();
 		if (StringUtils.isNotBlank(keyword)) {
-			criteria.andLike("deptname", String.format("%%%s%%", keyword));
+			criteria.andLike("deptname", String.format("%%%s%%", keyword.trim()));
 		}
 		String deptUuid = param.getDeptUuid();
 		String deptName = null;
 		if (StringUtils.isNotBlank(deptUuid)) {
-			criteria.andEqualTo("deptuuid", deptUuid);
-			UnitCompany unitCompany = unitCompanyService.findBy("uuid", deptUuid);
+			criteria.andEqualTo("deptuuid", deptUuid.trim());
+			UnitCompany unitCompany = unitCompanyService.findBy("uuid", deptUuid.trim());
 			if (unitCompany == null) {
 				return ResultGenerator.genFailResult("链接可能已失效");
 			}
@@ -73,7 +73,7 @@ public class UnitDepartmentController {
 		}
 		String parentUuid = param.getParentUuid();
 		if (StringUtils.isNotBlank(parentUuid)) {
-			criteria.andEqualTo("parentuuid", parentUuid);
+			criteria.andEqualTo("parentuuid", parentUuid.trim());
 		}
 
 		Integer page = param.getPage();
@@ -109,6 +109,36 @@ public class UnitDepartmentController {
 		pagination.setPageSize(_list.getPageSize());
 		data.put("pagination", pagination);
 		return ResultGenerator.genSuccessResult(data);
+	}
+
+	@TokenCheck
+	@PostMapping("/getDeptsByCompany")
+	public Result<?> getDeptsByCompany(@RequestBody DepartmentSearchParam param) {
+		logger.info("company search param:{}", param.toString());
+		Condition condition = new Condition(UnitDepartment.class);
+		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
+		List<Map<String, Object>> list = new ArrayList<>();
+		String deptUuid = param.getDeptUuid();
+		if (StringUtils.isNotBlank(deptUuid)) {
+			criteria.andEqualTo("deptuuid", deptUuid.trim());
+			UnitCompany unitCompany = unitCompanyService.findBy("uuid", deptUuid.trim());
+			if (unitCompany == null) {
+				return ResultGenerator.genSuccessResult(list);
+			}
+		} else {
+			return ResultGenerator.genSuccessResult(list);
+		}
+		List<UnitDepartment> result = unitDepartmentService.findByCondition(condition);
+		if (result != null && result.size() > 0) {
+			Map<String, Object> item = null;
+			for (UnitDepartment i : result) {
+				item = new HashMap<>();
+				item.put("key", i.getUuid());
+				item.put("name", i.getDeptname());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 
 	@TokenCheck

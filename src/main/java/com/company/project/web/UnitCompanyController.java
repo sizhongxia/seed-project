@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,16 +50,12 @@ public class UnitCompanyController {
 	@PostMapping("/data")
 	public Result<?> data(@RequestBody CompanySearchParam param) {
 		logger.info("company search param:{}", param.toString());
-
-
 		Condition condition = new Condition(UnitCompany.class);
 		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
-
 		String keyword = param.getKeyword();
 		if (StringUtils.isNotBlank(keyword)) {
-			criteria.andLike("companyname", String.format("%%%s%%", keyword));
+			criteria.andLike("companyname", String.format("%%%s%%", keyword.trim()));
 		}
-
 		Integer page = param.getPage();
 		if (page == null || page.intValue() < 1) {
 			page = 1;
@@ -98,6 +95,38 @@ public class UnitCompanyController {
 		pagination.setPageSize(_list.getPageSize());
 		data.put("pagination", pagination);
 		return ResultGenerator.genSuccessResult(data);
+	}
+
+	@TokenCheck
+	@PostMapping("/getCompanyOptions")
+	public Result<?> getCompanyOptions(@RequestBody CompanySearchParam param) {
+		logger.info("company search param:{}", param.toString());
+		Condition condition = new Condition(UnitCompany.class);
+		Criteria criteria = condition.createCriteria().andEqualTo("state", 0);
+
+		List<Map<String, Object>> list = new ArrayList<>();
+
+		// 1 建设2施工3设计4监理5 勘察6劳务分包商7公司集团8设备供应商
+		String type = param.getType();
+		if (NumberUtils.isDigits(type)) {
+			criteria.andEqualTo("type", Integer.parseInt(type.trim()));
+		}
+
+		condition.setOrderByClause("companyname asc");
+
+		List<UnitCompany> result = unitCompanyService.findByCondition(condition);
+		if (result != null && result.size() > 0) {
+			Map<String, Object> item = null;
+			for (UnitCompany i : result) {
+				item = new HashMap<>();
+				item.put("key", i.getUuid());
+				item.put("name", i.getCompanyname());
+				item.put("type", i.getType());
+				item.put("typename", i.getTypename());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 
 	@TokenCheck
@@ -221,18 +250,22 @@ public class UnitCompanyController {
 		return ResultGenerator.genSuccessResult();
 	}
 
+	/**
+	 * @param type
+	 * @return
+	 */
 	private String getTypeName(String type) {
 		switch (type) {
 		case "1":
-			return "勘察单位";
-		case "2":
-			return "设计单位";
-		case "3":
 			return "建设单位";
-		case "4":
+		case "2":
 			return "施工单位";
-		case "5":
+		case "3":
+			return "设计单位";
+		case "4":
 			return "监理单位";
+		case "5":
+			return "勘察单位";
 		case "6":
 			return "劳务分包商";
 		case "7":

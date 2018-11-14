@@ -47,9 +47,9 @@ import tk.mybatis.mapper.entity.Condition;
  */
 @RestController
 @RequestMapping("/user")
-public class UserLoginAccountController {
+public class UserController {
 
-	private Logger logger = LoggerFactory.getLogger(UserLoginAccountController.class.getName());
+	private Logger logger = LoggerFactory.getLogger(UserController.class.getName());
 
 	@Resource
 	private UserLoginAccountService userLoginAccountService;
@@ -78,11 +78,19 @@ public class UserLoginAccountController {
 		}
 		UserLoginAccount user = userLoginAccountService.findBy("username", param.getLoginName());
 		if (user == null) {
-			return ResultGenerator.genFailResult("登录失败，无效的账号");
+			user = userLoginAccountService.findBy("phone", param.getLoginName());
+			if (user == null) {
+				return ResultGenerator.genFailResult("登录失败，无效的账号");
+			}
 		}
-		if (!Md5Util.md5(param.getLoginPwd(), param.getLoginName()).equals(user.getPassword())) {
+		if (!Md5Util.md5(param.getLoginPwd(), user.getUsername()).equals(user.getPassword())) {
 			return ResultGenerator.genFailResult("登录失败，账号密码不匹配");
 		}
+
+		if (user.getState().intValue() != 0) {
+			return ResultGenerator.genFailResult("登录失败，当前账号已被禁止使用");
+		}
+
 		Map<String, String> data = new HashMap<>();
 
 		if (StringUtils.isNotBlank(user.getName())) {
@@ -91,6 +99,7 @@ public class UserLoginAccountController {
 			data.put("loginName", user.getUsername());
 		}
 
+		// 获取用户身份信息
 		Condition condition = new Condition(UserIdentity.class);
 		condition.createCriteria().andEqualTo("useruuid", user.getUuid()).andEqualTo("type", param.getType())
 				.andEqualTo("state", 0);
@@ -101,6 +110,7 @@ public class UserLoginAccountController {
 		}
 		UserIdentity ui = userIdentitys.get(0);
 
+		// 获取用户角色信息
 		if (StringUtils.isBlank(ui.getRoleuuid())) {
 			return ResultGenerator.genFailResult("未授权访问V2");
 		}

@@ -51,12 +51,12 @@ public class DictionaryController {
 
 		String keyword = param.getKeyword();
 		if (StringUtils.isNotBlank(keyword)) {
-			criteria.andLike("name", String.format("%%%s%%", keyword));
+			criteria.andLike("name", String.format("%%%s%%", keyword.trim()));
 		}
 
 		String type = param.getType();
 		if (StringUtils.isNotBlank(type) && !"all".equals(type)) {
-			criteria.andEqualTo("type", type);
+			criteria.andEqualTo("type", type.trim());
 		}
 
 		Integer page = param.getPage();
@@ -90,7 +90,7 @@ public class DictionaryController {
 				list.add(item);
 			}
 		}
-		
+
 		Map<String, Object> data = new HashMap<>();
 		data.put("list", list);
 		Pagination pagination = new Pagination();
@@ -99,6 +99,34 @@ public class DictionaryController {
 		pagination.setPageSize(_list.getPageSize());
 		data.put("pagination", pagination);
 		return ResultGenerator.genSuccessResult(data);
+	}
+
+	@TokenCheck
+	@PostMapping("/getByType")
+	public Result<?> getByType(@RequestBody DictionartSearchParam param) {
+		logger.info("company search param:{}", param.toString());
+
+		Condition condition = new Condition(SysDictionary.class);
+		Criteria criteria = condition.createCriteria();
+		List<Map<String, Object>> list = new ArrayList<>();
+		String type = param.getType();
+		if (StringUtils.isNotBlank(type) && !"all".equals(type)) {
+			criteria.andEqualTo("type", type.trim());
+		} else {
+			return ResultGenerator.genSuccessResult(list);
+		}
+		condition.setOrderByClause("value asc");
+		List<SysDictionary> result = sysDictionaryService.findByCondition(condition);
+		if (result != null && result.size() > 0) {
+			Map<String, Object> item = null;
+			for (SysDictionary i : result) {
+				item = new HashMap<>();
+				item.put("key", i.getValue().toString());
+				item.put("name", i.getName());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 
 	@TokenCheck

@@ -51,23 +51,23 @@ public class AreaController {
 
 		String name = param.getName();
 		if (StringUtils.isNotBlank(name)) {
-			criteria.andLike("name", String.format("%%%s%%", name));
+			criteria.andLike("name", String.format("%%%s%%", name.trim()));
 		}
 		String pinyin = param.getPinyin();
 		if (StringUtils.isNotBlank(pinyin)) {
-			criteria.andLike("pinyin", String.format("%%%s%%", pinyin));
+			criteria.andLike("pinyin", String.format("%%%s%%", pinyin.trim()));
 		}
 		String jianpin = param.getJianpin();
 		if (StringUtils.isNotBlank(jianpin)) {
-			criteria.andLike("jianpin", String.format("%%%s%%", jianpin));
+			criteria.andLike("jianpin", String.format("%%%s%%", jianpin.trim()));
 		}
 		String code = param.getCode();
 		if (StringUtils.isNotBlank(code)) {
-			criteria.andEqualTo("code", code);
+			criteria.andEqualTo("code", Integer.parseInt(code.trim()));
 		}
 		String pcode = param.getPcode();
 		if (StringUtils.isNotBlank(pcode)) {
-			criteria.andEqualTo("pcode", pcode);
+			criteria.andEqualTo("pcode", Integer.parseInt(pcode.trim()));
 		}
 
 		Integer page = param.getPage();
@@ -146,6 +146,33 @@ public class AreaController {
 		item.put("lat", area.getLat());
 		item.put("lng", area.getLng());
 		return ResultGenerator.genSuccessResult(item);
+	}
+
+	@TokenCheck
+	@PostMapping("/getAreas")
+	public Result<?> getAreas(@RequestBody AreaSearchParam param) {
+		Condition condition = new Condition(SysArea.class);
+		Criteria criteria = condition.createCriteria();
+
+		String pcode = param.getPcode();
+		if (StringUtils.isNotBlank(pcode)) {
+			criteria.andEqualTo("pcode", Integer.parseInt(pcode.trim()));
+		}
+
+		condition.setOrderByClause("code asc");
+		List<SysArea> result = sysAreaService.findByCondition(condition);
+
+		List<Map<String, Object>> list = new ArrayList<>();
+		if (result != null && result.size() > 0) {
+			Map<String, Object> item = null;
+			for (SysArea i : result) {
+				item = new HashMap<>();
+				item.put("value", i.getCode().toString());
+				item.put("label", i.getName());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 
 	@TokenCheck
