@@ -24,18 +24,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.project.annotation.TokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitLaborsubcontractor;
 import com.company.project.model.UnitProject;
+import com.company.project.model.UnitProjectConfig;
 import com.company.project.model.om.ProjectModel;
 import com.company.project.model.param.ProjectSearchParam;
 import com.company.project.model.returns.Pagination;
+import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitLaborsubcontractorService;
+import com.company.project.service.UnitProjectConfigService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UtcDateParseUtil;
 import com.company.project.unit.UuidUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xiaoleilu.hutool.date.DateUtil;
+import com.xiaoleilu.hutool.util.RandomUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
@@ -49,6 +54,10 @@ public class UnitProjectController {
 	private UnitProjectService unitProjectService;
 	@Resource
 	private UnitLaborsubcontractorService unitLaborsubcontractorService;
+	@Resource
+	private UnitCompanyService unitCompanyService;
+	@Resource
+	private UnitProjectConfigService unitProjectConfigService;
 
 	@TokenCheck
 	@PostMapping("/data")
@@ -57,6 +66,7 @@ public class UnitProjectController {
 
 		Condition condition = new Condition(UnitProject.class);
 		Criteria criteria = condition.createCriteria();
+		criteria.andEqualTo("state", 0);
 
 		String name = param.getName();
 		if (StringUtils.isNotBlank(name)) {
@@ -115,6 +125,9 @@ public class UnitProjectController {
 				item.put("name", i.getName());
 				item.put("proname", i.getProname());
 				item.put("procode", i.getProcode());
+				item.put("locationmap", i.getLocationmap());
+				item.put("lmwidth", i.getWidth());
+				item.put("lmlength", i.getLength());
 				// item.put("longitude", i.getLongitude());
 				// item.put("latitude", i.getLatitude());
 				// item.put("companyuuid", i.getCompanyuuid());
@@ -189,36 +202,29 @@ public class UnitProjectController {
 			cuids.toArray(strings);
 			model.setSubcontractorcompany(strings);
 		}
+
+		UnitProjectConfig upc = unitProjectConfigService.findBy("prouuid", project.getUuid());
+		if (upc != null) {
+			model.setPersonnelpositioning(upc.getIspersonnelpositioning().toString());
+		}
+
 		return ResultGenerator.genSuccessResult(model);
 	}
 
 	@TokenCheck
 	@PostMapping("/deleteById")
 	public Result<?> deleteById(@RequestBody ProjectModel model) {
-
-		if (StringUtils.isNotBlank(model.getUuid())) {
-			UnitProject project = unitProjectService.findBy("uuid", model.getUuid());
-			if (project == null) {
-				return ResultGenerator.genFailResult("无效的表单02");
-			}
-			project.setState(1);
-			project.setUpdatetime(System.currentTimeMillis());
-			unitProjectService.update(project);
-			return ResultGenerator.genSuccessResult();
-		} else if (model.getIds() != null && model.getIds().length > 0) {
-			String[] ids = model.getIds();
-			for (String id : ids) {
-				UnitProject project = unitProjectService.findBy("uuid", id);
-				if (project == null) {
-					return ResultGenerator.genFailResult("无效的表单04");
-				}
-				project.setState(1);
-				project.setUpdatetime(System.currentTimeMillis());
-				unitProjectService.update(project);
-			}
-			return ResultGenerator.genSuccessResult();
+		if (StringUtils.isBlank(model.getUuid())) {
+			return ResultGenerator.genFailResult("无效的表单01");
 		}
-		return ResultGenerator.genFailResult("无效的表单");
+		UnitProject project = unitProjectService.findBy("uuid", model.getUuid());
+		if (project == null) {
+			return ResultGenerator.genFailResult("无效的表单02");
+		}
+		project.setState(1);
+		project.setUpdatetime(System.currentTimeMillis());
+		unitProjectService.update(project);
+		return ResultGenerator.genSuccessResult();
 	}
 
 	@TokenCheck
@@ -228,13 +234,27 @@ public class UnitProjectController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-		UnitProject project = unitProjectService.findBy("procode", model.getProcode());
+
+		String procode = DateUtil.format(new Date(), "yyyyMMdd");
+
+		Condition unitProjectCondition = new Condition(UnitProject.class);
+		unitProjectCondition.createCriteria().andLike("procode", procode + "%");
+		List<UnitProject> upByCodes = unitProjectService.findByCondition(unitProjectCondition);
+		if (upByCodes == null) {
+			procode = procode + "0001" + RandomUtil.randomNumbers(4);
+		} else {
+			String no = "0000" + upByCodes.size();
+			procode = procode + no.substring(no.length() - 4, no.length()) + RandomUtil.randomNumbers(4);
+		}
+
+		UnitProject project = unitProjectService.findBy("procode", procode);
 		if (project != null) {
-			return ResultGenerator.genFailResult("当前工地编码已存在");
+			return ResultGenerator.genFailResult("请尝试重新提交");
 		}
 
 		project = new UnitProject();
 		BeanUtils.copyProperties(model, project);
+		project.setProcode(procode);
 		project.setUuid(UuidUtil.init());
 		String[] areaInfo = model.getAreainfo();
 		if (areaInfo.length > 0) {
@@ -296,6 +316,13 @@ public class UnitProjectController {
 		if (contractorcompanys != null && contractorcompanys.length > 0) {
 			List<UnitLaborsubcontractor> uls = new ArrayList<>();
 			for (String ulId : contractorcompanys) {
+				if (StringUtils.isBlank(ulId)) {
+					continue;
+				}
+				UnitCompany unitCompany = unitCompanyService.findBy("uuid", ulId);
+				if (unitCompany == null) {
+					continue;
+				}
 				UnitLaborsubcontractor laborsubcontractor = new UnitLaborsubcontractor();
 				laborsubcontractor.setAddtime(System.currentTimeMillis());
 				laborsubcontractor.setProuuid(project.getUuid());
@@ -305,6 +332,17 @@ public class UnitProjectController {
 			}
 			unitLaborsubcontractorService.save(uls);
 		}
+
+		String personnelpositioning = model.getPersonnelpositioning();
+		if (!NumberUtils.isDigits(personnelpositioning)) {
+			personnelpositioning = "0";
+		}
+
+		UnitProjectConfig unitProjectConfig = new UnitProjectConfig();
+		unitProjectConfig.setProuuid(project.getUuid());
+		unitProjectConfig.setIspersonnelpositioning(Integer.parseInt(personnelpositioning.trim()));
+		unitProjectConfig.setIsshowgov(0);
+		unitProjectConfigService.save(unitProjectConfig);
 
 		return ResultGenerator.genSuccessResult();
 	}
@@ -322,14 +360,8 @@ public class UnitProjectController {
 			return ResultGenerator.genFailResult("无效的工地ID");
 		}
 
-		UnitProject _project = unitProjectService.findBy("procode", model.getProcode());
-		if (_project != null && !_project.getUuid().equals(project.getUuid())) {
-			return ResultGenerator.genFailResult("当前工地编码已存在");
-		}
-
 		project.setProname(model.getProname());
 		project.setName(model.getName());
-		project.setProcode(model.getProcode());
 		project.setCompanyuuid(model.getCompanyuuid());
 		project.setNumberoflayers(model.getNumberoflayers());
 		project.setLongitude(model.getLongitude());
@@ -361,11 +393,15 @@ public class UnitProjectController {
 		String[] functions = model.getFunction();
 		if (functions != null && functions.length > 0) {
 			project.setFunction(String.join(",", functions));
+		} else {
+			project.setFunction("");
 		}
 
 		String[] mainstructuretypes = model.getMainstructuretype();
 		if (mainstructuretypes != null && mainstructuretypes.length > 0) {
 			project.setMainstructuretype(String.join(",", mainstructuretypes));
+		} else {
+			project.setMainstructuretype("");
 		}
 
 		String planstarttime = model.getPlanstarttime();
@@ -376,7 +412,11 @@ public class UnitProjectController {
 					project.setPlanstarttime(time.getTime());
 				}
 			} catch (Exception e) {
+				logger.error(e.getMessage());
+				project.setPlanstarttime(null);
 			}
+		} else {
+			project.setPlanstarttime(null);
 		}
 
 		String planendttime = model.getPlanendtime();
@@ -387,32 +427,82 @@ public class UnitProjectController {
 					project.setPlanendtime(time.getTime());
 				}
 			} catch (Exception e) {
+				logger.error(e.getMessage());
+				project.setPlanendtime(null);
 			}
+		} else {
+			project.setPlanendtime(null);
 		}
 
 		String measure = model.getMeasure();
 		if (NumberUtils.isParsable(measure)) {
 			project.setMeasure(new Double(measure));
+		} else {
+			project.setMeasure(null);
 		}
 		String investment = model.getInvestment();
 		if (NumberUtils.isParsable(investment)) {
 			project.setInvestment(new Double(investment));
+		} else {
+			project.setInvestment(null);
 		}
 		project.setUpdatetime(System.currentTimeMillis());
 		unitProjectService.update(project);
 
+		Condition condition = new Condition(UnitLaborsubcontractor.class);
+		condition.createCriteria().andEqualTo("prouuid", project.getUuid());
+		List<UnitLaborsubcontractor> oldUls = unitLaborsubcontractorService.findByCondition(condition);
+		if (oldUls != null && oldUls.size() > 0) {
+			for (UnitLaborsubcontractor u : oldUls) {
+				u.setState(1);
+				unitLaborsubcontractorService.update(u);
+			}
+		}
 		String[] contractorcompanys = model.getSubcontractorcompany();
 		if (contractorcompanys != null && contractorcompanys.length > 0) {
-			List<UnitLaborsubcontractor> uls = new ArrayList<>();
 			for (String ulId : contractorcompanys) {
-				UnitLaborsubcontractor laborsubcontractor = new UnitLaborsubcontractor();
-				laborsubcontractor.setAddtime(System.currentTimeMillis());
-				laborsubcontractor.setProuuid(project.getUuid());
-				laborsubcontractor.setCompanyuuid(ulId);
-				laborsubcontractor.setState(0);
-				uls.add(laborsubcontractor);
+				if (StringUtils.isBlank(ulId)) {
+					continue;
+				}
+				UnitCompany unitCompany = unitCompanyService.findBy("uuid", ulId);
+				if (unitCompany == null) {
+					continue;
+				}
+				condition = new Condition(UnitLaborsubcontractor.class);
+				condition.createCriteria().andEqualTo("prouuid", project.getUuid()).andEqualTo("companyuuid",
+						unitCompany.getUuid());
+				List<UnitLaborsubcontractor> culs = unitLaborsubcontractorService.findByCondition(condition);
+				UnitLaborsubcontractor laborsubcontractor = null;
+				if (culs == null || culs.isEmpty()) {
+					laborsubcontractor = new UnitLaborsubcontractor();
+					laborsubcontractor.setAddtime(System.currentTimeMillis());
+					laborsubcontractor.setProuuid(project.getUuid());
+					laborsubcontractor.setCompanyuuid(ulId);
+					laborsubcontractor.setState(0);
+					unitLaborsubcontractorService.save(laborsubcontractor);
+				} else {
+					laborsubcontractor = culs.get(0);
+					laborsubcontractor.setState(0);
+					unitLaborsubcontractorService.update(laborsubcontractor);
+				}
 			}
-			//unitLaborsubcontractorService.save(uls);
+		}
+
+		String personnelpositioning = model.getPersonnelpositioning();
+		if (!NumberUtils.isDigits(personnelpositioning)) {
+			personnelpositioning = "0";
+		}
+
+		UnitProjectConfig unitProjectConfig = unitProjectConfigService.findBy("prouuid", project.getUuid());
+		if (unitProjectConfig == null) {
+			unitProjectConfig = new UnitProjectConfig();
+			unitProjectConfig.setProuuid(project.getUuid());
+			unitProjectConfig.setIspersonnelpositioning(Integer.parseInt(personnelpositioning.trim()));
+			unitProjectConfig.setIsshowgov(0);
+			unitProjectConfigService.save(unitProjectConfig);
+		} else {
+			unitProjectConfig.setIspersonnelpositioning(Integer.parseInt(personnelpositioning.trim()));
+			unitProjectConfigService.update(unitProjectConfig);
 		}
 
 		return ResultGenerator.genSuccessResult();

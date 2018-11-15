@@ -8,13 +8,10 @@ public class ProjectModel {
 
 	private String uuid;
 
-	private String[] ids;
-
 	@NotBlank(message = "请输入工地简称")
 	private String name;
 	@NotBlank(message = "请输入工地全称")
 	private String proname;
-	@NotBlank(message = "请输入工地编码")
 	private String procode;
 	private String width;
 	private String length;
@@ -24,6 +21,8 @@ public class ProjectModel {
 	private String province;
 	private String city;
 	private String county;
+
+	private String personnelpositioning;
 
 	private String[] areainfo;
 	private String building;
@@ -167,14 +166,6 @@ public class ProjectModel {
 
 	public void setLocationmap(String locationmap) {
 		this.locationmap = locationmap;
-	}
-
-	public String[] getIds() {
-		return ids;
-	}
-
-	public void setIds(String[] ids) {
-		this.ids = ids;
 	}
 
 	public String getPersonname() {
@@ -337,20 +328,28 @@ public class ProjectModel {
 		this.subcontractorcompany = subcontractorcompany;
 	}
 
+	public String getPersonnelpositioning() {
+		return personnelpositioning;
+	}
+
+	public void setPersonnelpositioning(String personnelpositioning) {
+		this.personnelpositioning = personnelpositioning;
+	}
+
 	@Override
 	public String toString() {
-		return "ProjectModel [uuid=" + uuid + ", ids=" + Arrays.toString(ids) + ", name=" + name + ", proname="
-				+ proname + ", width=" + width + ", length=" + length + ", locationmap=" + locationmap + ", code="
-				+ code + ", logo=" + logo + ", province=" + province + ", city=" + city + ", county=" + county
-				+ ", areainfo=" + Arrays.toString(areainfo) + ", building=" + building + ", companyuuid=" + companyuuid
-				+ ", construction=" + construction + ", constructionnature=" + constructionnature + ", design=" + design
-				+ ", function=" + Arrays.toString(function) + ", investment=" + investment + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", mainstructuretype=" + Arrays.toString(mainstructuretype)
-				+ ", measure=" + measure + ", numberoflayers=" + numberoflayers + ", personname=" + personname
-				+ ", phone=" + phone + ", planendtime=" + planendtime + ", planstarttime=" + planstarttime
-				+ ", procode=" + procode + ", salesname=" + salesname + ", salesphone=" + salesphone
-				+ ", subcontractorcompany=" + Arrays.toString(subcontractorcompany) + ", supervision=" + supervision
-				+ ", survey=" + survey + ", type=" + type + "]";
+		return "ProjectModel [uuid=" + uuid + ", name=" + name + ", proname=" + proname + ", procode=" + procode
+				+ ", width=" + width + ", length=" + length + ", locationmap=" + locationmap + ", code=" + code
+				+ ", logo=" + logo + ", province=" + province + ", city=" + city + ", county=" + county
+				+ ", personnelpositioning=" + personnelpositioning + ", areainfo=" + Arrays.toString(areainfo)
+				+ ", building=" + building + ", companyuuid=" + companyuuid + ", construction=" + construction
+				+ ", constructionnature=" + constructionnature + ", design=" + design + ", function="
+				+ Arrays.toString(function) + ", investment=" + investment + ", latitude=" + latitude + ", longitude="
+				+ longitude + ", mainstructuretype=" + Arrays.toString(mainstructuretype) + ", measure=" + measure
+				+ ", numberoflayers=" + numberoflayers + ", personname=" + personname + ", phone=" + phone
+				+ ", planendtime=" + planendtime + ", planstarttime=" + planstarttime + ", salesname=" + salesname
+				+ ", salesphone=" + salesphone + ", subcontractorcompany=" + Arrays.toString(subcontractorcompany)
+				+ ", supervision=" + supervision + ", survey=" + survey + ", type=" + type + "]";
 	}
 
 }
