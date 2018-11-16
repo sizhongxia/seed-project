@@ -2,6 +2,8 @@ package com.company.project.web;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +22,9 @@ import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.UnitCompany;
+import com.company.project.model.UnitProject;
 import com.company.project.service.UnitCompanyService;
+import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UuidUtil;
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
@@ -39,6 +43,8 @@ public class UploadController {
 	private QiniuConstant qiniuConstant;
 	@Autowired
 	private UnitCompanyService unitCompanyService;
+	@Autowired
+	private UnitProjectService unitProjectService;
 
 	@ResponseBody
 	@PostMapping("/image")
@@ -55,12 +61,6 @@ public class UploadController {
 	@PostMapping("/change/companylogo")
 	public Result<?> changeCompanyLogo(@RequestParam("avatar") MultipartFile multipartFile, HttpServletRequest request)
 			throws IOException {
-		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
-		if (!uploadQNImg(inputStream, key)) {
-			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
-		}
-
 		String uuid = request.getParameter("uuid");
 		if (StringUtils.isBlank(uuid)) {
 			return ResultGenerator.genFailResult("无效的公司ID");
@@ -70,11 +70,80 @@ public class UploadController {
 		if (company == null) {
 			return ResultGenerator.genFailResult("无效的公司ID");
 		}
+
+		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
+		String key = UuidUtil.initShort();
+		if (!uploadQNImg(inputStream, key)) {
+			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
+		}
+
 		company.setLogo(key);
 		company.setUpdatetime(System.currentTimeMillis());
 		unitCompanyService.update(company);
 
 		return ResultGenerator.genSuccessResult(String.format("%s%s", qiniuConstant.getPath(), key));
+	}
+
+	@ResponseBody
+	@PostMapping("/change/projectlocationmap")
+	public Result<?> changeProjectLocationMap(@RequestParam("avatar") MultipartFile multipartFile,
+			HttpServletRequest request) throws IOException {
+
+		String uuid = request.getParameter("uuid");
+		if (StringUtils.isBlank(uuid)) {
+			return ResultGenerator.genFailResult("无效的工地ID");
+		}
+
+		UnitProject project = unitProjectService.findBy("uuid", uuid);
+		if (project == null) {
+			return ResultGenerator.genFailResult("无效的工地ID");
+		}
+
+		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
+		String key = UuidUtil.initShort();
+		if (!uploadQNImg(inputStream, key)) {
+			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
+		}
+
+		project.setLocationmap(key);
+		project.setUpdatetime(System.currentTimeMillis());
+		unitProjectService.update(project);
+
+		Map<String, String> res = new HashMap<>();
+		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("type", "projectlocationmap");
+		return ResultGenerator.genSuccessResult(res);
+	}
+
+	@ResponseBody
+	@PostMapping("/change/projectlogo")
+	public Result<?> changeProjectLogo(@RequestParam("avatar") MultipartFile multipartFile, HttpServletRequest request)
+			throws IOException {
+
+		String uuid = request.getParameter("uuid");
+		if (StringUtils.isBlank(uuid)) {
+			return ResultGenerator.genFailResult("无效的工地ID");
+		}
+
+		UnitProject project = unitProjectService.findBy("uuid", uuid);
+		if (project == null) {
+			return ResultGenerator.genFailResult("无效的工地ID");
+		}
+
+		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
+		String key = UuidUtil.initShort();
+		if (!uploadQNImg(inputStream, key)) {
+			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
+		}
+
+		project.setLogo(key);
+		project.setUpdatetime(System.currentTimeMillis());
+		unitProjectService.update(project);
+
+		Map<String, String> res = new HashMap<>();
+		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("type", "projectlogo");
+		return ResultGenerator.genSuccessResult(res);
 	}
 
 	/**

@@ -48,6 +48,13 @@ public class ProjectModel {
 	private String survey;
 	private String type;
 
+	// 超管账号
+	@NotBlank(message = "请输入超管账号")
+	private String username;
+	// 超管密码
+	@NotBlank(message = "请输入超管密码")
+	private String password;
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -336,6 +343,22 @@ public class ProjectModel {
 		this.personnelpositioning = personnelpositioning;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
 		return "ProjectModel [uuid=" + uuid + ", name=" + name + ", proname=" + proname + ", procode=" + procode
@@ -349,7 +372,8 @@ public class ProjectModel {
 				+ ", numberoflayers=" + numberoflayers + ", personname=" + personname + ", phone=" + phone
 				+ ", planendtime=" + planendtime + ", planstarttime=" + planstarttime + ", salesname=" + salesname
 				+ ", salesphone=" + salesphone + ", subcontractorcompany=" + Arrays.toString(subcontractorcompany)
-				+ ", supervision=" + supervision + ", survey=" + survey + ", type=" + type + "]";
+				+ ", supervision=" + supervision + ", survey=" + survey + ", type=" + type + ", username=" + username
+				+ ", password=" + password + "]";
 	}
 
 }

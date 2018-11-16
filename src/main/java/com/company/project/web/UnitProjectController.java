@@ -14,6 +14,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.project.annotation.TokenCheck;
+import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitLaborsubcontractor;
 import com.company.project.model.UnitProject;
 import com.company.project.model.UnitProjectConfig;
+import com.company.project.model.UserIdentity;
+import com.company.project.model.UserLoginAccount;
 import com.company.project.model.om.ProjectModel;
 import com.company.project.model.param.ProjectSearchParam;
 import com.company.project.model.returns.Pagination;
@@ -35,6 +39,9 @@ import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitLaborsubcontractorService;
 import com.company.project.service.UnitProjectConfigService;
 import com.company.project.service.UnitProjectService;
+import com.company.project.service.UserIdentityService;
+import com.company.project.service.UserLoginAccountService;
+import com.company.project.unit.Md5Util;
 import com.company.project.unit.UtcDateParseUtil;
 import com.company.project.unit.UuidUtil;
 import com.github.pagehelper.Page;
@@ -58,6 +65,12 @@ public class UnitProjectController {
 	private UnitCompanyService unitCompanyService;
 	@Resource
 	private UnitProjectConfigService unitProjectConfigService;
+	@Autowired
+	private QiniuConstant qiniuConstant;
+	@Resource
+	private UserLoginAccountService userLoginAccountService;
+	@Autowired
+	private UserIdentityService userIdentityService;
 
 	@TokenCheck
 	@PostMapping("/data")
@@ -125,9 +138,18 @@ public class UnitProjectController {
 				item.put("name", i.getName());
 				item.put("proname", i.getProname());
 				item.put("procode", i.getProcode());
-				item.put("locationmap", i.getLocationmap());
-				item.put("lmwidth", i.getWidth());
-				item.put("lmlength", i.getLength());
+				if (StringUtils.isNotBlank(i.getLocationmap())) {
+					item.put("locationmap", String.format("%s%s", qiniuConstant.getPath(), i.getLocationmap()));
+				} else {
+					item.put("locationmap", "");
+				}
+				if (StringUtils.isNotBlank(i.getLogo())) {
+					item.put("logo", String.format("%s%s", qiniuConstant.getPath(), i.getLogo()));
+				} else {
+					item.put("logo", "");
+				}
+				// item.put("lmwidth", i.getWidth());
+				// item.put("lmlength", i.getLength());
 				// item.put("longitude", i.getLongitude());
 				// item.put("latitude", i.getLatitude());
 				// item.put("companyuuid", i.getCompanyuuid());
@@ -189,6 +211,12 @@ public class UnitProjectController {
 		if (StringUtils.isNotBlank(project.getFunction())) {
 			model.setFunction(project.getFunction().split("[,]"));
 		}
+		if (project.getWidth() != null) {
+			model.setWidth(project.getWidth().toString());
+		}
+		if (project.getLength() != null) {
+			model.setLength(project.getLength().toString());
+		}
 
 		Condition condition = new Condition(UnitLaborsubcontractor.class);
 		condition.createCriteria().andEqualTo("state", 0).andEqualTo("prouuid", project.getUuid());
@@ -208,6 +236,17 @@ public class UnitProjectController {
 			model.setPersonnelpositioning(upc.getIspersonnelpositioning().toString());
 		}
 
+		Condition userIdentityCondition = new Condition(UserIdentity.class);
+		userIdentityCondition.createCriteria().andEqualTo("deptuuid", project.getUuid()).andEqualTo("issuper", 1);
+		List<UserIdentity> uids = userIdentityService.findByCondition(userIdentityCondition);
+		if (uids != null && uids.size() > 0) {
+			UserIdentity uid = uids.get(0);
+			UserLoginAccount ula = userLoginAccountService.findBy("uuid", uid.getUseruuid());
+			if (ula != null) {
+				model.setUsername(ula.getUsername());
+				model.setPassword(ula.getPassword());
+			}
+		}
 		return ResultGenerator.genSuccessResult(model);
 	}
 
@@ -299,6 +338,17 @@ public class UnitProjectController {
 			}
 		}
 
+		if (NumberUtils.isDigits(model.getLength())) {
+			project.setLength(Integer.parseInt(model.getLength().trim()));
+		} else {
+			project.setLength(null);
+		}
+		if (NumberUtils.isDigits(model.getWidth())) {
+			project.setWidth(Integer.parseInt(model.getWidth().trim()));
+		} else {
+			project.setWidth(null);
+		}
+
 		String measure = model.getMeasure();
 		if (NumberUtils.isParsable(measure)) {
 			project.setMeasure(new Double(measure));
@@ -344,6 +394,38 @@ public class UnitProjectController {
 		unitProjectConfig.setIsshowgov(0);
 		unitProjectConfigService.save(unitProjectConfig);
 
+		String username = model.getUsername().trim();
+		UserLoginAccount ula = userLoginAccountService.findBy("username", username);
+		if (ula == null) {
+			ula = new UserLoginAccount();
+			ula.setUuid(UuidUtil.init());
+			ula.setUsername(username);
+			ula.setPhone("");
+			ula.setPassword(Md5Util.md5(model.getPassword().trim(), username));
+			ula.setSex(1);
+			ula.setState(0);
+			ula.setAddtime(System.currentTimeMillis());
+			ula.setUpdatetime(System.currentTimeMillis());
+			userLoginAccountService.save(ula);
+		} else {
+			return ResultGenerator.genSuccessResult("工地信息保存成功，输入的超管账号已分配，暂未保存超管账号");
+		}
+		UserIdentity userIdentity = new UserIdentity();
+		userIdentity.setUuid(UuidUtil.init());
+		userIdentity.setUseruuid(ula.getUuid());
+		userIdentity.setType(1);
+		userIdentity.setIsdefault(1);
+		userIdentity.setDeptuuid(project.getUuid());
+		userIdentity.setRoleuuid("");// 超管
+		userIdentity.setIsloging(0);
+		userIdentity.setSinglesignon(0);
+		userIdentity.setAddtime(System.currentTimeMillis());
+		userIdentity.setUpdatetime(System.currentTimeMillis());
+		userIdentity.setPasstime(System.currentTimeMillis());
+		userIdentity.setState(0);
+		userIdentity.setIssuper(1);
+		userIdentity.setCompanyuuid(project.getCompanyuuid());
+		userIdentityService.save(userIdentity);
 		return ResultGenerator.genSuccessResult();
 	}
 
@@ -434,6 +516,17 @@ public class UnitProjectController {
 			project.setPlanendtime(null);
 		}
 
+		if (NumberUtils.isDigits(model.getLength())) {
+			project.setLength(Integer.parseInt(model.getLength().trim()));
+		} else {
+			project.setLength(null);
+		}
+		if (NumberUtils.isDigits(model.getWidth())) {
+			project.setWidth(Integer.parseInt(model.getWidth().trim()));
+		} else {
+			project.setWidth(null);
+		}
+
 		String measure = model.getMeasure();
 		if (NumberUtils.isParsable(measure)) {
 			project.setMeasure(new Double(measure));
@@ -507,5 +600,35 @@ public class UnitProjectController {
 
 		return ResultGenerator.genSuccessResult();
 	}
+
+	// @TokenCheck
+	// @PostMapping("/updateLocationMap")
+	// public Result<?> updateLocationMap(@Validated @RequestBody
+	// ProjectLocationMapModel model,
+	// BindingResult bindingResult, HttpServletRequest request) {
+	// if (bindingResult.hasErrors()) {
+	// return
+	// ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+	// }
+	//
+	// UnitProject project = unitProjectService.findBy("uuid", model.getUuid());
+	// if (project == null) {
+	// return ResultGenerator.genFailResult("无效的工地ID");
+	// }
+	//
+	// if (NumberUtils.isDigits(model.getLength())) {
+	// project.setLength(Integer.parseInt(model.getLength().trim()));
+	// } else {
+	// project.setLength(null);
+	// }
+	// if (NumberUtils.isDigits(model.getWidth())) {
+	// project.setWidth(Integer.parseInt(model.getWidth().trim()));
+	// } else {
+	// project.setWidth(null);
+	// }
+	// project.setUpdatetime(System.currentTimeMillis());
+	// unitProjectService.update(project);
+	// return ResultGenerator.genSuccessResult();
+	// }
 
 }

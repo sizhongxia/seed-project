@@ -2,6 +2,7 @@ package com.company.project.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.company.project.annotation.TokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SysArea;
+import com.company.project.model.om.AreaLevelModel;
 import com.company.project.model.om.AreaModel;
 import com.company.project.model.param.AreaSearchParam;
 import com.company.project.model.returns.Pagination;
@@ -146,6 +148,64 @@ public class AreaController {
 		item.put("lat", area.getLat());
 		item.put("lng", area.getLng());
 		return ResultGenerator.genSuccessResult(item);
+	}
+
+	@TokenCheck
+	@PostMapping("/getAreaLevelModels")
+	public Result<?> getAreaLevelModels() {
+		List<AreaLevelModel> roots = new ArrayList<>();
+		Condition condition = new Condition(SysArea.class);
+		condition.setOrderByClause("code asc");
+		List<SysArea> alls = sysAreaService.findByCondition(condition);
+
+		if (alls != null && alls.size() > 0) {
+			AreaLevelModel e = null;
+			Iterator<SysArea> it = alls.iterator();
+			while (it.hasNext()) {
+				SysArea x = it.next();
+				if (x.getPcode() == null || 0 == x.getPcode().intValue()) {
+					e = new AreaLevelModel();
+					e.setValue(x.getCode().toString());
+					e.setLeaf(false);
+					e.setLabel(x.getName());
+					e.setChildren(new ArrayList<>());
+					roots.add(e);
+					it.remove();
+				}
+			}
+
+			if (roots.size() > 0) {
+				for (AreaLevelModel alm : roots) {
+					Iterator<SysArea> it2 = alls.iterator();
+					while (it2.hasNext()) {
+						SysArea x = it2.next();
+						if (alm.getValue().equals(x.getPcode().toString())) {
+							e = new AreaLevelModel();
+							e.setValue(x.getCode().toString());
+							e.setLeaf(false);
+							e.setLabel(x.getName());
+							e.setChildren(new ArrayList<>());
+							alm.getChildren().add(e);
+						}
+					}
+					List<AreaLevelModel> almLasts = alm.getChildren();
+					for (AreaLevelModel almLast : almLasts) {
+						Iterator<SysArea> it3 = alls.iterator();
+						while (it3.hasNext()) {
+							SysArea x = it3.next();
+							if (almLast.getValue().equals(x.getPcode().toString())) {
+								e = new AreaLevelModel();
+								e.setValue(x.getCode().toString());
+								e.setLeaf(true);
+								e.setLabel(x.getName());
+								almLast.getChildren().add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		return ResultGenerator.genSuccessResult(roots);
 	}
 
 	@TokenCheck

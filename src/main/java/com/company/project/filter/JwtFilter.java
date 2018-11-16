@@ -95,7 +95,6 @@ public class JwtFilter extends GenericFilterBean {
 			}
 			request.setAttribute("userId", userid);
 			request.setAttribute("role", role);
-
 			chain.doFilter(req, res);
 		}
 	}

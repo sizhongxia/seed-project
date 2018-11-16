@@ -20,5 +20,6 @@ public class Md5Util {
 	public static void main(String[] args) {
 		Digester sha256 = new Digester(DigestAlgorithm.SHA1);
 		System.out.println(sha256.digestHex("kepqmf7zm9qloev8k5mpsqceayyybbgw"));
+		System.out.println(md5("123456", "admin_szx"));
 	}
 }

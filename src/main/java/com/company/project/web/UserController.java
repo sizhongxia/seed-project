@@ -2,7 +2,6 @@ package com.company.project.web;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -24,14 +23,10 @@ import com.company.project.annotation.TokenCheck;
 import com.company.project.configurer.Audience;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
-import com.company.project.model.UserIdentity;
-import com.company.project.model.UserLoginAccount;
-import com.company.project.model.UserRole;
+import com.company.project.model.AdminUser;
 import com.company.project.model.UserTokenFlag;
 import com.company.project.model.param.LoginParam;
-import com.company.project.service.UserIdentityService;
-import com.company.project.service.UserLoginAccountService;
-import com.company.project.service.UserRoleService;
+import com.company.project.service.AdminUserService;
 import com.company.project.service.UserTokenFlagService;
 import com.company.project.unit.JwtHelper;
 import com.company.project.unit.Md5Util;
@@ -40,7 +35,6 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 import io.jsonwebtoken.Claims;
-import tk.mybatis.mapper.entity.Condition;
 
 /**
  * Created by SiZhongXia on 2018/11/06.
@@ -51,18 +45,16 @@ public class UserController {
 
 	private Logger logger = LoggerFactory.getLogger(UserController.class.getName());
 
-	@Resource
-	private UserLoginAccountService userLoginAccountService;
 	@Resource(name = "systemLocal")
 	private SystemLocal systemLocal;
 	@Autowired
 	private Audience audience;
-	@Autowired
-	private UserIdentityService userIdentityService;
-	@Autowired
-	private UserRoleService userRoleService;
+	// @Autowired
+	// private UserRoleService userRoleService;
 	@Autowired
 	private UserTokenFlagService userTokenFlagService;
+	@Autowired
+	private AdminUserService adminUserService;
 
 	@PostMapping("/login")
 	public Result<?> login(@RequestBody LoginParam param) {
@@ -76,9 +68,9 @@ public class UserController {
 		if (StringUtils.isBlank(param.getLoginPwd())) {
 			return ResultGenerator.genFailResult("请输入登录密码");
 		}
-		UserLoginAccount user = userLoginAccountService.findBy("username", param.getLoginName());
+		AdminUser user = adminUserService.findBy("username", param.getLoginName());
 		if (user == null) {
-			user = userLoginAccountService.findBy("phone", param.getLoginName());
+			user = adminUserService.findBy("phone", param.getLoginName());
 			if (user == null) {
 				return ResultGenerator.genFailResult("登录失败，无效的账号");
 			}
@@ -99,31 +91,8 @@ public class UserController {
 			data.put("loginName", user.getUsername());
 		}
 
-		// 获取用户身份信息
-		Condition condition = new Condition(UserIdentity.class);
-		condition.createCriteria().andEqualTo("useruuid", user.getUuid()).andEqualTo("type", param.getType())
-				.andEqualTo("state", 0);
-		List<UserIdentity> userIdentitys = userIdentityService.findByCondition(condition);
-
-		if (userIdentitys == null || userIdentitys.isEmpty()) {
-			return ResultGenerator.genFailResult("未授权访问V1");
-		}
-		UserIdentity ui = userIdentitys.get(0);
-
-		// 获取用户角色信息
-		if (StringUtils.isBlank(ui.getRoleuuid())) {
-			return ResultGenerator.genFailResult("未授权访问V2");
-		}
-
-		UserRole userRole = userRoleService.findBy("uuid", ui.getRoleuuid());
-		if (userRole == null) {
-			return ResultGenerator.genFailResult("未授权访问V3");
-		}
-
-		data.put("currentAuthority", userRole.getRolecode());
-
 		final String flagKey = UuidUtil.init();
-		String jwtToken = initJwt(user.getUsername(), user.getUuid(), userRole.getRolecode(), flagKey);
+		String jwtToken = initJwt(user.getUsername(), user.getUuid(), "admin", flagKey);
 
 		UserTokenFlag tokenFlag = userTokenFlagService.findBy("useruuid", user.getUuid());
 		if (tokenFlag == null) {
@@ -194,8 +163,7 @@ public class UserController {
 		}
 
 		final String flagKey = UuidUtil.init();
-		String jwtToken = initJwt(claims.get("unique_name").toString(), claims.get("userid").toString(),
-				claims.get("role").toString(), flagKey);
+		String jwtToken = initJwt(claims.get("unique_name").toString(), claims.get("userid").toString(), claims.get("role").toString(), flagKey);
 		tokenFlag.setFlagKey(flagKey);
 		tokenFlag.setToken(jwtToken);
 		tokenFlag.setCreateTime(System.currentTimeMillis());
