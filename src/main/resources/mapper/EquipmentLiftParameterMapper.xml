@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.EquipmentLiftParameterMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.EquipmentLiftParameter">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="equipmentNo" jdbcType="VARCHAR" property="equipmentno" />
+    <result column="data_time" jdbcType="BIGINT" property="dataTime" />
+    <result column="function_configuration" jdbcType="VARCHAR" property="functionConfiguration" />
+    <result column="Identification_method" jdbcType="CHAR" property="identificationMethod" />
+    <result column="installation_time" jdbcType="BIGINT" property="installationTime" />
+    <result column="empty_hook_sampling_value1" jdbcType="DOUBLE" property="emptyHookSamplingValue1" />
+    <result column="empty_hook_sampling_value2" jdbcType="DOUBLE" property="emptyHookSamplingValue2" />
+    <result column="empty_hook_sampling_value" jdbcType="DOUBLE" property="emptyHookSamplingValue" />
+    <result column="standard_weight_sampling_value1" jdbcType="DOUBLE" property="standardWeightSamplingValue1" />
+    <result column="standard_weight_sampling_value2" jdbcType="DOUBLE" property="standardWeightSamplingValue2" />
+    <result column="standard_weight_sampling_value" jdbcType="DOUBLE" property="standardWeightSamplingValue" />
+    <result column="standard_weight_weight" jdbcType="DOUBLE" property="standardWeightWeight" />
+    <result column="safe_weight" jdbcType="DOUBLE" property="safeWeight" />
+    <result column="early_warning_ratio" jdbcType="TINYINT" property="earlyWarningRatio" />
+    <result column="give_alarm_ratio" jdbcType="TINYINT" property="giveAlarmRatio" />
+    <result column="time_limited_start_time1" jdbcType="TINYINT" property="timeLimitedStartTime1" />
+    <result column="time_limited_end_time1" jdbcType="TINYINT" property="timeLimitedEndTime1" />
+    <result column="time_limited_start_time2" jdbcType="TINYINT" property="timeLimitedStartTime2" />
+    <result column="time_limited_end_time2" jdbcType="TINYINT" property="timeLimitedEndTime2" />
+    <result column="time_limited_start_time3" jdbcType="TINYINT" property="timeLimitedStartTime3" />
+    <result column="time_limited_end_time3" jdbcType="TINYINT" property="timeLimitedEndTime3" />
+    <result column="time_limited_start_time4" jdbcType="TINYINT" property="timeLimitedStartTime4" />
+    <result column="time_limited_end_time4" jdbcType="TINYINT" property="timeLimitedEndTime4" />
+    <result column="time_limited_safe_weight1" jdbcType="DOUBLE" property="timeLimitedSafeWeight1" />
+    <result column="time_limited_safe_weight2" jdbcType="DOUBLE" property="timeLimitedSafeWeight2" />
+    <result column="time_limited_safe_weight3" jdbcType="DOUBLE" property="timeLimitedSafeWeight3" />
+    <result column="time_limited_safe_weight4" jdbcType="DOUBLE" property="timeLimitedSafeWeight4" />
+    <result column="floor_sampling_one" jdbcType="DOUBLE" property="floorSamplingOne" />
+    <result column="floor_sampling_max" jdbcType="DOUBLE" property="floorSamplingMax" />
+    <result column="storey_height1" jdbcType="DOUBLE" property="storeyHeight1" />
+    <result column="storey_height2" jdbcType="DOUBLE" property="storeyHeight2" />
+    <result column="storey_height3" jdbcType="DOUBLE" property="storeyHeight3" />
+    <result column="storey_height4" jdbcType="DOUBLE" property="storeyHeight4" />
+    <result column="floor1" jdbcType="DOUBLE" property="floor1" />
+    <result column="floor2" jdbcType="DOUBLE" property="floor2" />
+    <result column="floor3" jdbcType="DOUBLE" property="floor3" />
+    <result column="floor4" jdbcType="DOUBLE" property="floor4" />
+    <result column="floor_max" jdbcType="DOUBLE" property="floorMax" />
+    <result column="height_max" jdbcType="DOUBLE" property="heightMax" />
+    <result column="driver_identity_cycle" jdbcType="DOUBLE" property="driverIdentityCycle" />
+    <result column="supervision_identity_cycle" jdbcType="DOUBLE" property="supervisionIdentityCycle" />
+    <result column="limited_person" jdbcType="TINYINT" property="limitedPerson" />
+    <result column="latitude" jdbcType="DOUBLE" property="latitude" />
+    <result column="latitude_type" jdbcType="TINYINT" property="latitudeType" />
+    <result column="longitude" jdbcType="DOUBLE" property="longitude" />
+    <result column="longitude_type" jdbcType="TINYINT" property="longitudeType" />
+    <result column="wind_early_warning" jdbcType="TINYINT" property="windEarlyWarning" />
+    <result column="wind_give_alarm" jdbcType="TINYINT" property="windGiveAlarm" />
+    <result column="boot_loader_version" jdbcType="VARCHAR" property="bootLoaderVersion" />
+    <result column="soft_version" jdbcType="VARCHAR" property="softVersion" />
+    <result column="creat_time" jdbcType="BIGINT" property="creatTime" />
+  </resultMap>
+</mapper>

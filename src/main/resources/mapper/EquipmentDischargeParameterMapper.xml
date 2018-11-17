@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.EquipmentDischargeParameterMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.EquipmentDischargeParameter">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="equipmentNo" jdbcType="VARCHAR" property="equipmentno" />
+    <result column="data_time" jdbcType="BIGINT" property="dataTime" />
+    <result column="installation_time" jdbcType="BIGINT" property="installationTime" />
+    <result column="safe_weight" jdbcType="DOUBLE" property="safeWeight" />
+    <result column="early_warning_ratio" jdbcType="TINYINT" property="earlyWarningRatio" />
+    <result column="give_alarm_ratio" jdbcType="TINYINT" property="giveAlarmRatio" />
+    <result column="empty_load_ad1" jdbcType="DOUBLE" property="emptyLoadAd1" />
+    <result column="empty_load_ad2" jdbcType="DOUBLE" property="emptyLoadAd2" />
+    <result column="empty_load_ad3" jdbcType="DOUBLE" property="emptyLoadAd3" />
+    <result column="empty_load_ad4" jdbcType="DOUBLE" property="emptyLoadAd4" />
+    <result column="empty_load_ad" jdbcType="DOUBLE" property="emptyLoadAd" />
+    <result column="standard_weight_ad1" jdbcType="DOUBLE" property="standardWeightAd1" />
+    <result column="standard_weight_ad2" jdbcType="DOUBLE" property="standardWeightAd2" />
+    <result column="standard_weight_ad3" jdbcType="DOUBLE" property="standardWeightAd3" />
+    <result column="standard_weight_ad4" jdbcType="DOUBLE" property="standardWeightAd4" />
+    <result column="standard_weight_ad" jdbcType="DOUBLE" property="standardWeightAd" />
+    <result column="standard_weight" jdbcType="DOUBLE" property="standardWeight" />
+    <result column="dip_angle_early_warning" jdbcType="DOUBLE" property="dipAngleEarlyWarning" />
+    <result column="dip_angle_give_alarm" jdbcType="DOUBLE" property="dipAngleGiveAlarm" />
+    <result column="soft_version" jdbcType="VARCHAR" property="softVersion" />
+    <result column="creat_time" jdbcType="BIGINT" property="creatTime" />
+  </resultMap>
+</mapper>

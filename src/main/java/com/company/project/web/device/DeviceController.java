@@ -175,6 +175,18 @@ public class DeviceController {
 	}
 
 	@TokenCheck
+	@PostMapping("/resetReceiptByUuid")
+	public Result<?> resetReceiptByUuid(@RequestBody DeviceDustNoiseModel model) {
+		if (StringUtils.isBlank(model.getUuid())) {
+			return ResultGenerator.genFailResult("无效的表单");
+		}
+		EquipmentAftersale aftersale = equipmentAftersaleService.findBy("uuid", model.getUuid());
+		aftersale.setReceipt("");
+		equipmentAftersaleService.update(aftersale);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@TokenCheck
 	@PostMapping("/getProjectDeviceOptions")
 	public Result<?> getProjectDeviceOptions(@RequestBody ProjectDeviceParam param) {
 		List<Map<String, Object>> list = new ArrayList<>();
