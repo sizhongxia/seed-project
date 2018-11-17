@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.EquipmentBasicsMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.EquipmentBasics">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="companyUuid" jdbcType="VARCHAR" property="companyuuid" />
+    <result column="proUuid" jdbcType="VARCHAR" property="prouuid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="equipmentNo" jdbcType="VARCHAR" property="equipmentno" />
+    <result column="positionx" jdbcType="VARCHAR" property="positionx" />
+    <result column="positiony" jdbcType="VARCHAR" property="positiony" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="addTime" jdbcType="BIGINT" property="addtime" />
+    <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
+    <result column="lastOnLineTime" jdbcType="BIGINT" property="lastonlinetime" />
+    <result column="supplierCompanyUuid" jdbcType="VARCHAR" property="suppliercompanyuuid" />
+    <result column="agentCompanyUuid" jdbcType="VARCHAR" property="agentcompanyuuid" />
+    <result column="ipaddressPort" jdbcType="VARCHAR" property="ipaddressport" />
+    <result column="ipportIssueStatus" jdbcType="INTEGER" property="ipportissuestatus" />
+    <result column="workType" jdbcType="VARCHAR" property="worktype" />
+    <result column="lng" jdbcType="VARCHAR" property="lng" />
+    <result column="lat" jdbcType="VARCHAR" property="lat" />
+  </resultMap>
+</mapper>

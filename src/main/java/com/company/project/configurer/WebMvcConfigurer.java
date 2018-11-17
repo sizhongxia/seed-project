@@ -188,6 +188,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		urlPatterns.add("/dictionary/**");
 		urlPatterns.add("/sys/**");
 		urlPatterns.add("/loginaccount/**");
+		urlPatterns.add("/device/**");
 		registrationBean.addUrlPatterns(urlPatterns.toArray(new String[urlPatterns.size()]));
 		return registrationBean;
 	}

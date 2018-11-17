@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.EquipmentVideoMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.EquipmentVideo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="deptUuid" jdbcType="VARCHAR" property="deptuuid" />
+    <result column="flowAddress" jdbcType="VARCHAR" property="flowaddress" />
+    <result column="streamUrl" jdbcType="VARCHAR" property="streamurl" />
+    <result column="playUrl" jdbcType="VARCHAR" property="playurl" />
+    <result column="deployTime" jdbcType="BIGINT" property="deploytime" />
+    <result column="brandName" jdbcType="VARCHAR" property="brandname" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="voperation" jdbcType="VARCHAR" property="voperation" />
+    <result column="isTowerEye" jdbcType="INTEGER" property="istowereye" />
+    <result column="pushFlowMode" jdbcType="VARCHAR" property="pushflowmode" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="port" jdbcType="VARCHAR" property="port" />
+    <result column="userName" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="lasttime" jdbcType="TIMESTAMP" property="lasttime" />
+    <result column="onvifstatus" jdbcType="VARCHAR" property="onvifstatus" />
+    <result column="isEyeClient" jdbcType="INTEGER" property="iseyeclient" />
+    <result column="equipmentUuid" jdbcType="VARCHAR" property="equipmentuuid" />
+    <result column="remoteTime" jdbcType="TIMESTAMP" property="remotetime" />
+    <result column="remoteConnectionString" jdbcType="LONGVARCHAR" property="remoteconnectionstring" />
+  </resultMap>
+</mapper>

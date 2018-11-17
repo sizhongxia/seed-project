@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.EquipmentDustnoiseParameterMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.EquipmentDustnoiseParameter">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="equipmentNo" jdbcType="VARCHAR" property="equipmentno" />
+    <result column="companyUuid" jdbcType="VARCHAR" property="companyuuid" />
+    <result column="pm2_5_Alarm" jdbcType="DOUBLE" property="pm25Alarm" />
+    <result column="pm10_Alarm" jdbcType="DOUBLE" property="pm10Alarm" />
+    <result column="noise_Alarm" jdbcType="DOUBLE" property="noiseAlarm" />
+    <result column="noise_pattern" jdbcType="INTEGER" property="noisePattern" />
+    <result column="noise_cycle" jdbcType="INTEGER" property="noiseCycle" />
+    <result column="noise_oc" jdbcType="INTEGER" property="noiseOc" />
+    <result column="noise_status" jdbcType="INTEGER" property="noiseStatus" />
+    <result column="addTime" jdbcType="BIGINT" property="addtime" />
+    <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
+  </resultMap>
+</mapper>

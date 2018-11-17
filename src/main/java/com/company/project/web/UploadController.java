@@ -21,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.EquipmentAftersale;
 import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitProject;
+import com.company.project.service.EquipmentAftersaleService;
 import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UuidUtil;
@@ -45,6 +47,8 @@ public class UploadController {
 	private UnitCompanyService unitCompanyService;
 	@Autowired
 	private UnitProjectService unitProjectService;
+	@Autowired
+	private EquipmentAftersaleService equipmentAftersaleService;
 
 	@ResponseBody
 	@PostMapping("/image")
@@ -143,6 +147,36 @@ public class UploadController {
 		Map<String, String> res = new HashMap<>();
 		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
 		res.put("type", "projectlogo");
+		return ResultGenerator.genSuccessResult(res);
+	}
+
+	@ResponseBody
+	@PostMapping("/change/devicereceipt")
+	public Result<?> changeDevicereceipt(@RequestParam("avatar") MultipartFile multipartFile,
+			HttpServletRequest request) throws IOException {
+
+		String uuid = request.getParameter("uuid");
+		if (StringUtils.isBlank(uuid)) {
+			return ResultGenerator.genFailResult("无效的工地ID");
+		}
+
+		EquipmentAftersale aftersale = equipmentAftersaleService.findBy("uuid", uuid);
+		if (aftersale == null) {
+			return ResultGenerator.genFailResult("无效的记录ID");
+		}
+
+		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
+		String key = UuidUtil.initShort();
+		if (!uploadQNImg(inputStream, key)) {
+			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
+		}
+
+		aftersale.setReceipt(key);
+		equipmentAftersaleService.update(aftersale);
+
+		Map<String, String> res = new HashMap<>();
+		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("type", "devicereceipt");
 		return ResultGenerator.genSuccessResult(res);
 	}
 

@@ -106,7 +106,7 @@ public class UnitCompanyController {
 
 		List<Map<String, Object>> list = new ArrayList<>();
 
-		// 1 建设2施工3设计4监理5 勘察6劳务分包商7公司集团8设备供应商
+		// 1 建设2施工3设计4监理5 勘察6劳务分包商7公司集团8设备供应商9设备代理商
 		String type = param.getType();
 		if (NumberUtils.isDigits(type)) {
 			criteria.andEqualTo("type", Integer.parseInt(type.trim()));
@@ -184,9 +184,12 @@ public class UnitCompanyController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-		UnitCompany unitCompany = unitCompanyService.findBy("companyname", model.getCompanyname());
-		if (unitCompany == null) {
-			unitCompany = new UnitCompany();
+		Condition condition = new Condition(UnitCompany.class);
+		condition.createCriteria().andEqualTo("companyname", model.getCompanyname()).andEqualTo("type",
+				Integer.parseInt(model.getType().trim()));
+		List<UnitCompany> unitCompanys = unitCompanyService.findByCondition(condition);
+		if (unitCompanys == null || unitCompanys.isEmpty()) {
+			UnitCompany unitCompany = new UnitCompany();
 			unitCompany.setAddtime(System.currentTimeMillis());
 			unitCompany.setCompanyname(model.getCompanyname());
 			unitCompany.setDescription(model.getDescription());
@@ -205,6 +208,7 @@ public class UnitCompanyController {
 			unitCompany.setUuid(UuidUtil.init());
 			unitCompanyService.save(unitCompany);
 		} else {
+			UnitCompany unitCompany = unitCompanys.get(0);
 			unitCompany.setShortname(model.getShortname());
 			unitCompany.setState(0);
 			unitCompany.setUpdatetime(System.currentTimeMillis());
@@ -229,9 +233,17 @@ public class UnitCompanyController {
 		if (unitCompany == null) {
 			return ResultGenerator.genFailResult("无效的表单");
 		}
-		UnitCompany _unitCompany = unitCompanyService.findBy("companyname", model.getCompanyname());
-		if (_unitCompany != null && !_unitCompany.getUuid().equals(unitCompany.getUuid())) {
-			return ResultGenerator.genFailResult("当前公司名称已存在");
+
+		Condition condition = new Condition(UnitCompany.class);
+		condition.createCriteria().andEqualTo("companyname", model.getCompanyname()).andEqualTo("type",
+				Integer.parseInt(model.getType().trim()));
+		List<UnitCompany> unitCompanys = unitCompanyService.findByCondition(condition);
+
+		if (unitCompanys != null && unitCompanys.size() > 0) {
+			UnitCompany _unitCompany = unitCompanys.get(0);
+			if (_unitCompany != null && !_unitCompany.getUuid().equals(unitCompany.getUuid())) {
+				return ResultGenerator.genFailResult("当前公司名称已存在");
+			}
 		}
 
 		unitCompany.setCompanyname(model.getCompanyname());
@@ -272,6 +284,8 @@ public class UnitCompanyController {
 			return "集团公司";
 		case "8":
 			return "设备供应商";
+		case "9":
+			return "设备代理商";
 		default:
 			return null;
 		}

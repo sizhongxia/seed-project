@@ -83,7 +83,7 @@ public class LoginAccountController {
 		if (size == null || size.intValue() < 1) {
 			size = 10;
 		}
-		condition.setOrderByClause("id asc");
+		condition.setOrderByClause("state asc, id asc");
 		PageHelper.startPage(page, size);
 		Page<UserLoginAccount> _list = (Page<UserLoginAccount>) userLoginAccountService.findByCondition(condition);
 		List<UserLoginAccount> result = _list.getResult();

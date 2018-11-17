@@ -179,6 +179,27 @@ public class UnitProjectController {
 	}
 
 	@TokenCheck
+	@PostMapping("/getProjectOptions")
+	public Result<?> getProjectOptions() {
+		List<Map<String, Object>> list = new ArrayList<>();
+		Condition condition = new Condition(UnitProject.class);
+		condition.createCriteria().andEqualTo("state", 0);
+		condition.setOrderByClause("proname asc");
+		List<UnitProject> result = unitProjectService.findByCondition(condition);
+		if (result != null && result.size() > 0) {
+			Map<String, Object> item = null;
+			for (UnitProject i : result) {
+				item = new HashMap<>();
+				item.put("key", i.getUuid());
+				item.put("proname", i.getProname());
+				item.put("name", i.getName());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@TokenCheck
 	@PostMapping("/getById")
 	public Result<?> getById(@RequestBody ProjectModel model) {
 
@@ -630,5 +651,4 @@ public class UnitProjectController {
 	// unitProjectService.update(project);
 	// return ResultGenerator.genSuccessResult();
 	// }
-
 }
