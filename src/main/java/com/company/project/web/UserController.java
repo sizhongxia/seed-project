@@ -40,7 +40,7 @@ import io.jsonwebtoken.Claims;
  * Created by SiZhongXia on 2018/11/06.
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/apiv0/user")
 public class UserController {
 
 	private Logger logger = LoggerFactory.getLogger(UserController.class.getName());
@@ -49,8 +49,6 @@ public class UserController {
 	private SystemLocal systemLocal;
 	@Autowired
 	private Audience audience;
-	// @Autowired
-	// private UserRoleService userRoleService;
 	@Autowired
 	private UserTokenFlagService userTokenFlagService;
 	@Autowired

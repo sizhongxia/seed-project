@@ -37,7 +37,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
-@RequestMapping("/unit/company")
+@RequestMapping("/apiv0/unit/company")
 public class UnitCompanyController {
 	private Logger logger = LoggerFactory.getLogger(UnitCompanyController.class.getName());
 

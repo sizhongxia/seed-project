@@ -43,7 +43,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
-@RequestMapping("/device")
+@RequestMapping("/apiv0/device")
 public class DeviceController {
 	private Logger logger = LoggerFactory.getLogger(DustNoiseController.class.getName());
 	@Resource

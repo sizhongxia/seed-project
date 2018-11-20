@@ -31,7 +31,7 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 @RestController
-@RequestMapping("/device/fogGun")
+@RequestMapping("/apiv0/device/fogGun")
 public class FogGunController {
 	private Logger logger = LoggerFactory.getLogger(FogGunController.class.getName());
 

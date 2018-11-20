@@ -32,7 +32,7 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 @RestController
-@RequestMapping("/device/towercrane")
+@RequestMapping("/apiv0/device/towercrane")
 public class TowercraneController {
 	private Logger logger = LoggerFactory.getLogger(TowercraneController.class.getName());
 

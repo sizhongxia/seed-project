@@ -184,11 +184,11 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		// 添加需要拦截的url
 		List<String> urlPatterns = Lists.newArrayList();
 		urlPatterns.add("/check");
-		urlPatterns.add("/unit/**");
-		urlPatterns.add("/dictionary/**");
-		urlPatterns.add("/sys/**");
-		urlPatterns.add("/loginaccount/**");
 		urlPatterns.add("/device/**");
+		urlPatterns.add("/dictionary/**");
+		urlPatterns.add("/loginaccount/**");
+		urlPatterns.add("/sys/**");
+		urlPatterns.add("/unit/**");
 		registrationBean.addUrlPatterns(urlPatterns.toArray(new String[urlPatterns.size()]));
 		return registrationBean;
 	}

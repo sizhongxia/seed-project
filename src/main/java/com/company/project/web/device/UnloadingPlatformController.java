@@ -32,7 +32,7 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 @RestController
-@RequestMapping("/device/unloadingPlatform")
+@RequestMapping("/apiv0/device/unloadingPlatform")
 public class UnloadingPlatformController {
 	private Logger logger = LoggerFactory.getLogger(UnloadingPlatformController.class.getName());
 

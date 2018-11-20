@@ -1,6 +1,5 @@
 package com.conpany.project;
 
-
 import com.company.project.Application;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest(classes = Application.class)
 @Transactional
 @Rollback
-public abstract class Tester {}
-
-
-
+public abstract class Tester {
+	public static void main(String[] args) {
+		Float value = Float.intBitsToFloat(Integer.valueOf("3e4ccccd", 16));
+		System.out.println(value);
+		value = Float.intBitsToFloat(Integer.valueOf("3e50e560", 16));
+		System.out.println(value);
+	}
+}

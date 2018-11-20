@@ -34,7 +34,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
-@RequestMapping("/dictionary")
+@RequestMapping("/apiv0/dictionary")
 public class DictionaryController {
 	private Logger logger = LoggerFactory.getLogger(DictionaryController.class.getName());
 

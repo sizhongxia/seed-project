@@ -33,7 +33,7 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 @RestController
-@RequestMapping("/device/dustNoise")
+@RequestMapping("/apiv0/device/dustNoise")
 public class DustNoiseController {
 	private Logger logger = LoggerFactory.getLogger(DustNoiseController.class.getName());
 

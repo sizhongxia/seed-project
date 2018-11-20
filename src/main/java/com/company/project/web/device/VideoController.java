@@ -31,7 +31,7 @@ import com.company.project.unit.UuidUtil;
 import com.xiaoleilu.hutool.date.DateUtil;
 
 @RestController
-@RequestMapping("/device/video")
+@RequestMapping("/apiv0/device/video")
 public class VideoController {
 	private Logger logger = LoggerFactory.getLogger(VideoController.class.getName());
 

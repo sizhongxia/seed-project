@@ -18,7 +18,7 @@ public class AdminController {
 	private Logger logger = LoggerFactory.getLogger(AdminController.class.getName());
 
 	@ResponseBody
-	@PostMapping("/check")
+	@PostMapping("/apiv0/check")
 	public Result<?> check() throws IOException {
 		logger.debug("check status");
 		return ResultGenerator.genSuccessResult();

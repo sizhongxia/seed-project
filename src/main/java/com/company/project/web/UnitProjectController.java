@@ -41,19 +41,16 @@ import com.company.project.service.UnitProjectConfigService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.service.UserIdentityService;
 import com.company.project.service.UserLoginAccountService;
-import com.company.project.unit.Md5Util;
 import com.company.project.unit.UtcDateParseUtil;
-import com.company.project.unit.UuidUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
-@RequestMapping("/unit/project")
+@RequestMapping("/apiv0/unit/project")
 public class UnitProjectController {
 	private Logger logger = LoggerFactory.getLogger(UnitProjectController.class.getName());
 
@@ -294,159 +291,11 @@ public class UnitProjectController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-
-		String procode = DateUtil.format(new Date(), "yyyyMMdd");
-
-		Condition unitProjectCondition = new Condition(UnitProject.class);
-		unitProjectCondition.createCriteria().andLike("procode", procode + "%");
-		List<UnitProject> upByCodes = unitProjectService.findByCondition(unitProjectCondition);
-		if (upByCodes == null) {
-			procode = procode + "0001" + RandomUtil.randomNumbers(4);
-		} else {
-			String no = "0000" + upByCodes.size();
-			procode = procode + no.substring(no.length() - 4, no.length()) + RandomUtil.randomNumbers(4);
+		try {
+			unitProjectService.saveByTransactional(model);
+		} catch (Exception e) {
+			return ResultGenerator.genFailResult(e.getMessage());
 		}
-
-		UnitProject project = unitProjectService.findBy("procode", procode);
-		if (project != null) {
-			return ResultGenerator.genFailResult("请尝试重新提交");
-		}
-
-		project = new UnitProject();
-		BeanUtils.copyProperties(model, project);
-		project.setProcode(procode);
-		project.setUuid(UuidUtil.init());
-		String[] areaInfo = model.getAreainfo();
-		if (areaInfo.length > 0) {
-			project.setProvince(areaInfo[0]);
-			if (areaInfo.length > 1) {
-				project.setCity(areaInfo[1]);
-				if (areaInfo.length > 2) {
-					project.setCounty(areaInfo[2]);
-				}
-			}
-		}
-
-		String[] functions = model.getFunction();
-		if (functions != null && functions.length > 0) {
-			project.setFunction(String.join(",", functions));
-		}
-
-		String[] mainstructuretypes = model.getMainstructuretype();
-		if (mainstructuretypes != null && mainstructuretypes.length > 0) {
-			project.setMainstructuretype(String.join(",", mainstructuretypes));
-		}
-
-		String planstarttime = model.getPlanstarttime();
-		if (StringUtils.isNotBlank(planstarttime)) {
-			try {
-				Date time = UtcDateParseUtil.parse(planstarttime);
-				if (time != null) {
-					project.setPlanstarttime(time.getTime());
-				}
-			} catch (Exception e) {
-			}
-		}
-
-		String planendttime = model.getPlanendtime();
-		if (StringUtils.isNotBlank(planendttime)) {
-			try {
-				Date time = UtcDateParseUtil.parse(planendttime);
-				if (time != null) {
-					project.setPlanendtime(time.getTime());
-				}
-			} catch (Exception e) {
-			}
-		}
-
-		if (NumberUtils.isDigits(model.getLength())) {
-			project.setLength(Integer.parseInt(model.getLength().trim()));
-		} else {
-			project.setLength(null);
-		}
-		if (NumberUtils.isDigits(model.getWidth())) {
-			project.setWidth(Integer.parseInt(model.getWidth().trim()));
-		} else {
-			project.setWidth(null);
-		}
-
-		String measure = model.getMeasure();
-		if (NumberUtils.isParsable(measure)) {
-			project.setMeasure(new Double(measure));
-		}
-		String investment = model.getInvestment();
-		if (NumberUtils.isParsable(investment)) {
-			project.setInvestment(new Double(investment));
-		}
-		project.setState(0);
-		project.setAddtime(System.currentTimeMillis());
-		project.setUpdatetime(System.currentTimeMillis());
-		unitProjectService.save(project);
-
-		String[] contractorcompanys = model.getSubcontractorcompany();
-		if (contractorcompanys != null && contractorcompanys.length > 0) {
-			List<UnitLaborsubcontractor> uls = new ArrayList<>();
-			for (String ulId : contractorcompanys) {
-				if (StringUtils.isBlank(ulId)) {
-					continue;
-				}
-				UnitCompany unitCompany = unitCompanyService.findBy("uuid", ulId);
-				if (unitCompany == null) {
-					continue;
-				}
-				UnitLaborsubcontractor laborsubcontractor = new UnitLaborsubcontractor();
-				laborsubcontractor.setAddtime(System.currentTimeMillis());
-				laborsubcontractor.setProuuid(project.getUuid());
-				laborsubcontractor.setCompanyuuid(ulId);
-				laborsubcontractor.setState(0);
-				uls.add(laborsubcontractor);
-			}
-			unitLaborsubcontractorService.save(uls);
-		}
-
-		String personnelpositioning = model.getPersonnelpositioning();
-		if (!NumberUtils.isDigits(personnelpositioning)) {
-			personnelpositioning = "0";
-		}
-
-		UnitProjectConfig unitProjectConfig = new UnitProjectConfig();
-		unitProjectConfig.setProuuid(project.getUuid());
-		unitProjectConfig.setIspersonnelpositioning(Integer.parseInt(personnelpositioning.trim()));
-		unitProjectConfig.setIsshowgov(0);
-		unitProjectConfigService.save(unitProjectConfig);
-
-		String username = model.getUsername().trim();
-		UserLoginAccount ula = userLoginAccountService.findBy("username", username);
-		if (ula == null) {
-			ula = new UserLoginAccount();
-			ula.setUuid(UuidUtil.init());
-			ula.setUsername(username);
-			ula.setPhone("");
-			ula.setPassword(Md5Util.md5(model.getPassword().trim(), username));
-			ula.setSex(1);
-			ula.setState(0);
-			ula.setAddtime(System.currentTimeMillis());
-			ula.setUpdatetime(System.currentTimeMillis());
-			userLoginAccountService.save(ula);
-		} else {
-			return ResultGenerator.genSuccessResult("工地信息保存成功，输入的超管账号已分配，暂未保存超管账号");
-		}
-		UserIdentity userIdentity = new UserIdentity();
-		userIdentity.setUuid(UuidUtil.init());
-		userIdentity.setUseruuid(ula.getUuid());
-		userIdentity.setType(1);
-		userIdentity.setIsdefault(1);
-		userIdentity.setDeptuuid(project.getUuid());
-		userIdentity.setRoleuuid("");// 超管
-		userIdentity.setIsloging(0);
-		userIdentity.setSinglesignon(0);
-		userIdentity.setAddtime(System.currentTimeMillis());
-		userIdentity.setUpdatetime(System.currentTimeMillis());
-		userIdentity.setPasstime(System.currentTimeMillis());
-		userIdentity.setState(0);
-		userIdentity.setIssuper(1);
-		userIdentity.setCompanyuuid(project.getCompanyuuid());
-		userIdentityService.save(userIdentity);
 		return ResultGenerator.genSuccessResult();
 	}
 

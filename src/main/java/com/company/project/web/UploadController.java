@@ -37,7 +37,7 @@ import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 
 @Controller
-@RequestMapping("/upload")
+@RequestMapping("/apiv0/upload")
 public class UploadController {
 	private Logger logger = LoggerFactory.getLogger(UploadController.class.getName());
 
