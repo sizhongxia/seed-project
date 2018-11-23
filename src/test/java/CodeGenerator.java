@@ -38,7 +38,8 @@ public class CodeGenerator {
 
 	public static void main(String[] args) {
 		// genCode("sys_user");
-		genCodeByCustomModelName("equipment_discharge_parameter", "EquipmentDischargeParameter");
+		//genCodeByCustomModelName("personnel_realname_system", "PersonnelRealnameSystem");
+//		genCodeByCustomModelName("unit_group", "UnitGroup");
 	}
 
 	/**

@@ -1,9 +1,9 @@
 package com.company.project.unit;
 
-import com.xiaoleilu.hutool.crypto.digest.DigestAlgorithm;
-import com.xiaoleilu.hutool.crypto.digest.Digester;
-import com.xiaoleilu.hutool.crypto.digest.HMac;
-import com.xiaoleilu.hutool.crypto.digest.HmacAlgorithm;
+import cn.hutool.crypto.digest.DigestAlgorithm;
+import cn.hutool.crypto.digest.Digester;
+import cn.hutool.crypto.digest.HMac;
+import cn.hutool.crypto.digest.HmacAlgorithm;
 
 public class Md5Util {
 	public static String md5(String txt) {

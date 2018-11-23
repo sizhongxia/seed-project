@@ -25,6 +25,28 @@ public class UuidUtil {
 	public static void main(String[] args) {
 		System.out.println(init());
 		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
+		System.out.println(init());
 		System.out.println(initShort());
 		System.out.println(initShort());
 		System.out.println(System.currentTimeMillis());

@@ -11,4 +11,12 @@
     <result column="addTime" jdbcType="BIGINT" property="addtime" />
     <result column="state" jdbcType="INTEGER" property="state" />
   </resultMap>
+  
+  
+  <select id="selectProjectLaborsubcontractors" parameterType="java.lang.String" resultType="com.company.project.model.returns.apiv1.LaborsubcontractorModel">
+  	SELECT ul.companyUuid AS companyid, uc.companyName AS companyname FROM
+		unit_laborsubcontractor ul LEFT JOIN unit_company uc ON ul.companyUuid = uc.uuid
+	WHERE ul.state = 0 AND ul.proUuid = #{proUuid}  ORDER BY uc.companyName asc
+  </select>
+  
 </mapper>

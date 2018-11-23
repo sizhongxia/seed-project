@@ -31,9 +31,9 @@ import com.company.project.service.UserLoginAccountService;
 import com.company.project.unit.Md5Util;
 import com.company.project.unit.UtcDateParseUtil;
 import com.company.project.unit.UuidUtil;
-import com.xiaoleilu.hutool.date.DateUtil;
-import com.xiaoleilu.hutool.util.RandomUtil;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import tk.mybatis.mapper.entity.Condition;
 
 /**

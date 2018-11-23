@@ -1,4 +1,4 @@
-package com.company.project.model.param.api;
+package com.company.project.model.param.apiv1;
 
 import org.hibernate.validator.constraints.NotBlank;
 

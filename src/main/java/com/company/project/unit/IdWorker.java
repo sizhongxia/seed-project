@@ -175,8 +175,8 @@ public class IdWorker {
 		// System.out.println(id.datacenterId);
 		// System.out.println(id.workerId);
 
-		for (int i = 0; i < 9000; i++) {
-			System.err.println(id.nextId());
+		for (int i = 0; i < 10; i++) {
+			System.err.println("E" + id.nextId());
 		}
 	}
 }

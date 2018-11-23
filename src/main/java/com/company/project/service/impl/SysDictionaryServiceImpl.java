@@ -39,4 +39,16 @@ public class SysDictionaryServiceImpl extends AbstractService<SysDictionary> imp
 		return name;
 	}
 
+	@Override
+	public String selectValueName(String type, Integer value) {
+		SysDictionary record = new SysDictionary();
+		record.setType(type);
+		record.setValue(value);
+		List<SysDictionary> sds = sysDictionaryMapper.select(record);
+		if (sds == null || sds.isEmpty()) {
+			return "";
+		}
+		return sds.get(0).getName();
+	}
+
 }

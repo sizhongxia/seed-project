@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.PersonnelRealnameSystemMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.PersonnelRealnameSystem">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="empNo" jdbcType="VARCHAR" property="empno" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="birthday" jdbcType="DATE" property="birthday" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="birthplace" jdbcType="VARCHAR" property="birthplace" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="homeAddress" jdbcType="VARCHAR" property="homeaddress" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="manualInput" jdbcType="VARCHAR" property="manualinput" />
+    <result column="dateIn" jdbcType="VARCHAR" property="datein" />
+    <result column="addTime" jdbcType="BIGINT" property="addtime" />
+    <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
+  </resultMap>
+</mapper>

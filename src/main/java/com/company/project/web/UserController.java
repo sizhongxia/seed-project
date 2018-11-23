@@ -32,8 +32,8 @@ import com.company.project.unit.JwtHelper;
 import com.company.project.unit.Md5Util;
 import com.company.project.unit.SystemLocal;
 import com.company.project.unit.UuidUtil;
-import com.xiaoleilu.hutool.date.DateUtil;
 
+import cn.hutool.core.date.DateUtil;
 import io.jsonwebtoken.Claims;
 
 /**

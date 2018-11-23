@@ -13,4 +13,6 @@ public interface SysDictionaryService extends Service<SysDictionary> {
 	public List<String> selectAllTypes();
 
 	public String selectTypeName(String type);
+
+	public String selectValueName(String type, Integer value);
 }

@@ -29,7 +29,8 @@ import com.company.project.service.EquipmentDischargeParameterService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UtcDateParseUtil;
 import com.company.project.unit.UuidUtil;
-import com.xiaoleilu.hutool.date.DateUtil;
+
+import cn.hutool.core.date.DateUtil;
 
 @RestController
 @RequestMapping("/apiv0/device/unloadingPlatform")
