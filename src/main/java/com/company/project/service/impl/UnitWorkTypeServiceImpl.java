@@ -7,8 +7,9 @@ import com.company.project.core.AbstractService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import java.util.List;
 
+import javax.annotation.Resource;
 
 /**
  * Created by SiZhongXia on 2018/11/12.
@@ -16,7 +17,12 @@ import javax.annotation.Resource;
 @Service
 @Transactional
 public class UnitWorkTypeServiceImpl extends AbstractService<UnitWorkType> implements UnitWorkTypeService {
-    @Resource
-    private UnitWorkTypeMapper unitWorktypeMapper;
+	@Resource
+	private UnitWorkTypeMapper unitWorktypeMapper;
+
+	@Override
+	public List<UnitWorkType> selectAllWorktype(String proUuid) {
+		return unitWorktypeMapper.selectAllWorktype(proUuid);
+	}
 
 }
