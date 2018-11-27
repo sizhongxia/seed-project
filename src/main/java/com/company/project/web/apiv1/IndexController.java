@@ -1,5 +1,8 @@
 package com.company.project.web.apiv1;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +27,7 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SysArea;
 import com.company.project.model.SysMenu;
+import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitProject;
 import com.company.project.model.UserIdentity;
 import com.company.project.model.UserLoginAccount;
@@ -35,6 +39,7 @@ import com.company.project.model.returns.apiv1.ProjectResult;
 import com.company.project.service.SysAreaService;
 import com.company.project.service.SysDictionaryService;
 import com.company.project.service.SysMenuService;
+import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitLaborsubcontractorService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.service.UserIdentityService;
@@ -63,6 +68,8 @@ public class IndexController {
 	private SysAreaService sysAreaService;
 	@Resource
 	private UnitLaborsubcontractorService unitLaborsubcontractorService;
+	@Resource
+	private UnitCompanyService unitCompanyService;
 
 	@TokenCheck
 	@PostMapping("/probe")
@@ -172,12 +179,13 @@ public class IndexController {
 		projectResult.setPlanstarttime(LongDataFormatUtil.formatDate(project.getPlanstarttime()));
 		projectResult.setPlanendtime(LongDataFormatUtil.formatDate(project.getPlanendtime()));
 		Double measure = project.getMeasure();
+		DecimalFormat df = new DecimalFormat("#0.00");
 		if (measure != null) {
-			projectResult.setMeasure(String.format("%f%s", measure, "平方米"));
+			projectResult.setMeasure(String.format("%s%s", df.format(new BigDecimal(measure)), "平方米"));
 		}
 		Double investment = project.getInvestment();
 		if (investment != null) {
-			projectResult.setInvestment(String.format("%f%s", investment, "万元"));
+			projectResult.setInvestment(String.format("%s%s", df.format(new BigDecimal(investment)), "万元"));
 		}
 		if (NumberUtils.isParsable(project.getType())) {
 			projectResult.setTypename(
@@ -186,6 +194,53 @@ public class IndexController {
 		if (NumberUtils.isParsable(project.getConstructionnature())) {
 			projectResult.setConstructionnaturename(sysDictionaryService.selectValueName("proConstructionNature",
 					Integer.parseInt(project.getConstructionnature().trim())));
+		}
+
+		if (project.getWidth() != null) {
+			projectResult.setWidth(project.getWidth().toString() + "米");
+		}
+		if (project.getLength() != null) {
+			projectResult.setLength(project.getLength().toString() + "米");
+		}
+
+		projectResult.setBuildingname("");
+		if (StringUtils.isNotBlank(projectResult.getBuilding())) {
+			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getBuilding());
+			if (unit != null) {
+				projectResult.setBuildingname(unit.getCompanyname());
+			}
+		}
+
+		projectResult.setConstructionname("");
+		if (StringUtils.isNotBlank(projectResult.getConstruction())) {
+			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getConstruction());
+			if (unit != null) {
+				projectResult.setConstructionname(unit.getCompanyname());
+			}
+		}
+
+		projectResult.setSurveyname("");
+		if (StringUtils.isNotBlank(projectResult.getSurvey())) {
+			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getSurvey());
+			if (unit != null) {
+				projectResult.setSurveyname(unit.getCompanyname());
+			}
+		}
+
+		projectResult.setSupervisionname("");
+		if (StringUtils.isNotBlank(projectResult.getSupervision())) {
+			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getSupervision());
+			if (unit != null) {
+				projectResult.setSupervisionname(unit.getCompanyname());
+			}
+		}
+
+		projectResult.setDesignname("");
+		if (StringUtils.isNotBlank(projectResult.getDesign())) {
+			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getDesign());
+			if (unit != null) {
+				projectResult.setDesignname(unit.getCompanyname());
+			}
 		}
 
 		if (StringUtils.isNotBlank(project.getMainstructuretype())) {
@@ -201,17 +256,18 @@ public class IndexController {
 			projectResult.setMainstructuretypenames(sb.toString());
 		}
 
-		if (StringUtils.isNotBlank(project.getFunction())) {
-			String[] functions = project.getFunction().split("[,]");
+		if (StringUtils.isNotBlank(project.getFunctions())) {
+			String[] functions = project.getFunctions().split("[,]");
 			StringBuffer sb = new StringBuffer("");
 			for (String function : functions) {
 				if (sb.length() > 0) {
 					sb.append(", ");
 				}
-				sb.append(sysDictionaryService.selectValueName("proFunctrion", Integer.parseInt(function.trim())));
+				sb.append(sysDictionaryService.selectValueName("proFunction", Integer.parseInt(function.trim())));
 			}
 			projectResult.setFunctionname(sb.toString());
 		}
+
 		SysArea area = null;
 		if (NumberUtils.isParsable(project.getProvince())) {
 			area = sysAreaService.findBy("code", Integer.parseInt(project.getProvince().trim()));

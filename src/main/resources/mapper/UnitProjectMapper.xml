@@ -36,7 +36,7 @@
     <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="constructionNature" jdbcType="VARCHAR" property="constructionnature" />
     <result column="mainStructureType" jdbcType="VARCHAR" property="mainstructuretype" />
-    <result column="function" jdbcType="VARCHAR" property="function" />
+    <result column="functions" jdbcType="VARCHAR" property="functions" />
     <result column="planStartTime" jdbcType="BIGINT" property="planstarttime" />
     <result column="planEndTime" jdbcType="BIGINT" property="planendtime" />
     <result column="province" jdbcType="VARCHAR" property="province" />

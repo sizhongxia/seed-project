@@ -91,7 +91,7 @@ public class UnitProjectServiceImpl extends AbstractService<UnitProject> impleme
 
 		String[] functions = model.getFunction();
 		if (functions != null && functions.length > 0) {
-			project.setFunction(String.join(",", functions));
+			project.setFunctions(String.join(",", functions));
 		}
 
 		String[] mainstructuretypes = model.getMainstructuretype();

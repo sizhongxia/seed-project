@@ -24,6 +24,9 @@ public class ProjectResult {
 	private String design;
 	private String designname;
 
+	private String width;
+	private String length;
+
 	private String personname;
 	private String phone;
 	private String salesname;
@@ -97,6 +100,22 @@ public class ProjectResult {
 
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
+	}
+
+	public String getWidth() {
+		return width;
+	}
+
+	public void setWidth(String width) {
+		this.width = width;
+	}
+
+	public String getLength() {
+		return length;
+	}
+
+	public void setLength(String length) {
+		this.length = length;
 	}
 
 	public String getCompanyuuid() {

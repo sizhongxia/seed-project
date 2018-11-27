@@ -226,8 +226,8 @@ public class UnitProjectController {
 		if (StringUtils.isNotBlank(project.getMainstructuretype())) {
 			model.setMainstructuretype(project.getMainstructuretype().split("[,]"));
 		}
-		if (StringUtils.isNotBlank(project.getFunction())) {
-			model.setFunction(project.getFunction().split("[,]"));
+		if (StringUtils.isNotBlank(project.getFunctions())) {
+			model.setFunction(project.getFunctions().split("[,]"));
 		}
 		if (project.getWidth() != null) {
 			model.setWidth(project.getWidth().toString());
@@ -344,9 +344,9 @@ public class UnitProjectController {
 
 		String[] functions = model.getFunction();
 		if (functions != null && functions.length > 0) {
-			project.setFunction(String.join(",", functions));
+			project.setFunctions(String.join(",", functions));
 		} else {
-			project.setFunction("");
+			project.setFunctions("");
 		}
 
 		String[] mainstructuretypes = model.getMainstructuretype();
