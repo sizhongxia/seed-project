@@ -4,7 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class WorktypeModel {
 	private String id;
-	@NotBlank(message = "请传工种名称")
+	@NotBlank(message = "请传入工种名称")
 	private String name;
 	@NotBlank(message = "请传入PID")
 	private String pid;
