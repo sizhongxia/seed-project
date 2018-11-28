@@ -1,7 +1,5 @@
 package com.company.project.configurer;
 
-import static com.company.project.core.ProjectConstant.MAPPER_INTERFACE_REFERENCE;
-import static com.company.project.core.ProjectConstant.MAPPER_PACKAGE;
 import static com.company.project.core.ProjectConstant.MODEL_PACKAGE;
 
 import java.util.Properties;
@@ -11,6 +9,7 @@ import javax.sql.DataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import tk.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -18,12 +17,11 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.github.pagehelper.PageHelper;
 
-import tk.mybatis.spring.mapper.MapperScannerConfigurer;
-
 /**
  * Mybatis & Mapper & PageHelper 配置
  */
 @Configuration
+@MapperScan(basePackages = "com.company.project.dao")
 public class MybatisConfigurer {
 
     @Bean
@@ -49,23 +47,21 @@ public class MybatisConfigurer {
         return factory.getObject();
     }
 
-    @Bean
-    public MapperScannerConfigurer mapperScannerConfigurer() {
-        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-        mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactoryBean");
-        mapperScannerConfigurer.setBasePackage(MAPPER_PACKAGE);
-
-        //配置通用Mapper，详情请查阅官方文档
-        Properties properties = new Properties();
-        properties.setProperty("mappers", MAPPER_INTERFACE_REFERENCE);
-        properties.setProperty("notEmpty", "false");//insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str != ''
-        properties.setProperty("IDENTITY", "MYSQL");
-        mapperScannerConfigurer.setProperties(properties);
-
-        return mapperScannerConfigurer;
-    }
-    
-    
+//    @Bean
+//    public MapperScannerConfigurer mapperScannerConfigurer() {
+//        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
+//        mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactoryBean");
+//        mapperScannerConfigurer.setBasePackage(MAPPER_PACKAGE);
+//
+//        //配置通用Mapper，详情请查阅官方文档
+//        Properties properties = new Properties();
+//        properties.setProperty("mappers", MAPPER_INTERFACE_REFERENCE);
+//        properties.setProperty("notEmpty", "false");//insert、update是否判断字符串类型!='' 即 test="str != null"表达式内是否追加 and str != ''
+//        properties.setProperty("IDENTITY", "MYSQL");
+//        mapperScannerConfigurer.setProperties(properties);
+//
+//        return mapperScannerConfigurer;
+//    }
 
 }
 

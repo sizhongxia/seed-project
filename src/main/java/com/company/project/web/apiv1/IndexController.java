@@ -144,7 +144,7 @@ public class IndexController {
 
 		Condition menuCondition = new Condition(SysMenu.class);
 		menuCondition.createCriteria().andEqualTo("type", 1).andEqualTo("state", 0).andIsNull("parentid");
-		menuCondition.orderBy("sortnum asc");
+		menuCondition.setOrderByClause("sortnum asc");
 		List<SysMenu> _menus = sysMenuService.findByCondition(menuCondition);
 		if (_menus != null && _menus.size() > 0) {
 			MenuResult mr = null;

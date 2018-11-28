@@ -60,7 +60,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!--MyBatis 及 插件依赖 -->
+		<!--MyBatis 及 插件依赖 
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis-spring</artifactId>
@@ -75,6 +75,11 @@
 			<groupId>tk.mybatis</groupId>
 			<artifactId>mapper</artifactId>
 			<version>3.4.2</version>
+		</dependency>-->
+		<dependency>
+			<groupId>tk.mybatis</groupId>
+			<artifactId>mapper-spring-boot-starter</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.pagehelper</groupId>
