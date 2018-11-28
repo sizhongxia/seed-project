@@ -38,7 +38,7 @@ import com.company.project.service.UnitGroupService;
 import com.company.project.service.UnitLaborsubcontractorService;
 import com.company.project.service.UnitPostService;
 import com.company.project.service.UnitProjectService;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -291,7 +291,7 @@ public class OrgStructureController {
 		}
 
 		UnitGroup unitGroup = new UnitGroup();
-		unitGroup.setUuid(UuidUtil.init());
+		unitGroup.setUuid(IdUtils.initUuid());
 		unitGroup.setCompanyuuid(companyId);
 		unitGroup.setProuuid(model.getPid());
 		unitGroup.setName(name);
@@ -446,7 +446,7 @@ public class OrgStructureController {
 //		}
 
 		UnitDepartment unitDepartment = new UnitDepartment();
-		unitDepartment.setUuid(UuidUtil.init());
+		unitDepartment.setUuid(IdUtils.initUuid());
 		unitDepartment.setParentuuid(parentId);
 		unitDepartment.setDeptname(name);
 		unitDepartment.setDeptuuid(model.getPid());
@@ -470,7 +470,7 @@ public class OrgStructureController {
 					continue;
 				}
 				UnitPost up = new UnitPost();
-				up.setUuid(UuidUtil.init());
+				up.setUuid(IdUtils.initUuid());
 				up.setName(post);
 				up.setProuuid(model.getPid());
 				up.setDeptuuid(unitDepartment.getUuid());
@@ -584,7 +584,7 @@ public class OrgStructureController {
 					}
 					post.trim();
 					UnitPost up = new UnitPost();
-					up.setUuid(UuidUtil.init());
+					up.setUuid(IdUtils.initUuid());
 					up.setName(post);
 					up.setProuuid(model.getPid());
 					up.setDeptuuid(unitDepartment.getUuid());

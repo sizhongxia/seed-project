@@ -27,7 +27,7 @@ import com.company.project.service.EquipmentAftersaleService;
 import com.company.project.service.EquipmentBasicsService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UtcDateParseUtil;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 
 import cn.hutool.core.date.DateUtil;
 
@@ -111,7 +111,7 @@ public class FogGunController {
 		EquipmentBasics equipmentBasics = equipmentBasicsService.findBy("equipmentno", model.getEquipmentno());
 		if (equipmentBasics == null) {
 			equipmentBasics = new EquipmentBasics();
-			equipmentBasics.setUuid(UuidUtil.init());
+			equipmentBasics.setUuid(IdUtils.initUuid());
 			equipmentBasics.setCompanyuuid(model.getCompanyuuid());
 			equipmentBasics.setProuuid(model.getProuuid());
 			equipmentBasics.setName(model.getName());

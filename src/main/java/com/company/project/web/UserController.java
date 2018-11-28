@@ -31,7 +31,7 @@ import com.company.project.service.UserTokenFlagService;
 import com.company.project.unit.JwtHelper;
 import com.company.project.unit.Md5Util;
 import com.company.project.unit.SystemLocal;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 
 import cn.hutool.core.date.DateUtil;
 import io.jsonwebtoken.Claims;
@@ -89,7 +89,7 @@ public class UserController {
 			data.put("loginName", user.getUsername());
 		}
 
-		final String flagKey = UuidUtil.init();
+		final String flagKey = IdUtils.initUuid();
 		String jwtToken = initJwt(user.getUsername(), user.getUuid(), "admin", flagKey);
 
 		UserTokenFlag tokenFlag = userTokenFlagService.findBy("useruuid", user.getUuid());
@@ -160,7 +160,7 @@ public class UserController {
 			return ResultGenerator.genSuccessResult(data);
 		}
 
-		final String flagKey = UuidUtil.init();
+		final String flagKey = IdUtils.initUuid();
 		String jwtToken = initJwt(claims.get("unique_name").toString(), claims.get("userid").toString(), claims.get("role").toString(), flagKey);
 		tokenFlag.setFlagKey(flagKey);
 		tokenFlag.setToken(jwtToken);

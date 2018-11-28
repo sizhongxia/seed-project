@@ -29,7 +29,7 @@ import com.company.project.model.om.UnitCompanyModel;
 import com.company.project.model.param.CompanySearchParam;
 import com.company.project.model.returns.Pagination;
 import com.company.project.service.UnitCompanyService;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
@@ -205,7 +205,7 @@ public class UnitCompanyController {
 			unitCompany.setType(new Integer(model.getType()));
 			unitCompany.setTypename(typeName);
 			unitCompany.setUpdatetime(System.currentTimeMillis());
-			unitCompany.setUuid(UuidUtil.init());
+			unitCompany.setUuid(IdUtils.initUuid());
 			unitCompanyService.save(unitCompany);
 		} else {
 			UnitCompany unitCompany = unitCompanys.get(0);

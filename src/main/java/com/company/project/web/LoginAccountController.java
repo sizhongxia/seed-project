@@ -31,7 +31,7 @@ import com.company.project.model.param.LoginAccountSearchParam;
 import com.company.project.model.returns.Pagination;
 import com.company.project.service.UserLoginAccountService;
 import com.company.project.unit.Md5Util;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
@@ -183,7 +183,7 @@ public class LoginAccountController {
 			return ResultGenerator.genFailResult("当前登陆名称已存在");
 		}
 		loginAccount = new UserLoginAccount();
-		loginAccount.setUuid(UuidUtil.init());
+		loginAccount.setUuid(IdUtils.initUuid());
 		loginAccount.setIdnumber(model.getIdnumber());
 		loginAccount.setUsername(model.getUsername());
 		loginAccount.setPhone(model.getPhone());

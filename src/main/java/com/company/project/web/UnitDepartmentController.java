@@ -29,7 +29,7 @@ import com.company.project.model.param.DepartmentSearchParam;
 import com.company.project.model.returns.Pagination;
 import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitDepartmentService;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
@@ -196,7 +196,7 @@ public class UnitDepartmentController {
 		UnitDepartment unitDepartment = null;
 		if (unitDepartments == null || unitDepartments.isEmpty()) {
 			unitDepartment = new UnitDepartment();
-			unitDepartment.setUuid(UuidUtil.init());
+			unitDepartment.setUuid(IdUtils.initUuid());
 			unitDepartment.setDeptname(model.getDeptname());
 			unitDepartment.setDeptuuid(model.getDeptuuid());
 			unitDepartment.setParentuuid(model.getParentuuid());

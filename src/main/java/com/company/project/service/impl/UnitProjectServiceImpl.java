@@ -30,7 +30,7 @@ import com.company.project.service.UserIdentityService;
 import com.company.project.service.UserLoginAccountService;
 import com.company.project.unit.Md5Util;
 import com.company.project.unit.UtcDateParseUtil;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -77,7 +77,7 @@ public class UnitProjectServiceImpl extends AbstractService<UnitProject> impleme
 		project = new UnitProject();
 		BeanUtils.copyProperties(model, project);
 		project.setProcode(procode);
-		project.setUuid(UuidUtil.init());
+		project.setUuid(IdUtils.initUuid());
 		String[] areaInfo = model.getAreainfo();
 		if (areaInfo.length > 0) {
 			project.setProvince(areaInfo[0]);
@@ -181,7 +181,7 @@ public class UnitProjectServiceImpl extends AbstractService<UnitProject> impleme
 		UserLoginAccount ula = userLoginAccountService.findBy("username", username);
 		if (ula == null) {
 			ula = new UserLoginAccount();
-			ula.setUuid(UuidUtil.init());
+			ula.setUuid(IdUtils.initUuid());
 			ula.setUsername(username);
 			ula.setPhone("");
 			ula.setPassword(Md5Util.md5(model.getPassword().trim(), username));
@@ -194,7 +194,7 @@ public class UnitProjectServiceImpl extends AbstractService<UnitProject> impleme
 			throw new RuntimeException("超管账号已存在，请更改为其他账号");
 		}
 		UserIdentity userIdentity = new UserIdentity();
-		userIdentity.setUuid(UuidUtil.init());
+		userIdentity.setUuid(IdUtils.initUuid());
 		userIdentity.setUseruuid(ula.getUuid());
 		userIdentity.setType(1);
 		userIdentity.setIsdefault(1);

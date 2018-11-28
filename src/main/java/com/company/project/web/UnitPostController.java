@@ -28,7 +28,7 @@ import com.company.project.model.param.PostSearchParam;
 import com.company.project.model.returns.Pagination;
 import com.company.project.service.UnitDepartmentService;
 import com.company.project.service.UnitPostService;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
@@ -189,7 +189,7 @@ public class UnitPostController {
 		UnitPost unitPost = null;
 		if (unitPosts == null || unitPosts.isEmpty()) {
 			unitPost = new UnitPost();
-			unitPost.setUuid(UuidUtil.init());
+			unitPost.setUuid(IdUtils.initUuid());
 			unitPost.setName(model.getName());
 			unitPost.setDeptuuid(model.getDeptuuid());
 			unitPost.setProuuid(unitDepartment.getUuid());

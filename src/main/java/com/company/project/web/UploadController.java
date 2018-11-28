@@ -27,7 +27,7 @@ import com.company.project.model.UnitProject;
 import com.company.project.service.EquipmentAftersaleService;
 import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitProjectService;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
@@ -54,7 +54,7 @@ public class UploadController {
 	@PostMapping("/image")
 	public Result<?> image(@RequestParam("avatar") MultipartFile multipartFile) throws IOException {
 		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
+		String key = IdUtils.initObjectId();
 		if (uploadQNImg(inputStream, key)) {
 			return ResultGenerator.genSuccessResult(String.format("%s%s%s", qiniuConstant.getPath(), key, "-200x200"));
 		}
@@ -76,7 +76,7 @@ public class UploadController {
 		}
 
 		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
+		String key = IdUtils.initObjectId();
 		if (!uploadQNImg(inputStream, key)) {
 			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
 		}
@@ -104,7 +104,7 @@ public class UploadController {
 		}
 
 		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
+		String key = IdUtils.initObjectId();
 		if (!uploadQNImg(inputStream, key)) {
 			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
 		}
@@ -135,7 +135,7 @@ public class UploadController {
 		}
 
 		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
+		String key = IdUtils.initObjectId();
 		if (!uploadQNImg(inputStream, key)) {
 			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
 		}
@@ -166,7 +166,7 @@ public class UploadController {
 		}
 
 		FileInputStream inputStream = (FileInputStream) multipartFile.getInputStream();
-		String key = UuidUtil.initShort();
+		String key = IdUtils.initObjectId();
 		if (!uploadQNImg(inputStream, key)) {
 			return ResultGenerator.genFailResult("上传文件失败，请稍候重试");
 		}

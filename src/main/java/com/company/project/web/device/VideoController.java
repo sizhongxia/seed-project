@@ -27,7 +27,7 @@ import com.company.project.service.EquipmentBasicsService;
 import com.company.project.service.EquipmentVideoService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.UtcDateParseUtil;
-import com.company.project.unit.UuidUtil;
+import com.company.project.unit.IdUtils;
 
 import cn.hutool.core.date.DateUtil;
 
@@ -114,7 +114,7 @@ public class VideoController {
 			return ResultGenerator.genFailResult("请选择一个设备所属单位或工地");
 		}
 		EquipmentBasics equipmentBasics = new EquipmentBasics();
-		equipmentBasics.setUuid(UuidUtil.init());
+		equipmentBasics.setUuid(IdUtils.initUuid());
 		equipmentBasics.setCompanyuuid(model.getCompanyuuid());
 		equipmentBasics.setProuuid(model.getProuuid());
 		equipmentBasics.setName(model.getName());
