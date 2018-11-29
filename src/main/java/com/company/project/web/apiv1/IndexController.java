@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -25,12 +27,14 @@ import com.company.project.annotation.TokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SysArea;
+import com.company.project.model.SysDictionary;
 import com.company.project.model.SysMenu;
 import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitProject;
 import com.company.project.model.UserIdentity;
 import com.company.project.model.UserLoginAccount;
 import com.company.project.model.param.apiv1.CommonParam;
+import com.company.project.model.param.apiv1.DictionaryParam;
 import com.company.project.model.param.apiv1.UserLoginParam;
 import com.company.project.model.returns.apiv1.KeyValueResult;
 import com.company.project.model.returns.apiv1.MenuResult;
@@ -52,6 +56,8 @@ import tk.mybatis.mapper.entity.Condition;
 @RestController
 @RequestMapping("/apiv1/")
 public class IndexController {
+
+	private final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
 	@Resource
 	private UserLoginAccountService userLoginAccountService;
@@ -119,6 +125,7 @@ public class IndexController {
 		Map<String, String> data = new HashMap<>();
 		data.put("uid", user.getUuid());
 		data.put("uname", user.getName());
+		data.put("uaccount", user.getUsername());
 		data.put("pid", unitProject.getUuid());
 		return ResultGenerator.genSuccessResult(data);
 	}
@@ -291,6 +298,33 @@ public class IndexController {
 				unitLaborsubcontractorService.selectProjectLaborsubcontractors(project.getUuid()));
 
 		return ResultGenerator.genSuccessResult(projectResult);
+	}
+
+	@TokenCheck
+	@PostMapping("/dictionary")
+	public Result<?> dictionary(@Validated @RequestBody DictionaryParam param, BindingResult bindingResult,
+			HttpServletRequest request) {
+		List<KeyValueResult> kvs = new ArrayList<>();
+		if (bindingResult.hasErrors()) {
+			logger.error(bindingResult.getFieldError().getDefaultMessage());
+			return ResultGenerator.genSuccessResult(kvs);
+		}
+
+		Condition condition = new Condition(SysDictionary.class);
+		condition.createCriteria().andEqualTo("type", param.getType());
+		List<SysDictionary> dicts = sysDictionaryService.findByCondition(condition);
+
+		if (dicts != null && dicts.size() > 0) {
+			KeyValueResult kv = null;
+			for (SysDictionary sd : dicts) {
+				kv = new KeyValueResult();
+				kv.setKey(sd.getName());
+				kv.setValue(sd.getValue().toString());
+				kvs.add(kv);
+			}
+		}
+
+		return ResultGenerator.genSuccessResult(kvs);
 	}
 
 	@TokenCheck
