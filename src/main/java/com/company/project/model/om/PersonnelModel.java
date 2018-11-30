@@ -23,8 +23,11 @@ public class PersonnelModel {
 	@NotBlank(message = "请输入用户年龄")
 	private String age;
 
-	@NotBlank(message = "请输入用户籍贯")
 	private String birthplace;
+	private String birthplace1;
+	private String birthplace2;
+	private String birthplace3;
+
 	private String photo;
 	@NotBlank(message = "请选择用户所属民族")
 	private String nation;
@@ -213,6 +216,30 @@ public class PersonnelModel {
 
 	public void setManualinput(String manualinput) {
 		this.manualinput = manualinput;
+	}
+
+	public String getBirthplace1() {
+		return birthplace1;
+	}
+
+	public void setBirthplace1(String birthplace1) {
+		this.birthplace1 = birthplace1;
+	}
+
+	public String getBirthplace2() {
+		return birthplace2;
+	}
+
+	public void setBirthplace2(String birthplace2) {
+		this.birthplace2 = birthplace2;
+	}
+
+	public String getBirthplace3() {
+		return birthplace3;
+	}
+
+	public void setBirthplace3(String birthplace3) {
+		this.birthplace3 = birthplace3;
 	}
 
 }

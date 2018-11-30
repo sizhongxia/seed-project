@@ -21,11 +21,13 @@ import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.PersonnelIdentity;
 import com.company.project.model.PersonnelRealnameSystem;
+import com.company.project.model.SysArea;
 import com.company.project.model.om.PersonnelBaseModel;
 import com.company.project.model.om.PersonnelModel;
 import com.company.project.model.param.apiv1.PersonnelParam;
 import com.company.project.service.PersonnelIdentityService;
 import com.company.project.service.PersonnelRealnameSystemService;
+import com.company.project.service.SysAreaService;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
@@ -39,6 +41,8 @@ public class PersonnelController {
 	private PersonnelRealnameSystemService personnelRealnameSystemService;
 	@Resource
 	private PersonnelIdentityService personnelIdentityService;
+	@Resource
+	private SysAreaService sysAreaService;
 
 	@TokenCheck
 	@PostMapping("/save")
@@ -78,6 +82,33 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的人员类型");
 		}
 
+		StringBuffer birthplcae = new StringBuffer("");
+		if (NumberUtils.isParsable(model.getBirthplace1())) {
+			SysArea sysArea = sysAreaService.findBy("code", Integer.parseInt(model.getBirthplace1().trim()));
+			if (sysArea != null) {
+				birthplcae.append(sysArea.getCode().toString());
+
+				if (NumberUtils.isParsable(model.getBirthplace2())) {
+					sysArea = sysAreaService.findBy("code", Integer.parseInt(model.getBirthplace2().trim()));
+					if (sysArea != null) {
+						birthplcae.append(",");
+						birthplcae.append(sysArea.getCode().toString());
+
+						if (NumberUtils.isParsable(model.getBirthplace3())) {
+							sysArea = sysAreaService.findBy("code", Integer.parseInt(model.getBirthplace3().trim()));
+							if (sysArea != null) {
+								birthplcae.append(",");
+								birthplcae.append(sysArea.getCode().toString());
+							}
+						}
+
+					}
+				}
+
+			}
+		}
+
+		model.setBirthplace(birthplcae.toString());
 		personnelRealnameSystemService.saveByTransactional(model);
 		return ResultGenerator.genSuccessResult("保存成功");
 	}

@@ -2,14 +2,13 @@ package com.company.project.model.param.apiv1;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-public class DictionaryParam {
-
+public class PostParam {
 	@NotBlank(message = "请传入UID")
 	private String uid;
 	@NotBlank(message = "请传入PID")
 	private String pid;
-	@NotBlank(message = "请传入字典类型")
-	private String type;
+
+	private String deptUuid;
 
 	public String getUid() {
 		return uid;
@@ -27,12 +26,12 @@ public class DictionaryParam {
 		this.pid = pid;
 	}
 
-	public String getType() {
-		return type;
+	public String getDeptUuid() {
+		return deptUuid;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDeptUuid(String deptUuid) {
+		this.deptUuid = deptUuid;
 	}
 
 }

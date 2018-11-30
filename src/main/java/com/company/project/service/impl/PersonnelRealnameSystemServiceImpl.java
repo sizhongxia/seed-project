@@ -62,12 +62,13 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 			}
 			realnameSystem.setAge(Integer.parseInt(model.getAge().trim()));
 			realnameSystem.setBirthday(birthday);
+			realnameSystem.setBirthplace(model.getBirthplace());
 			realnameSystem.setPhoto(model.getPhoto());
 			realnameSystem.setNation(model.getNation());
 			realnameSystem.setHomeaddress(model.getHomeaddress());
 			realnameSystem.setTelephone(model.getTelephone());
-			realnameSystem.setManualinput(model.getManualinput());
-			realnameSystem.setDatein(model.getDatein());
+			realnameSystem.setManualinput("0");
+			realnameSystem.setDatein("");
 			realnameSystem.setAddtime(System.currentTimeMillis());
 			realnameSystem.setUpdatetime(System.currentTimeMillis());
 			personnelRealnameSystemMapper.insert(realnameSystem);

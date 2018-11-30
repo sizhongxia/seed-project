@@ -1,7 +1,5 @@
 package com.company.project.web.apiv1;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,16 +27,15 @@ import com.company.project.core.ResultGenerator;
 import com.company.project.model.SysArea;
 import com.company.project.model.SysDictionary;
 import com.company.project.model.SysMenu;
-import com.company.project.model.UnitCompany;
 import com.company.project.model.UnitProject;
 import com.company.project.model.UserIdentity;
 import com.company.project.model.UserLoginAccount;
+import com.company.project.model.param.apiv1.AreaParam;
 import com.company.project.model.param.apiv1.CommonParam;
 import com.company.project.model.param.apiv1.DictionaryParam;
 import com.company.project.model.param.apiv1.UserLoginParam;
 import com.company.project.model.returns.apiv1.KeyValueResult;
 import com.company.project.model.returns.apiv1.MenuResult;
-import com.company.project.model.returns.apiv1.ProjectResult;
 import com.company.project.service.SysAreaService;
 import com.company.project.service.SysDictionaryService;
 import com.company.project.service.SysMenuService;
@@ -47,7 +44,6 @@ import com.company.project.service.UnitLaborsubcontractorService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.service.UserIdentityService;
 import com.company.project.service.UserLoginAccountService;
-import com.company.project.unit.LongDataFormatUtil;
 import com.company.project.unit.Md5Util;
 
 import cn.hutool.core.date.DateUtil;
@@ -57,7 +53,7 @@ import tk.mybatis.mapper.entity.Condition;
 @RequestMapping("/apiv1/")
 public class IndexController {
 
-	private final Logger logger = LoggerFactory.getLogger(IndexController.class);
+	final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
 	@Resource
 	private UserLoginAccountService userLoginAccountService;
@@ -166,138 +162,34 @@ public class IndexController {
 	}
 
 	@TokenCheck
-	@PostMapping("/project/detail")
-	public Result<?> projectDetail(@Validated @RequestBody CommonParam param, BindingResult bindingResult,
+	@PostMapping("/area")
+	public Result<?> area(@Validated @RequestBody AreaParam param, BindingResult bindingResult,
 			HttpServletRequest request) {
+		List<KeyValueResult> kvs = new ArrayList<>();
 		if (bindingResult.hasErrors()) {
-			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+			logger.error(bindingResult.getFieldError().getDefaultMessage());
+			return ResultGenerator.genSuccessResult(kvs);
 		}
-		UnitProject project = unitProjectService.findBy("uuid", param.getPid());
-		if (project == null) {
-			return ResultGenerator.genFailResult("项目可能已被删除");
-		}
-		if (project.getState().intValue() != 0) {
-			return ResultGenerator.genFailResult("项目已被禁止访问");
-		}
-		ProjectResult projectResult = new ProjectResult();
-		BeanUtils.copyProperties(project, projectResult);
-
-		projectResult.setPlanstarttime(LongDataFormatUtil.formatDate(project.getPlanstarttime()));
-		projectResult.setPlanendtime(LongDataFormatUtil.formatDate(project.getPlanendtime()));
-		Double measure = project.getMeasure();
-		DecimalFormat df = new DecimalFormat("#0.00");
-		if (measure != null) {
-			projectResult.setMeasure(String.format("%s%s", df.format(new BigDecimal(measure)), "平方米"));
-		}
-		Double investment = project.getInvestment();
-		if (investment != null) {
-			projectResult.setInvestment(String.format("%s%s", df.format(new BigDecimal(investment)), "万元"));
-		}
-		if (NumberUtils.isParsable(project.getType())) {
-			projectResult.setTypename(
-					sysDictionaryService.selectValueName("proType", Integer.parseInt(project.getType().trim())));
-		}
-		if (NumberUtils.isParsable(project.getConstructionnature())) {
-			projectResult.setConstructionnaturename(sysDictionaryService.selectValueName("proConstructionNature",
-					Integer.parseInt(project.getConstructionnature().trim())));
+		if (!NumberUtils.isParsable(param.getPcode())) {
+			logger.error("pcode param is invalid");
+			return ResultGenerator.genSuccessResult(kvs);
 		}
 
-		if (project.getWidth() != null) {
-			projectResult.setWidth(project.getWidth().toString() + "米");
-		}
-		if (project.getLength() != null) {
-			projectResult.setLength(project.getLength().toString() + "米");
-		}
+		Condition condition = new Condition(SysArea.class);
+		condition.createCriteria().andEqualTo("pcode", param.getPcode());
+		List<SysArea> areas = sysAreaService.findByCondition(condition);
 
-		projectResult.setBuildingname("");
-		if (StringUtils.isNotBlank(projectResult.getBuilding())) {
-			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getBuilding());
-			if (unit != null) {
-				projectResult.setBuildingname(unit.getCompanyname());
+		if (areas != null && areas.size() > 0) {
+			KeyValueResult kv = null;
+			for (SysArea sd : areas) {
+				kv = new KeyValueResult();
+				kv.setKey(sd.getName());
+				kv.setValue(sd.getCode().toString());
+				kvs.add(kv);
 			}
 		}
 
-		projectResult.setConstructionname("");
-		if (StringUtils.isNotBlank(projectResult.getConstruction())) {
-			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getConstruction());
-			if (unit != null) {
-				projectResult.setConstructionname(unit.getCompanyname());
-			}
-		}
-
-		projectResult.setSurveyname("");
-		if (StringUtils.isNotBlank(projectResult.getSurvey())) {
-			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getSurvey());
-			if (unit != null) {
-				projectResult.setSurveyname(unit.getCompanyname());
-			}
-		}
-
-		projectResult.setSupervisionname("");
-		if (StringUtils.isNotBlank(projectResult.getSupervision())) {
-			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getSupervision());
-			if (unit != null) {
-				projectResult.setSupervisionname(unit.getCompanyname());
-			}
-		}
-
-		projectResult.setDesignname("");
-		if (StringUtils.isNotBlank(projectResult.getDesign())) {
-			UnitCompany unit = unitCompanyService.findBy("uuid", projectResult.getDesign());
-			if (unit != null) {
-				projectResult.setDesignname(unit.getCompanyname());
-			}
-		}
-
-		if (StringUtils.isNotBlank(project.getMainstructuretype())) {
-			String[] mainstructuretypes = project.getMainstructuretype().split("[,]");
-			StringBuffer sb = new StringBuffer("");
-			for (String mainstructuretype : mainstructuretypes) {
-				if (sb.length() > 0) {
-					sb.append(", ");
-				}
-				sb.append(sysDictionaryService.selectValueName("proMainStructureType",
-						Integer.parseInt(mainstructuretype.trim())));
-			}
-			projectResult.setMainstructuretypenames(sb.toString());
-		}
-
-		if (StringUtils.isNotBlank(project.getFunctions())) {
-			String[] functions = project.getFunctions().split("[,]");
-			StringBuffer sb = new StringBuffer("");
-			for (String function : functions) {
-				if (sb.length() > 0) {
-					sb.append(", ");
-				}
-				sb.append(sysDictionaryService.selectValueName("proFunction", Integer.parseInt(function.trim())));
-			}
-			projectResult.setFunctionname(sb.toString());
-		}
-
-		SysArea area = null;
-		if (NumberUtils.isParsable(project.getProvince())) {
-			area = sysAreaService.findBy("code", Integer.parseInt(project.getProvince().trim()));
-			if (area != null) {
-				projectResult.setProvince(area.getName());
-			}
-		}
-		if (NumberUtils.isParsable(project.getCity())) {
-			area = sysAreaService.findBy("code", Integer.parseInt(project.getCity().trim()));
-			if (area != null) {
-				projectResult.setCity(area.getName());
-			}
-		}
-		if (NumberUtils.isParsable(project.getCounty())) {
-			area = sysAreaService.findBy("code", Integer.parseInt(project.getCounty().trim()));
-			if (area != null) {
-				projectResult.setCounty(area.getName());
-			}
-		}
-
-		projectResult.setLaborsubcontractors(
-				unitLaborsubcontractorService.selectProjectLaborsubcontractors(project.getUuid()));
-
-		return ResultGenerator.genSuccessResult(projectResult);
+		return ResultGenerator.genSuccessResult(kvs);
 	}
 
 	@TokenCheck
