@@ -1,7 +1,10 @@
 package com.company.project.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import com.company.project.dao.PersonnelRealnameSystemMapper;
 import com.company.project.model.PersonnelIdentity;
 import com.company.project.model.PersonnelRealnameSystem;
 import com.company.project.model.om.PersonnelModel;
+import com.company.project.model.returns.apiv1.PersonnelResult;
 import com.company.project.service.PersonnelIdentityService;
 import com.company.project.service.PersonnelRealnameSystemService;
 import com.company.project.unit.IdWorker;
@@ -19,6 +23,8 @@ import com.company.project.unit.IdWorker;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
+import cn.hutool.core.util.RandomUtil;
+import tk.mybatis.mapper.entity.Condition;
 
 /**
  * Created by SiZhongXia on 2018/11/22.
@@ -41,15 +47,21 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 	public void saveByTransactional(PersonnelModel model) {
 
 		PersonnelRealnameSystem record = new PersonnelRealnameSystem();
-		record.setCode(model.getCode());
+		record.setCode(model.getCode()); // 身份证号查询唯一性
 		PersonnelRealnameSystem realnameSystem = personnelRealnameSystemMapper.selectOne(record);
 		if (realnameSystem == null) {
 			realnameSystem = new PersonnelRealnameSystem();
-			String empno = "E" + idWorker.nextId();
-			realnameSystem.setEmpno(empno);
+			String maxEmpNo = personnelRealnameSystemMapper.selectMaxEmpNo();
+			if (NumberUtils.isParsable(maxEmpNo)) {
+				int nextEmpNo = Integer.parseInt(maxEmpNo) + RandomUtil.randomInt(9, 99);
+				maxEmpNo = nextEmpNo + model.getType();
+			} else {
+				maxEmpNo = RandomUtil.randomInt(1234561121, 1434561121) + model.getType();
+			}
+			realnameSystem.setEmpno(maxEmpNo);
 			realnameSystem.setName(model.getName());
 			realnameSystem.setCode(model.getCode());
-			realnameSystem.setSex(Integer.parseInt(model.getAge().trim()));
+			realnameSystem.setSex(Integer.parseInt(model.getSex().trim()));
 			DateTime birthday = null;
 			try {
 				birthday = DateUtil.parse(model.getBirthday());
@@ -74,6 +86,15 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 			personnelRealnameSystemMapper.insert(realnameSystem);
 		}
 
+		Condition condition = new Condition(PersonnelIdentity.class);
+		condition.createCriteria().andEqualTo("prouuid", model.getProuuid())
+				.andEqualTo("empno", realnameSystem.getEmpno())
+				.andEqualTo("type", Integer.parseInt(model.getType().trim()));
+		List<PersonnelIdentity> personnelIdentities = personnelIdentityService.findByCondition(condition);
+		if (personnelIdentities != null && personnelIdentities.size() > 0) {
+			throw new RuntimeException("当前用户身份已存在");
+		}
+
 		PersonnelIdentity personnelIdentity = new PersonnelIdentity();
 		personnelIdentity.setEmpno(realnameSystem.getEmpno());
 		personnelIdentity.setType(Integer.parseInt(model.getType().trim()));
@@ -96,6 +117,11 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 		personnelIdentity.setAddtime(System.currentTimeMillis());
 		personnelIdentity.setUpdatetime(System.currentTimeMillis());
 		personnelIdentityService.save(personnelIdentity);
+	}
+
+	@Override
+	public List<PersonnelResult> selectProjectPersonnels(String proUuid) {
+		return this.personnelRealnameSystemMapper.selectProjectPersonnels(proUuid);
 	}
 
 }

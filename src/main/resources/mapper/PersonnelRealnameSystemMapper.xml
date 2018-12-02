@@ -22,4 +22,26 @@
     <result column="addTime" jdbcType="BIGINT" property="addtime" />
     <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
   </resultMap>
+  
+  <select id="selectMaxEmpNo" resultType="java.lang.String">
+  	select p.empNo from personnel_realname_system  p order by p.updateTime desc limit 0, 1
+  </select>
+  
+  <select id="selectProjectPersonnels" parameterType="java.lang.String" resultType="com.company.project.model.returns.apiv1.PersonnelResult">
+  	SELECT
+		pi.id as id,
+		prs.`name` as name,
+		prs.empNo as empNo,
+		pi.type as type,
+		prs.`code` as code,
+		prs.telephone as telephone,
+		prs.nation as nation,
+		prs.sex as sex,
+		prs.age as age,
+		prs.homeAddress as homeAddress
+	FROM
+		personnel_identity pi
+	LEFT JOIN personnel_realname_system prs ON pi.empNo = prs.empNo
+	WHERE pi.proUuid = #{proUuid} and pi.state = 0
+  </select>
 </mapper>

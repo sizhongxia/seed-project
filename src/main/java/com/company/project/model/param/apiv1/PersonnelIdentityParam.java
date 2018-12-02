@@ -2,15 +2,13 @@ package com.company.project.model.param.apiv1;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-public class PersonnelParam {
+public class PersonnelIdentityParam {
 	@NotBlank(message = "请传入UID")
 	private String uid;
 	@NotBlank(message = "请传入PID")
 	private String pid;
 
 	private String id;
-	private String code;
-	private String empNo;
 
 	public String getUid() {
 		return uid == null ? null : uid.trim();
@@ -28,22 +26,6 @@ public class PersonnelParam {
 		this.pid = pid;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getEmpNo() {
-		return empNo;
-	}
-
-	public void setEmpNo(String empNo) {
-		this.empNo = empNo;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -51,5 +33,6 @@ public class PersonnelParam {
 	public void setId(String id) {
 		this.id = id;
 	}
+
 
 }

@@ -6,8 +6,7 @@ import javax.validation.constraints.Min;
 import org.hibernate.validator.constraints.NotBlank;
 
 public class PersonnelBaseModel {
-	@NotBlank(message = "无效的记录编号")
-	private String empno;
+	private String id;
 
 	@NotBlank(message = "请输入用户名称")
 	private String name;
@@ -15,13 +14,14 @@ public class PersonnelBaseModel {
 	private String sex;
 	@NotBlank(message = "请输入用户出生日期")
 	private String birthday;
+	@NotBlank(message = "请输入用户身份证号")
+	private String code;
 
 	@Min(value = 16, message = "年龄值无效")
 	@Max(value = 100, message = "年龄值无效")
 	@NotBlank(message = "请输入用户年龄")
 	private String age;
 
-	@NotBlank(message = "请输入用户籍贯")
 	private String birthplace;
 	private String photo;
 	@NotBlank(message = "请选择用户所属民族")
@@ -35,12 +35,12 @@ public class PersonnelBaseModel {
 
 	private String datein;
 
-	public String getEmpno() {
-		return empno;
+	public String getId() {
+		return id;
 	}
 
-	public void setEmpno(String empno) {
-		this.empno = empno;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -89,6 +89,14 @@ public class PersonnelBaseModel {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getNation() {
