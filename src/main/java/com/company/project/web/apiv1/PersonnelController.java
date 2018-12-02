@@ -87,9 +87,8 @@ public class PersonnelController {
 		}
 		List<PersonnelResult> personnelResults = personnelRealnameSystemService.selectProjectPersonnels(param.getPid());
 		List<Map<String, Object>> list = new ArrayList<>();
-		if (personnelResults == null) {
-			personnelResults = new ArrayList<>();
-		} else {
+
+		if (personnelResults != null && personnelResults.size() > 0) {
 			Map<String, Object> item = null;
 			for (PersonnelResult pr : personnelResults) {
 				item = new HashMap<>();

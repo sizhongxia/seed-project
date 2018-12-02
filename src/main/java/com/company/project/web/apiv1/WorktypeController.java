@@ -43,9 +43,8 @@ public class WorktypeController {
 		}
 		List<UnitWorkType> worktypes = unitWorkTypeService.selectAllWorktype(param.getPid());
 		List<Map<String, Object>> list = new ArrayList<>();
-		if (worktypes == null) {
-			worktypes = new ArrayList<>();
-		} else {
+
+		if (worktypes != null && worktypes.size() > 0) {
 			Map<String, Object> item = null;
 			for (UnitWorkType wt : worktypes) {
 				item = new HashMap<>();
