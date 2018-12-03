@@ -1,10 +1,10 @@
 package com.company.project.unit;
 
-import org.apache.commons.codec.binary.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class AesUtil {
 
@@ -43,9 +43,7 @@ public class AesUtil {
 
 			cipher.init(Cipher.ENCRYPT_MODE, keyspec, ivspec);
 			byte[] encrypted = cipher.doFinal(plaintext);
-
-			return new Base64().encodeToString(encrypted);
-
+			return new Base64().encodeToString(encrypted).replaceAll("[+]", "^").replaceAll("\n", "").replaceAll("\r", "");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -66,7 +64,8 @@ public class AesUtil {
 	 */
 	public static String desEncrypt(String data, String key, String iv) throws Exception {
 		try {
-			byte[] encrypted1 = new Base64().decode(data);
+			byte[] encrypted1 = new Base64().decode(data.replaceAll("[\\^]", "+"));
+			//byte[] encrypted1 = new Base64().decode(URLDecoder.decode(data, "utf-8"));
 
 			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 			SecretKeySpec keyspec = new SecretKeySpec(key.getBytes(), "AES");

@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by SiZhongXia on 2018/12/02.
+ * Created by SiZhongXia on 2018/12/03.
  */
 public interface BusinessMemorabiliaService extends Service<BusinessMemorabilia> {
 

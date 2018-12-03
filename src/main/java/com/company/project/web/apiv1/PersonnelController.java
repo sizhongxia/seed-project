@@ -49,6 +49,7 @@ import com.company.project.service.UnitGroupService;
 import com.company.project.service.UnitPostService;
 import com.company.project.service.UnitWorkTypeService;
 import com.company.project.unit.AesUtil;
+import com.company.project.unit.QiuNiuStyle;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
@@ -515,7 +516,8 @@ public class PersonnelController {
 		data.put("id", id);
 		data.put("photo", "");
 		if (StringUtils.isNotBlank(personnel.getPhoto())) {
-			data.put("photo", String.format("%s%s%s", qiniuConstant.getPath(), personnel.getPhoto(),"-140x200"));
+			data.put("photo",
+					String.format("%s%s%s", qiniuConstant.getPath(), personnel.getPhoto(), QiuNiuStyle._140x200.code));
 		}
 		return ResultGenerator.genSuccessResult(data);
 	}

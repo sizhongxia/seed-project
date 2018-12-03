@@ -11,6 +11,8 @@
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="happenTime" jdbcType="DATE" property="happentime" />
+    <result column="releaseState" jdbcType="INTEGER" property="releasestate" />
+    <result column="onlineState" jdbcType="INTEGER" property="onlinestate" />
     <result column="addTime" jdbcType="BIGINT" property="addtime" />
     <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
     <result column="state" jdbcType="INTEGER" property="state" />

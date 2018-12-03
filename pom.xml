@@ -70,12 +70,13 @@
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
 			<version>3.4.5</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>tk.mybatis</groupId>
 			<artifactId>mapper</artifactId>
 			<version>3.4.2</version>
-		</dependency>-->
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>tk.mybatis</groupId>
 			<artifactId>mapper-spring-boot-starter</artifactId>

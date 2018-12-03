@@ -8,6 +8,7 @@ public class MemorabiliaParam {
 	@NotBlank(message = "请传入PID")
 	private String pid;
 
+	private String id;
 	private String uuid;
 
 	public String getUid() {
@@ -32,6 +33,14 @@ public class MemorabiliaParam {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

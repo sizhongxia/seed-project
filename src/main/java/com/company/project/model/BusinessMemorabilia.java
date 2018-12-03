@@ -39,6 +39,18 @@ public class BusinessMemorabilia {
     private Date happentime;
 
     /**
+     * 发布状态
+     */
+    @Column(name = "releaseState")
+    private Integer releasestate;
+
+    /**
+     * 在线状态
+     */
+    @Column(name = "onlineState")
+    private Integer onlinestate;
+
+    /**
      * 添加时间
      */
     @Column(name = "addTime")
@@ -161,6 +173,42 @@ public class BusinessMemorabilia {
      */
     public void setHappentime(Date happentime) {
         this.happentime = happentime;
+    }
+
+    /**
+     * 获取发布状态
+     *
+     * @return releaseState - 发布状态
+     */
+    public Integer getReleasestate() {
+        return releasestate;
+    }
+
+    /**
+     * 设置发布状态
+     *
+     * @param releasestate 发布状态
+     */
+    public void setReleasestate(Integer releasestate) {
+        this.releasestate = releasestate;
+    }
+
+    /**
+     * 获取在线状态
+     *
+     * @return onlineState - 在线状态
+     */
+    public Integer getOnlinestate() {
+        return onlinestate;
+    }
+
+    /**
+     * 设置在线状态
+     *
+     * @param onlinestate 在线状态
+     */
+    public void setOnlinestate(Integer onlinestate) {
+        this.onlinestate = onlinestate;
     }
 
     /**
