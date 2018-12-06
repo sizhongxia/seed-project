@@ -39,6 +39,7 @@ import com.company.project.model.om.PersonnelPhotoModel;
 import com.company.project.model.param.apiv1.CommonParam;
 import com.company.project.model.param.apiv1.PersonnelIdentityParam;
 import com.company.project.model.param.apiv1.PersonnelParam;
+import com.company.project.model.returns.GroupStatisticsResult;
 import com.company.project.model.returns.apiv1.PersonnelResult;
 import com.company.project.service.PersonnelIdentityService;
 import com.company.project.service.PersonnelRealnameSystemService;
@@ -553,5 +554,19 @@ public class PersonnelController {
 		identity.setUpdatetime(System.currentTimeMillis());
 		personnelIdentityService.update(identity);
 		return ResultGenerator.genSuccessResult("删除成功");
+	}
+	
+	@TokenCheck
+	@PostMapping("/statistics/worktype")
+	public Result<?> statisticsWorktype(@Validated @RequestBody CommonParam param, BindingResult bindingResult,
+			HttpServletRequest request) {
+		if (bindingResult.hasErrors()) {
+			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+		}
+		List<GroupStatisticsResult> personnelResults = personnelIdentityService.selectWorkTypeStatistics(param.getPid());
+		if(personnelResults == null) {
+			personnelResults = new ArrayList<>();
+		}
+		return ResultGenerator.genSuccessResult(personnelResults);
 	}
 }

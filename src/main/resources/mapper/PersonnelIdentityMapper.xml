@@ -19,4 +19,21 @@
     <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
     <result column="addTime" jdbcType="BIGINT" property="addtime" />
   </resultMap>
+  
+  <select id="selectWorkTypeStatistics" parameterType="java.lang.String" resultType="com.company.project.model.returns.GroupStatisticsResult">
+  	SELECT
+		uw.`name` AS item, num
+	FROM
+		(SELECT
+			pi.workType AS item, count(pi.workType) AS num
+		FROM
+			personnel_identity pi
+		WHERE
+			pi.state = 0 AND pi.type = 2 AND pi.proUuid = #{proUuid}
+		GROUP BY
+			pi.workType
+		) AS st
+	LEFT JOIN unit_worktype uw ON item = uw.id
+  </select>
+  
 </mapper>
