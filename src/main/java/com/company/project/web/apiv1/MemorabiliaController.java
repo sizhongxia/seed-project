@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +30,7 @@ import com.company.project.model.om.MemorabiliaModel;
 import com.company.project.model.om.MemorabiliaPicModel;
 import com.company.project.model.param.apiv1.CommonParam;
 import com.company.project.model.param.apiv1.MemorabiliaParam;
+import com.company.project.model.returns.apiv1.BusinessMemorabiliaResult;
 import com.company.project.service.BusinessMemorabiliaImgService;
 import com.company.project.service.BusinessMemorabiliaService;
 import com.company.project.unit.AesUtil;
@@ -107,6 +107,18 @@ public class MemorabiliaController {
 		data.put("releasestate", businessMemorabilia.getReleasestate());
 		data.put("onlinestate", businessMemorabilia.getOnlinestate());
 		data.put("happentime", DateUtil.format(businessMemorabilia.getHappentime(), "yyyy-MM-dd"));
+		
+		Condition condition = new Condition(BusinessMemorabiliaImg.class);
+		condition.createCriteria().andEqualTo("uuid", param.getUuid()).andEqualTo("state", 0);
+		condition.orderBy("sortnum").asc().orderBy("id").asc();
+		List<BusinessMemorabiliaImg> businessMemorabiliaImgs = businessMemorabiliaImgService.findByCondition(condition);
+		List<String> pics = new ArrayList<>();
+		if (businessMemorabiliaImgs != null && businessMemorabiliaImgs.size() > 0) {
+			for (BusinessMemorabiliaImg bmi : businessMemorabiliaImgs) {
+				pics.add(String.format("%s%s%s", qiniuConstant.getPath(), bmi.getSrc(), QiuNiuStyle._745x520.code));
+			}
+		}
+		data.put("pics", pics);
 		return ResultGenerator.genSuccessResult(data);
 	}
 
@@ -374,9 +386,9 @@ public class MemorabiliaController {
 		if (StringUtils.isBlank(model.getTitle())) {
 			return ResultGenerator.genFailResult("请输入图片标题");
 		}
-		if (!NumberUtils.isParsable(model.getSortnum())) {
-			return ResultGenerator.genFailResult("请输入图片序号");
-		}
+		// if (!NumberUtils.isParsable(model.getSortnum())) {
+		// return ResultGenerator.genFailResult("请输入图片序号");
+		// }
 
 		String realId = null;
 		try {
@@ -391,7 +403,7 @@ public class MemorabiliaController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 		bmi.setTitle(model.getTitle());
-		bmi.setSortnum(Integer.parseInt(model.getSortnum().trim()));
+		// bmi.setSortnum(Integer.parseInt(model.getSortnum().trim()));
 		bmi.setUpdatetime(System.currentTimeMillis());
 		businessMemorabiliaImgService.update(bmi);
 		return ResultGenerator.genSuccessResult();
@@ -427,4 +439,33 @@ public class MemorabiliaController {
 		businessMemorabiliaImgService.update(bmi);
 		return ResultGenerator.genSuccessResult("删除成功");
 	}
+
+	@TokenCheck
+	@PostMapping("/list")
+	public Result<?> list(@Validated @RequestBody CommonParam param, BindingResult bindingResult,
+			HttpServletRequest request) {
+		if (bindingResult.hasErrors()) {
+			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+		}
+		List<BusinessMemorabiliaResult> businessMemorabilias = businessMemorabiliaService
+				.findProjectList(param.getPid());
+		List<Map<String, Object>> list = new ArrayList<>();
+		if (businessMemorabilias != null && businessMemorabilias.size() > 0) {
+			Map<String, Object> item = null;
+			for (BusinessMemorabiliaResult bm : businessMemorabilias) {
+				if(StringUtils.isBlank(bm.getPicUrl())) {
+					continue;
+				}
+				item = new HashMap<>();
+				item.put("id", bm.getId());
+				item.put("title", bm.getTitle());
+				item.put("day", DateUtil.format(bm.getTime(), "dd日"));
+				item.put("years", DateUtil.format(bm.getTime(), "yyyy年MM月"));
+				item.put("picUrl", String.format("%s%s%s", qiniuConstant.getPath(), bm.getPicUrl(), QiuNiuStyle._360x220.code));
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+	
 }

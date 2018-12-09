@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.company.project.dao.BusinessMemorabiliaMapper">
-  <resultMap id="BaseResultMap" type="com.company.project.model.BusinessMemorabilia">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
-    <result column="proUUid" jdbcType="VARCHAR" property="prouuid" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="happenTime" jdbcType="DATE" property="happentime" />
-    <result column="releaseState" jdbcType="INTEGER" property="releasestate" />
-    <result column="onlineState" jdbcType="INTEGER" property="onlinestate" />
-    <result column="addTime" jdbcType="BIGINT" property="addtime" />
-    <result column="updateTime" jdbcType="BIGINT" property="updatetime" />
-    <result column="state" jdbcType="INTEGER" property="state" />
-  </resultMap>
+	<resultMap id="BaseResultMap" type="com.company.project.model.BusinessMemorabilia">
+		<!-- WARNING - @mbg.generated -->
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="uuid" jdbcType="VARCHAR" property="uuid" />
+		<result column="proUUid" jdbcType="VARCHAR" property="prouuid" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="happenTime" jdbcType="DATE" property="happentime" />
+		<result column="releaseState" jdbcType="INTEGER" property="releasestate" />
+		<result column="onlineState" jdbcType="INTEGER" property="onlinestate" />
+		<result column="addTime" jdbcType="BIGINT" property="addtime" />
+		<result column="updateTime" jdbcType="BIGINT" property="updatetime" />
+		<result column="state" jdbcType="INTEGER" property="state" />
+	</resultMap>
+
+	<select id="findProjectList" parameterType="java.lang.String"
+		resultType="com.company.project.model.returns.apiv1.BusinessMemorabiliaResult">
+		SELECT bm.uuid as id, bm.title as title, bmi.src as picUrl, bm.happenTime as time FROM business_memorabilia bm
+		LEFT JOIN (
+			SELECT uuid, src FROM business_memorabilia_img bmi1 WHERE
+			bmi1.state = 0 and NOT EXISTS (
+				SELECT 1 FROM business_memorabilia_img bmi2 WHERE bmi1.uuid = bmi2.uuid and bmi2.state = 0 and bmi1.id > bmi2.id
+			)
+		) bmi ON bm.uuid = bmi.uuid
+		where bm.proUUid=#{pid} and bm.state=0 and bm.releaseState=1 and bm.onlineState=1 order by bm.happenTime desc
+	</select>
+
 </mapper>
