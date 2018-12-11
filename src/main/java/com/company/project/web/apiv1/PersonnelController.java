@@ -40,6 +40,7 @@ import com.company.project.model.param.apiv1.CommonParam;
 import com.company.project.model.param.apiv1.PersonnelIdentityParam;
 import com.company.project.model.param.apiv1.PersonnelParam;
 import com.company.project.model.returns.GroupStatisticsResult;
+import com.company.project.model.returns.apiv1.PersonnelBaseCensusResult;
 import com.company.project.model.returns.apiv1.PersonnelResult;
 import com.company.project.service.PersonnelIdentityService;
 import com.company.project.service.PersonnelRealnameSystemService;
@@ -555,7 +556,7 @@ public class PersonnelController {
 		personnelIdentityService.update(identity);
 		return ResultGenerator.genSuccessResult("删除成功");
 	}
-	
+
 	@TokenCheck
 	@PostMapping("/statistics/worktype")
 	public Result<?> statisticsWorktype(@Validated @RequestBody CommonParam param, BindingResult bindingResult,
@@ -563,10 +564,48 @@ public class PersonnelController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-		List<GroupStatisticsResult> personnelResults = personnelIdentityService.selectWorkTypeStatistics(param.getPid());
-		if(personnelResults == null) {
+		List<GroupStatisticsResult> personnelResults = personnelIdentityService
+				.selectWorkTypeStatistics(param.getPid());
+		if (personnelResults == null) {
 			personnelResults = new ArrayList<>();
 		}
 		return ResultGenerator.genSuccessResult(personnelResults);
+	}
+
+	@TokenCheck
+	@PostMapping("/statistics/basecensuss")
+	public Result<?> statisticsBaseCensuss(@Validated @RequestBody CommonParam param, BindingResult bindingResult,
+			HttpServletRequest request) {
+		if (bindingResult.hasErrors()) {
+			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
+		}
+		List<PersonnelBaseCensusResult> baseCensusResults = personnelRealnameSystemService
+				.selectProjectPersonnelBaseCensuss(param.getPid());
+
+		Map<String, List<GroupStatisticsResult>> basecensuss = new HashMap<>();
+
+		List<GroupStatisticsResult> ages = new ArrayList<>();
+		ages.add(new GroupStatisticsResult("18岁以下", 0));
+		ages.add(new GroupStatisticsResult("18-25岁", 0));
+		ages.add(new GroupStatisticsResult("26-35岁", 0));
+		ages.add(new GroupStatisticsResult("36-45岁", 0));
+		ages.add(new GroupStatisticsResult("46-55岁", 0));
+		ages.add(new GroupStatisticsResult("55岁以上", 0));
+		basecensuss.put("ages", ages);
+		
+		List<GroupStatisticsResult> areas = new ArrayList<>();
+		areas.add(new GroupStatisticsResult("", 0));
+		basecensuss.put("areas", areas);
+		basecensuss.put("sexs", new ArrayList<>());
+
+		if (baseCensusResults != null && baseCensusResults.size() > 0) {
+			for (PersonnelBaseCensusResult bcr : baseCensusResults) {
+				ages = basecensuss.get("ages");
+				
+
+			}
+		}
+
+		return ResultGenerator.genSuccessResult(basecensuss);
 	}
 }

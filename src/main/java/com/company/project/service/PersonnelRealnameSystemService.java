@@ -5,6 +5,7 @@ import java.util.List;
 import com.company.project.core.Service;
 import com.company.project.model.PersonnelRealnameSystem;
 import com.company.project.model.om.PersonnelModel;
+import com.company.project.model.returns.apiv1.PersonnelBaseCensusResult;
 import com.company.project.model.returns.apiv1.PersonnelResult;
 
 /**
@@ -16,4 +17,5 @@ public interface PersonnelRealnameSystemService extends Service<PersonnelRealnam
 
 	public List<PersonnelResult> selectProjectPersonnels(String proUuid);
 
+	public List<PersonnelBaseCensusResult> selectProjectPersonnelBaseCensuss(String proUuid);
 }

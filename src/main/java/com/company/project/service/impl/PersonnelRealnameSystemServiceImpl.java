@@ -15,6 +15,7 @@ import com.company.project.dao.PersonnelRealnameSystemMapper;
 import com.company.project.model.PersonnelIdentity;
 import com.company.project.model.PersonnelRealnameSystem;
 import com.company.project.model.om.PersonnelModel;
+import com.company.project.model.returns.apiv1.PersonnelBaseCensusResult;
 import com.company.project.model.returns.apiv1.PersonnelResult;
 import com.company.project.service.PersonnelIdentityService;
 import com.company.project.service.PersonnelRealnameSystemService;
@@ -122,6 +123,11 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 	@Override
 	public List<PersonnelResult> selectProjectPersonnels(String proUuid) {
 		return this.personnelRealnameSystemMapper.selectProjectPersonnels(proUuid);
+	}
+
+	@Override
+	public List<PersonnelBaseCensusResult> selectProjectPersonnelBaseCensuss(String proUuid) {
+		return this.personnelRealnameSystemMapper.selectProjectPersonnelBaseCensuss(proUuid);
 	}
 
 }

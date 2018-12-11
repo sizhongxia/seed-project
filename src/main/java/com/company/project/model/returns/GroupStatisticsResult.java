@@ -20,6 +20,16 @@ public class GroupStatisticsResult {
 		this.num = num;
 	}
 
+	public GroupStatisticsResult() {
+		super();
+	}
+
+	public GroupStatisticsResult(String item, Integer num) {
+		super();
+		this.item = item;
+		this.num = num;
+	}
+
 	@Override
 	public String toString() {
 		return "GroupStatisticsResult [item=" + item + ", num=" + num + "]";
