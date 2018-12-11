@@ -1,5 +1,7 @@
 package com.company.project.web.apiv1;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -592,20 +594,124 @@ public class PersonnelController {
 		ages.add(new GroupStatisticsResult("46-55岁", 0));
 		ages.add(new GroupStatisticsResult("55岁以上", 0));
 		basecensuss.put("ages", ages);
-		
-		List<GroupStatisticsResult> areas = new ArrayList<>();
-		areas.add(new GroupStatisticsResult("", 0));
-		basecensuss.put("areas", areas);
-		basecensuss.put("sexs", new ArrayList<>());
 
+		List<GroupStatisticsResult> areas = new ArrayList<>();
+		areas.add(new GroupStatisticsResult("北京市", 0));
+		areas.add(new GroupStatisticsResult("天津市", 0));
+		areas.add(new GroupStatisticsResult("上海市", 0));
+		areas.add(new GroupStatisticsResult("重庆市", 0));
+		areas.add(new GroupStatisticsResult("河北省", 0));
+		areas.add(new GroupStatisticsResult("山西省", 0));
+		areas.add(new GroupStatisticsResult("辽宁省", 0));
+		areas.add(new GroupStatisticsResult("吉林省", 0));
+		areas.add(new GroupStatisticsResult("黑龙江省", 0));
+		areas.add(new GroupStatisticsResult("江苏省", 0));
+		areas.add(new GroupStatisticsResult("浙江省", 0));
+		areas.add(new GroupStatisticsResult("安徽省", 0));
+		areas.add(new GroupStatisticsResult("福建省", 0));
+		areas.add(new GroupStatisticsResult("江西省", 0));
+		areas.add(new GroupStatisticsResult("山东省", 0));
+		areas.add(new GroupStatisticsResult("河南省", 0));
+		areas.add(new GroupStatisticsResult("湖北省", 0));
+		areas.add(new GroupStatisticsResult("湖南省", 0));
+		areas.add(new GroupStatisticsResult("广东省", 0));
+		areas.add(new GroupStatisticsResult("海南省", 0));
+		areas.add(new GroupStatisticsResult("四川省", 0));
+		areas.add(new GroupStatisticsResult("贵州省", 0));
+		areas.add(new GroupStatisticsResult("云南省", 0));
+		areas.add(new GroupStatisticsResult("陕西省", 0));
+		areas.add(new GroupStatisticsResult("甘肃省", 0));
+		areas.add(new GroupStatisticsResult("青海省", 0));
+		areas.add(new GroupStatisticsResult("台湾省", 0));
+		areas.add(new GroupStatisticsResult("内蒙古自治区", 0));
+		areas.add(new GroupStatisticsResult("广西壮族自治区", 0));
+		areas.add(new GroupStatisticsResult("西藏自治区", 0));
+		areas.add(new GroupStatisticsResult("宁夏回族自治区", 0));
+		areas.add(new GroupStatisticsResult("新疆维吾尔自治区", 0));
+		areas.add(new GroupStatisticsResult("香港特别行政区", 0));
+		areas.add(new GroupStatisticsResult("澳门特别行政区", 0));
+		basecensuss.put("areas", areas);
+
+		List<GroupStatisticsResult> sexs = new ArrayList<>();
+		sexs.add(new GroupStatisticsResult("男性", 0));
+		sexs.add(new GroupStatisticsResult("女性", 0));
+		basecensuss.put("sexs", sexs);
+
+		int total = 0;
 		if (baseCensusResults != null && baseCensusResults.size() > 0) {
+			total = baseCensusResults.size();
 			for (PersonnelBaseCensusResult bcr : baseCensusResults) {
 				ages = basecensuss.get("ages");
-				
+				GroupStatisticsResult age = ages.get(initAgeIndex(bcr.getAge()));
+				age.setValue(age.getValue().intValue() + 1);
 
+				areas = basecensuss.get("areas");
+				GroupStatisticsResult area = areas.get(initAreaIndex(areas, bcr.getBirthplace()));
+				area.setValue(area.getValue().intValue() + 1);
+
+				sexs = basecensuss.get("sexs");
+				GroupStatisticsResult sex = sexs.get(initSexIndex(bcr.getSex()));
+				sex.setValue(sex.getValue().intValue() + 1);
 			}
+		}
+		
+		sexs = basecensuss.get("sexs");
+		if(total > 0) {
+			BigDecimal bd = new BigDecimal(sexs.get(0).getValue().intValue() * 100).divide(new BigDecimal(total),0, RoundingMode.HALF_UP);
+			sexs.get(0).setValue(bd.intValue());
+			sexs.get(1).setValue(100 - bd.intValue());
 		}
 
 		return ResultGenerator.genSuccessResult(basecensuss);
+	}
+
+	private int initSexIndex(Integer sex) {
+		if (sex == null) {
+			return 0;
+		}
+		return 1 - sex.intValue();
+	}
+
+	private int initAreaIndex(List<GroupStatisticsResult> areas, String birthplace) {
+		if (StringUtils.isBlank(birthplace)) {
+			return 0;
+		}
+
+		String code = birthplace.split("[,]")[0];
+		SysArea sysArea = sysAreaService.findBy("code", Integer.parseInt(code.trim()));
+		if (sysArea == null) {
+			return 0;
+		}
+		int index = 0;
+		for (GroupStatisticsResult sr : areas) {
+			if (sr.getName().equals(sysArea.getName())) {
+				return index;
+			}
+			index++;
+		}
+
+		return 0;
+	}
+
+	private int initAgeIndex(Integer age) {
+		if (age == null) {
+			return 0;
+		}
+		if (age.intValue() < 18) {
+			return 0;
+		}
+		if (age.intValue() <= 25) {
+			return 1;
+		}
+		if (age.intValue() <= 35) {
+			return 2;
+		}
+		if (age.intValue() <= 45) {
+			return 3;
+		}
+		if (age.intValue() <= 55) {
+			return 4;
+		}
+		return 5;
 	}
 }

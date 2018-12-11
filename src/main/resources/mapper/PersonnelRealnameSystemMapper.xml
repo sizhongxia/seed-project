@@ -29,8 +29,7 @@
 	</resultMap>
 
 	<select id="selectMaxEmpNo" resultType="java.lang.String">
-		select p.empNo from personnel_realname_system p order by p.updateTime desc
-		limit 0, 1
+		select p.empNo from personnel_realname_system p order by p.updateTime desc limit 0, 1
 	</select>
 
 	<select id="selectProjectPersonnels"

@@ -22,10 +22,10 @@
   
   <select id="selectWorkTypeStatistics" parameterType="java.lang.String" resultType="com.company.project.model.returns.GroupStatisticsResult">
   	SELECT
-		uw.`name` AS item, num
+		uw.`name` , `value`
 	FROM
 		(SELECT
-			pi.workType AS item, count(pi.workType) AS num
+			pi.workType AS item, count(pi.workType) AS value
 		FROM
 			personnel_identity pi
 		WHERE

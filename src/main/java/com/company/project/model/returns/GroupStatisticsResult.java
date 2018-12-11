@@ -1,38 +1,32 @@
 package com.company.project.model.returns;
 
 public class GroupStatisticsResult {
-	private String item;
-	private Integer num;
-
-	public String getItem() {
-		return item;
+	private String name;
+	private Integer value;
+	public String getName() {
+		return name;
 	}
-
-	public void setItem(String item) {
-		this.item = item;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-	public Integer getNum() {
-		return num;
+	public Integer getValue() {
+		return value;
 	}
-
-	public void setNum(Integer num) {
-		this.num = num;
+	public void setValue(Integer value) {
+		this.value = value;
 	}
-
 	public GroupStatisticsResult() {
 		super();
 	}
-
-	public GroupStatisticsResult(String item, Integer num) {
+	public GroupStatisticsResult(String name, Integer value) {
 		super();
-		this.item = item;
-		this.num = num;
+		this.name = name;
+		this.value = value;
 	}
-
 	@Override
 	public String toString() {
-		return "GroupStatisticsResult [item=" + item + ", num=" + num + "]";
+		return "GroupStatisticsResult [name=" + name + ", value=" + value + "]";
 	}
+
 
 }
