@@ -57,6 +57,7 @@ import com.company.project.unit.QiuNiuStyle;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdcardUtil;
+import tk.mybatis.mapper.entity.Condition;
 
 @RestController
 @RequestMapping("/apiv1/personnel")
@@ -566,8 +567,7 @@ public class PersonnelController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-		List<GroupStatisticsResult> personnelResults = personnelIdentityService
-				.selectWorkTypeStatistics(param.getPid());
+		List<GroupStatisticsResult> personnelResults = personnelIdentityService.selectWorkTypeStatistics(param.getPid());
 		if (personnelResults == null) {
 			personnelResults = new ArrayList<>();
 		}
@@ -640,13 +640,18 @@ public class PersonnelController {
 		int total = 0;
 		if (baseCensusResults != null && baseCensusResults.size() > 0) {
 			total = baseCensusResults.size();
+
+			Condition areaCondition = new Condition(SysArea.class);
+			areaCondition.createCriteria().andEqualTo("pcode", 0);
+			List<SysArea> sysAreas = sysAreaService.findByCondition(areaCondition);
+
 			for (PersonnelBaseCensusResult bcr : baseCensusResults) {
 				ages = basecensuss.get("ages");
 				GroupStatisticsResult age = ages.get(initAgeIndex(bcr.getAge()));
 				age.setValue(age.getValue().intValue() + 1);
 
 				areas = basecensuss.get("areas");
-				GroupStatisticsResult area = areas.get(initAreaIndex(areas, bcr.getBirthplace()));
+				GroupStatisticsResult area = areas.get(initAreaIndex(areas, sysAreas, bcr.getBirthplace()));
 				area.setValue(area.getValue().intValue() + 1);
 
 				sexs = basecensuss.get("sexs");
@@ -654,10 +659,11 @@ public class PersonnelController {
 				sex.setValue(sex.getValue().intValue() + 1);
 			}
 		}
-		
+
 		sexs = basecensuss.get("sexs");
-		if(total > 0) {
-			BigDecimal bd = new BigDecimal(sexs.get(0).getValue().intValue() * 100).divide(new BigDecimal(total),0, RoundingMode.HALF_UP);
+		if (total > 0) {
+			BigDecimal bd = new BigDecimal(sexs.get(0).getValue().intValue() * 100).divide(new BigDecimal(total), 0,
+					RoundingMode.HALF_UP);
 			sexs.get(0).setValue(bd.intValue());
 			sexs.get(1).setValue(100 - bd.intValue());
 		}
@@ -672,22 +678,33 @@ public class PersonnelController {
 		return 1 - sex.intValue();
 	}
 
-	private int initAreaIndex(List<GroupStatisticsResult> areas, String birthplace) {
+	private int initAreaIndex(List<GroupStatisticsResult> areas, List<SysArea> sysAreas, String birthplace) {
 		if (StringUtils.isBlank(birthplace)) {
 			return 0;
 		}
 
 		String code = birthplace.split("[,]")[0];
-		SysArea sysArea = sysAreaService.findBy("code", Integer.parseInt(code.trim()));
-		if (sysArea == null) {
+		if (StringUtils.isBlank(code)) {
 			return 0;
 		}
+
+		String name = null;
+		for (SysArea sysArea : sysAreas) {
+			if (sysArea.getCode().intValue() == Integer.parseInt(code.trim())) {
+				name = sysArea.getName();
+				break;
+			}
+		}
+
+		if (name == null) {
+			return 0;
+		}
+
 		int index = 0;
 		for (GroupStatisticsResult sr : areas) {
-			if (sr.getName().equals(sysArea.getName())) {
-				return index;
+			if (sr.getName().equals(name)) {
+				return index++;
 			}
-			index++;
 		}
 
 		return 0;
