@@ -54,10 +54,9 @@ public class PersonnelRealnameSystemServiceImpl extends AbstractService<Personne
 			realnameSystem = new PersonnelRealnameSystem();
 			String maxEmpNo = personnelRealnameSystemMapper.selectMaxEmpNo();
 			if (NumberUtils.isParsable(maxEmpNo)) {
-				int nextEmpNo = Integer.parseInt(maxEmpNo) + RandomUtil.randomInt(9, 99);
-				maxEmpNo = nextEmpNo + model.getType();
+				maxEmpNo = Integer.parseInt(maxEmpNo) + RandomUtil.randomInt(1, 9)+"";
 			} else {
-				maxEmpNo = RandomUtil.randomInt(1234561121, 1434561121) + model.getType();
+				maxEmpNo = RandomUtil.randomInt(100001, 100010)+"";
 			}
 			realnameSystem.setEmpno(maxEmpNo);
 			realnameSystem.setName(model.getName());

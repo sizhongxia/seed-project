@@ -703,8 +703,9 @@ public class PersonnelController {
 		int index = 0;
 		for (GroupStatisticsResult sr : areas) {
 			if (sr.getName().equals(name)) {
-				return index++;
+				return index;
 			}
+			index++;
 		}
 
 		return 0;
