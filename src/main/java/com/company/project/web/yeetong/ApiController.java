@@ -58,6 +58,7 @@ public class ApiController {
 	public Result<?> news(@RequestBody PageParam param) {
 		Condition condition = new Condition(YeeTongNews.class);
 		condition.createCriteria().andEqualTo("releaseState", "Y");
+		condition.orderBy("releaseTime").desc();
 		int page = NumberUtil.parseInt(param.getPage());
 		int size = NumberUtil.parseInt(param.getSize());
 		PageHelper.startPage(page, size);
@@ -74,12 +75,13 @@ public class ApiController {
 				item = new HashMap<>();
 				item.put("id", news.getUniqueId());
 				item.put("title", news.getNewsTitle());
+				item.put("coverPic", news.getNewsCoverPic());
 				item.put("abstract", news.getNewsAbstract());
-				item.put("time", DateUtil.format(news.getReleaseTime(), "yyyy年MM月dd"));
+				item.put("time", DateUtil.format(news.getReleaseTime(), "yyyy-MM-dd"));
 				newsLs.add(item);
 			}
 			data.put("count", pageInfo.getTotal());
-			data.put("hasNextPage", pageInfo.isHasNextPage() ? 1 : 0);
+			data.put("hasNextPage", pageInfo.isHasNextPage() ? page + 1 : 0);
 		} else {
 			data.put("count", 0);
 			data.put("hasNextPage", 0);
@@ -108,6 +110,7 @@ public class ApiController {
 		data.put("id", one.getNewsId());
 		data.put("coverPic", one.getNewsCoverPic());
 		data.put("title", news.getNewsTitle());
+		data.put("time", DateUtil.format(news.getReleaseTime(), "yyyy-MM-dd"));
 		return ResultGenerator.genSuccessResult(data);
 	}
 
@@ -117,7 +120,7 @@ public class ApiController {
 		if (news == null) {
 			return ResultGenerator.genFailResult("未找到精选新闻信息");
 		}
-		
+
 		// 更新访问量
 		news.setPageViewNum(news.getPageViewNum() + 1);
 		yeeTongNewsService.update(news);
@@ -126,6 +129,7 @@ public class ApiController {
 		data.put("id", news.getUniqueId());
 		data.put("coverPic", news.getNewsCoverPic());
 		data.put("title", news.getNewsTitle());
+		data.put("time", DateUtil.format(news.getReleaseTime(), "yyyy-MM-dd"));
 		data.put("abstract", news.getNewsAbstract());
 		data.put("content", news.getNewsContent());
 		data.put("keywords", news.getNewsKeywords());
