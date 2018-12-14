@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.YeeTongSiteInfoMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.YeeTongSiteInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="web_title" jdbcType="VARCHAR" property="webTitle" />
+    <result column="web_logo" jdbcType="VARCHAR" property="webLogo" />
+    <result column="seo_author" jdbcType="VARCHAR" property="seoAuthor" />
+    <result column="seo_keywords" jdbcType="VARCHAR" property="seoKeywords" />
+    <result column="seo_description" jdbcType="VARCHAR" property="seoDescription" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_telno" jdbcType="VARCHAR" property="companyTelno" />
+    <result column="company_address" jdbcType="VARCHAR" property="companyAddress" />
+    <result column="copyright" jdbcType="VARCHAR" property="copyright" />
+    <result column="mp_name" jdbcType="VARCHAR" property="mpName" />
+    <result column="mp_qrcode" jdbcType="VARCHAR" property="mpQrcode" />
+    <result column="use_state" jdbcType="CHAR" property="useState" />
+  </resultMap>
+</mapper>

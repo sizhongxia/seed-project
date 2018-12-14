@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.YeeTongNewsMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.YeeTongNews">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="unique_id" jdbcType="VARCHAR" property="uniqueId" />
+    <result column="news_title" jdbcType="VARCHAR" property="newsTitle" />
+    <result column="release_state" jdbcType="CHAR" property="releaseState" />
+    <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
+    <result column="news_origin" jdbcType="VARCHAR" property="newsOrigin" />
+    <result column="news_cover_pic" jdbcType="VARCHAR" property="newsCoverPic" />
+    <result column="news_abstract" jdbcType="VARCHAR" property="newsAbstract" />
+    <result column="news_keywords" jdbcType="VARCHAR" property="newsKeywords" />
+    <result column="before_id" jdbcType="VARCHAR" property="beforeId" />
+    <result column="after_id" jdbcType="VARCHAR" property="afterId" />
+    <result column="page_view_num" jdbcType="BIGINT" property="pageViewNum" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="news_content" jdbcType="LONGVARCHAR" property="newsContent" />
+  </resultMap>
+</mapper>
