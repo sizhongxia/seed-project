@@ -13,10 +13,12 @@
     <result column="seo_description" jdbcType="VARCHAR" property="seoDescription" />
     <result column="company_name" jdbcType="VARCHAR" property="companyName" />
     <result column="company_telno" jdbcType="VARCHAR" property="companyTelno" />
+    <result column="company_email" jdbcType="VARCHAR" property="companyEmail" />
     <result column="company_address" jdbcType="VARCHAR" property="companyAddress" />
     <result column="copyright" jdbcType="VARCHAR" property="copyright" />
     <result column="mp_name" jdbcType="VARCHAR" property="mpName" />
     <result column="mp_qrcode" jdbcType="VARCHAR" property="mpQrcode" />
     <result column="use_state" jdbcType="CHAR" property="useState" />
+    <result column="company_introduce" jdbcType="LONGVARCHAR" property="companyIntroduce" />
   </resultMap>
 </mapper>

@@ -50,6 +50,12 @@ public class YeeTongSiteInfo {
     private String companyTelno;
 
     /**
+     * 邮箱
+     */
+    @Column(name = "company_email")
+    private String companyEmail;
+
+    /**
      * 公司地址
      */
     @Column(name = "company_address")
@@ -77,6 +83,12 @@ public class YeeTongSiteInfo {
      */
     @Column(name = "use_state")
     private String useState;
+
+    /**
+     * 公司介绍
+     */
+    @Column(name = "company_introduce")
+    private String companyIntroduce;
 
     /**
      * 获取主键
@@ -219,6 +231,24 @@ public class YeeTongSiteInfo {
     }
 
     /**
+     * 获取邮箱
+     *
+     * @return company_email - 邮箱
+     */
+    public String getCompanyEmail() {
+        return companyEmail;
+    }
+
+    /**
+     * 设置邮箱
+     *
+     * @param companyEmail 邮箱
+     */
+    public void setCompanyEmail(String companyEmail) {
+        this.companyEmail = companyEmail;
+    }
+
+    /**
      * 获取公司地址
      *
      * @return company_address - 公司地址
@@ -306,5 +336,23 @@ public class YeeTongSiteInfo {
      */
     public void setUseState(String useState) {
         this.useState = useState;
+    }
+
+    /**
+     * 获取公司介绍
+     *
+     * @return company_introduce - 公司介绍
+     */
+    public String getCompanyIntroduce() {
+        return companyIntroduce;
+    }
+
+    /**
+     * 设置公司介绍
+     *
+     * @param companyIntroduce 公司介绍
+     */
+    public void setCompanyIntroduce(String companyIntroduce) {
+        this.companyIntroduce = companyIntroduce;
     }
 }

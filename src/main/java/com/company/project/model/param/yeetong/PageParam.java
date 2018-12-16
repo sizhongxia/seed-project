@@ -8,6 +8,8 @@ public class PageParam {
 	private String page;
 	private String size;
 
+	private String type;
+
 	public String getPage() {
 		if (NumberUtils.isParsable(page)) {
 			if (page.length() > 8) {
@@ -46,6 +48,14 @@ public class PageParam {
 
 	public void setSize(String size) {
 		this.size = size;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }
