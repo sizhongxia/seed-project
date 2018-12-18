@@ -39,8 +39,8 @@ import tk.mybatis.mapper.entity.Condition;
 
 @RestController
 @RequestMapping("/yeetong/api/")
-public class ApiController {
-	final Logger logger = LoggerFactory.getLogger(ApiController.class);
+public class YeeTongApiController {
+	final Logger logger = LoggerFactory.getLogger(YeeTongApiController.class);
 
 	@Resource
 	private YeeTongSiteInfoService yeeTongSiteInfoService;
