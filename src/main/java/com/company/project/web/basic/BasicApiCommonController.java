@@ -1,11 +1,13 @@
 package com.company.project.web.basic;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureUser;
@@ -35,7 +38,7 @@ public class BasicApiCommonController {
 	final Logger logger = LoggerFactory.getLogger(BasicApiCommonController.class);
 
 	// token有效时长
-	final int TOKEN_VALID_TIME = 2;
+	public final static int TOKEN_VALID_TIME = 2;
 
 	@Resource
 	SmartCultureUserService smartCultureUserService;
@@ -84,20 +87,36 @@ public class BasicApiCommonController {
 		result.put("token", userToken.getToken());
 		result.put("avator", user.getUserAvator());
 		result.put("userName", user.getUserName());
-		result.put("access", "admin");
+		List<String> accesses = new ArrayList<String>();
+		// 默认授权
+		accesses.add("admin");
+		result.put("access", accesses);
 		return ResultGenerator.genSuccessResult(result);
 	}
 
-	// @SmartCultureTokenCheck
-	// @PostMapping("/user/info")
-	// public Result<?> userInfo(HttpServletRequest request, @RequestBody
-	// BasicCommonParam param) {
-	// Map<String, Object> result = new HashMap<>();
-	// result.put("avator", "http://static.yeetong.cn/defalut-avator.png-yeetong");
-	// result.put("userName", "sizhongxia");
-	// result.put("access", "admin");
-	// return ResultGenerator.genSuccessResult(result);
-	// }
+	@SmartCultureTokenCheck
+	@PostMapping("/userInfo")
+	public Result<?> userInfo(HttpServletRequest request) {
+		String userId = request.getAttribute("userId").toString();
+		SmartCultureUser user = smartCultureUserService.findBy("userId", userId);
+		if (user == null) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("avator", user.getUserAvator());
+		result.put("userName", user.getUserName());
+		List<String> accesses = new ArrayList<String>();
+		// 默认授权
+		accesses.add("admin");
+		result.put("access", accesses);
+		return ResultGenerator.genSuccessResult(result);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/logout")
+	public Result<?> logout(HttpServletRequest request) {
+		return ResultGenerator.genSuccessResult(request.getAttribute("userId"));
+	}
 
 	// public static void main(String[] args) {
 	// System.out.println(Md5Util.md5("123456", "sizhongxia"));

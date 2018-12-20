@@ -122,10 +122,20 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 				.exposedHeaders(HttpHeaders.SET_COOKIE).maxAge(3600L);
 	}
 
+	@Bean
+	SmartCultureTokenCheckInterceptor smartCultureTokenCheckInterceptor() {
+		return new SmartCultureTokenCheckInterceptor();
+	}
+
+	@Bean
+	TokenCheckInterceptor tokenCheckInterceptor() {
+		return new TokenCheckInterceptor();
+	}
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new TokenCheckInterceptor());
-		registry.addInterceptor(new SmartCultureTokenCheckInterceptor());
+		registry.addInterceptor(tokenCheckInterceptor());
+		registry.addInterceptor(smartCultureTokenCheckInterceptor());
 		super.addInterceptors(registry);
 	}
 
