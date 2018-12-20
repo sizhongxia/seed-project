@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SmartCultureFarmMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.SmartCultureFarm">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="farm_id" jdbcType="VARCHAR" property="farmId" />
+    <result column="farm_name" jdbcType="VARCHAR" property="farmName" />
+    <result column="owner_user_id" jdbcType="VARCHAR" property="ownerUserId" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="version" jdbcType="BIGINT" property="version" />
+    <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
+    <result column="update_at" jdbcType="TIMESTAMP" property="updateAt" />
+  </resultMap>
+</mapper>

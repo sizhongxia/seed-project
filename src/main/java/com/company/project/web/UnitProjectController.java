@@ -41,6 +41,7 @@ import com.company.project.service.UnitProjectConfigService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.service.UserIdentityService;
 import com.company.project.service.UserLoginAccountService;
+import com.company.project.unit.QiuNiuStyle;
 import com.company.project.unit.UtcDateParseUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -136,12 +137,14 @@ public class UnitProjectController {
 				item.put("proname", i.getProname());
 				item.put("procode", i.getProcode());
 				if (StringUtils.isNotBlank(i.getLocationmap())) {
-					item.put("locationmap", String.format("%s%s", qiniuConstant.getPath(), i.getLocationmap()));
+					item.put("locationmap", String.format("%s%s%s", qiniuConstant.getPath(), i.getLocationmap(),
+							QiuNiuStyle.yeetong.code));
 				} else {
 					item.put("locationmap", "");
 				}
 				if (StringUtils.isNotBlank(i.getLogo())) {
-					item.put("logo", String.format("%s%s", qiniuConstant.getPath(), i.getLogo()));
+					item.put("logo",
+							String.format("%s%s%s", qiniuConstant.getPath(), i.getLogo(), QiuNiuStyle.yeetong.code));
 				} else {
 					item.put("logo", "");
 				}

@@ -34,6 +34,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.company.project.Interceptor.SmartCultureTokenCheckInterceptor;
 import com.company.project.Interceptor.TokenCheckInterceptor;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
@@ -124,6 +125,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new TokenCheckInterceptor());
+		registry.addInterceptor(new SmartCultureTokenCheckInterceptor());
 		super.addInterceptors(registry);
 	}
 

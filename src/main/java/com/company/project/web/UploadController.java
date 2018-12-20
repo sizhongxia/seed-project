@@ -28,6 +28,7 @@ import com.company.project.service.EquipmentAftersaleService;
 import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitProjectService;
 import com.company.project.unit.IdUtils;
+import com.company.project.unit.QiuNiuStyle;
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
@@ -85,7 +86,7 @@ public class UploadController {
 		company.setUpdatetime(System.currentTimeMillis());
 		unitCompanyService.update(company);
 
-		return ResultGenerator.genSuccessResult(String.format("%s%s", qiniuConstant.getPath(), key));
+		return ResultGenerator.genSuccessResult(String.format("%s%s%s", qiniuConstant.getPath(), key, QiuNiuStyle.yeetong.code));
 	}
 
 	@ResponseBody
@@ -114,7 +115,7 @@ public class UploadController {
 		unitProjectService.update(project);
 
 		Map<String, String> res = new HashMap<>();
-		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("url", String.format("%s%s%s", qiniuConstant.getPath(), key, QiuNiuStyle.yeetong.code));
 		res.put("type", "projectlocationmap");
 		return ResultGenerator.genSuccessResult(res);
 	}
@@ -145,7 +146,7 @@ public class UploadController {
 		unitProjectService.update(project);
 
 		Map<String, String> res = new HashMap<>();
-		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("url", String.format("%s%s%s", qiniuConstant.getPath(), key, QiuNiuStyle.yeetong.code));
 		res.put("type", "projectlogo");
 		return ResultGenerator.genSuccessResult(res);
 	}
@@ -175,7 +176,7 @@ public class UploadController {
 		equipmentAftersaleService.update(aftersale);
 
 		Map<String, String> res = new HashMap<>();
-		res.put("url", String.format("%s%s", qiniuConstant.getPath(), key));
+		res.put("url", String.format("%s%s%s", qiniuConstant.getPath(), key, QiuNiuStyle.yeetong.code));
 		res.put("type", "devicereceipt");
 		return ResultGenerator.genSuccessResult(res);
 	}

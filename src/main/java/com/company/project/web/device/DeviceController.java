@@ -34,6 +34,7 @@ import com.company.project.service.EquipmentAftersaleService;
 import com.company.project.service.EquipmentBasicsService;
 import com.company.project.service.UnitCompanyService;
 import com.company.project.service.UnitProjectService;
+import com.company.project.unit.QiuNiuStyle;
 import com.company.project.unit.UtcDateParseUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -169,7 +170,7 @@ public class DeviceController {
 		String receipt = "";
 		if (aftersale != null) {
 			receipt = StringUtils.isBlank(aftersale.getReceipt()) ? ""
-					: String.format("%s%s", qiniuConstant.getPath(), aftersale.getReceipt());
+					: String.format("%s%s%s", qiniuConstant.getPath(), aftersale.getReceipt(), QiuNiuStyle.yeetong.code);
 		}
 		return ResultGenerator.genSuccessResult(receipt);
 	}
