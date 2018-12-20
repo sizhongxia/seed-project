@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserToken;
-import com.company.project.model.param.basic.BasicCommonParam;
 import com.company.project.model.param.basic.BasicLoginParam;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureUserTokenService;
@@ -85,18 +82,22 @@ public class BasicApiCommonController {
 		}
 		Map<String, Object> result = new HashMap<>();
 		result.put("token", userToken.getToken());
-		return ResultGenerator.genSuccessResult(result);
-	}
-
-	@SmartCultureTokenCheck
-	@PostMapping("/user/info")
-	public Result<?> userInfo(HttpServletRequest request, @RequestBody BasicCommonParam param) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("avator", "http://static.yeetong.cn/defalut-avator.png-yeetong");
-		result.put("userName", "sizhongxia");
+		result.put("avator", user.getUserAvator());
+		result.put("userName", user.getUserName());
 		result.put("access", "admin");
 		return ResultGenerator.genSuccessResult(result);
 	}
+
+	// @SmartCultureTokenCheck
+	// @PostMapping("/user/info")
+	// public Result<?> userInfo(HttpServletRequest request, @RequestBody
+	// BasicCommonParam param) {
+	// Map<String, Object> result = new HashMap<>();
+	// result.put("avator", "http://static.yeetong.cn/defalut-avator.png-yeetong");
+	// result.put("userName", "sizhongxia");
+	// result.put("access", "admin");
+	// return ResultGenerator.genSuccessResult(result);
+	// }
 
 	// public static void main(String[] args) {
 	// System.out.println(Md5Util.md5("123456", "sizhongxia"));
