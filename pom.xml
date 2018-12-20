@@ -6,7 +6,7 @@
 
 	<groupId>com.github.sizhongxia</groupId>
 	<artifactId>seed-project</artifactId>
-	<version>1.6</version>
+	<version>1.8</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -144,6 +144,13 @@
 			<version>1.3.5</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+  <groupId>com.github.binarywang</groupId>
+  <artifactId>weixin-java-miniapp</artifactId>
+  <version>3.2.0</version>
+</dependency>
+		
 	</dependencies>
 
 	<build>
