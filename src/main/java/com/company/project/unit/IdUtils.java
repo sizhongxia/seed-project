@@ -16,6 +16,10 @@ public class IdUtils {
 	public static void main(String[] args) {
 		System.out.println(initObjectId());
 		System.out.println(initObjectId());
+		System.out.println(initObjectId());
+		System.out.println(initObjectId());
+		System.out.println(initObjectId());
+		System.out.println(initObjectId());
 		System.out.println(initObjectId().length());
 		Snowflake snowflake = IdUtil.createSnowflake(1, 1);
 		long id = snowflake.nextId();

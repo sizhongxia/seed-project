@@ -17,6 +17,12 @@ public class SmartCultureUserToken {
     @Column(name = "user_id")
     private String userId;
 
+    /**
+     * 来源类型（PC, ANDROID, IOS, MP, WXPUB）
+     */
+    @Column(name = "source_type")
+    private String sourceType;
+
     private String token;
 
     /**
@@ -77,6 +83,24 @@ public class SmartCultureUserToken {
      */
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    /**
+     * 获取来源类型（PC, ANDROID, IOS, MP, WXPUB）
+     *
+     * @return source_type - 来源类型（PC, ANDROID, IOS, MP, WXPUB）
+     */
+    public String getSourceType() {
+        return sourceType;
+    }
+
+    /**
+     * 设置来源类型（PC, ANDROID, IOS, MP, WXPUB）
+     *
+     * @param sourceType 来源类型（PC, ANDROID, IOS, MP, WXPUB）
+     */
+    public void setSourceType(String sourceType) {
+        this.sourceType = sourceType;
     }
 
     /**

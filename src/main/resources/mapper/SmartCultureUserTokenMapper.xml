@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="source_type" jdbcType="VARCHAR" property="sourceType" />
     <result column="token" jdbcType="VARCHAR" property="token" />
     <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
     <result column="last_visit_at" jdbcType="TIMESTAMP" property="lastVisitAt" />

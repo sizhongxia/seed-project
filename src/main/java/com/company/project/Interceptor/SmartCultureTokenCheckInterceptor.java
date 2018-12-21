@@ -47,12 +47,15 @@ public class SmartCultureTokenCheckInterceptor extends HandlerInterceptorAdapter
 				if (tokens == null || tokens.isEmpty()) {
 					return false;
 				}
-				
 				SmartCultureUserToken userToken = tokens.get(0);
 				userToken.setLastVisitAt(now);
-				userToken.setOverdueAt(DateUtil.offset(now, DateField.HOUR, BasicApiCommonController.TOKEN_VALID_TIME));
+				if (request.getRequestURI().contains("logout")) {
+					userToken.setIsForbidden(1);
+				} else {
+					userToken.setOverdueAt(
+							DateUtil.offset(now, DateField.HOUR, BasicApiCommonController.TOKEN_VALID_TIME));
+				}
 				smartCultureUserTokenService.update(userToken);
-
 				request.setAttribute("userId", userToken.getUserId());
 			}
 		}

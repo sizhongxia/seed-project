@@ -21,8 +21,10 @@ import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureUser;
+import com.company.project.model.SmartCultureUserIdentity;
 import com.company.project.model.SmartCultureUserToken;
 import com.company.project.model.param.basic.BasicLoginParam;
+import com.company.project.service.SmartCultureUserIdentityService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureUserTokenService;
 import com.company.project.unit.IdUtils;
@@ -43,9 +45,11 @@ public class BasicApiCommonController {
 	@Resource
 	SmartCultureUserService smartCultureUserService;
 	@Resource
+	SmartCultureUserIdentityService smartCultureUserIdentityService;
+	@Resource
 	SmartCultureUserTokenService smartCultureUserTokenService;
 
-	// 登陆
+	// PC登陆
 	@PostMapping("/login")
 	public Result<?> login(@RequestBody BasicLoginParam param) {
 		if (StringUtils.isBlank(param.getUserName())) {
@@ -64,8 +68,8 @@ public class BasicApiCommonController {
 		}
 		Date now = new Date();
 		Condition condition = new Condition(SmartCultureUserToken.class);
-		condition.createCriteria().andEqualTo("userId", user.getUserId()).andEqualTo("isForbidden", 0)
-				.andGreaterThan("overdueAt", now);
+		condition.createCriteria().andEqualTo("userId", user.getUserId()).andEqualTo("sourceType", "PC")
+				.andEqualTo("isForbidden", 0).andGreaterThan("overdueAt", now);
 		List<SmartCultureUserToken> userTokens = smartCultureUserTokenService.findByCondition(condition);
 		SmartCultureUserToken userToken = null;
 		if (userTokens == null || userTokens.isEmpty()) {
@@ -87,11 +91,22 @@ public class BasicApiCommonController {
 		result.put("token", userToken.getToken());
 		result.put("avator", user.getUserAvator());
 		result.put("userName", user.getUserName());
-		List<String> accesses = new ArrayList<String>();
-		// 默认授权
-		accesses.add("admin");
-		result.put("access", accesses);
+		result.put("access", getUserIndentities(user.getUserId()));
 		return ResultGenerator.genSuccessResult(result);
+	}
+
+	private List<String> getUserIndentities(String userId) {
+		List<String> accesses = new ArrayList<String>();
+		Condition systemUserIdentityCondition = new Condition(SmartCultureUserIdentity.class);
+		systemUserIdentityCondition.createCriteria().andEqualTo("userId", userId).andEqualTo("useState", 1);
+		List<SmartCultureUserIdentity> identities = smartCultureUserIdentityService
+				.findByCondition(systemUserIdentityCondition);
+		if (identities != null && identities.size() > 0) {
+			for (SmartCultureUserIdentity identity : identities) {
+				accesses.add(identity.getIdentity());
+			}
+		}
+		return accesses;
 	}
 
 	@SmartCultureTokenCheck
@@ -105,10 +120,7 @@ public class BasicApiCommonController {
 		Map<String, Object> result = new HashMap<>();
 		result.put("avator", user.getUserAvator());
 		result.put("userName", user.getUserName());
-		List<String> accesses = new ArrayList<String>();
-		// 默认授权
-		accesses.add("admin");
-		result.put("access", accesses);
+		result.put("access", getUserIndentities(user.getUserId()));
 		return ResultGenerator.genSuccessResult(result);
 	}
 
