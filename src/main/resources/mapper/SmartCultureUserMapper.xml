@@ -13,6 +13,7 @@
     <result column="phone_no" jdbcType="VARCHAR" property="phoneNo" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="account_state" jdbcType="INTEGER" property="accountState" />
+    <result column="organize_id" jdbcType="VARCHAR" property="organizeId" />
     <result column="version" jdbcType="BIGINT" property="version" />
     <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
     <result column="update_at" jdbcType="TIMESTAMP" property="updateAt" />

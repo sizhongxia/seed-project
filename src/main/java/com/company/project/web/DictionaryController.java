@@ -200,7 +200,7 @@ public class DictionaryController {
 			return ResultGenerator.genFailResult("无效的表单");
 		}
 
-		sysDictionaryService.deleteById(dictionary.getId());
+		sysDictionaryService.deleteById(dictionary.getId().longValue());
 
 		return ResultGenerator.genSuccessResult();
 	}

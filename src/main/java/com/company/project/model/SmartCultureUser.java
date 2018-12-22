@@ -52,6 +52,12 @@ public class SmartCultureUser {
     private Integer accountState;
 
     /**
+     * 所属组织
+     */
+    @Column(name = "organize_id")
+    private String organizeId;
+
+    /**
      * 版本
      */
     private Long version;
@@ -210,6 +216,24 @@ public class SmartCultureUser {
      */
     public void setAccountState(Integer accountState) {
         this.accountState = accountState;
+    }
+
+    /**
+     * 获取所属组织
+     *
+     * @return organize_id - 所属组织
+     */
+    public String getOrganizeId() {
+        return organizeId;
+    }
+
+    /**
+     * 设置所属组织
+     *
+     * @param organizeId 所属组织
+     */
+    public void setOrganizeId(String organizeId) {
+        this.organizeId = organizeId;
     }
 
     /**

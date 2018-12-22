@@ -75,7 +75,7 @@ public class BasicApiCommonController {
 		if (userTokens == null || userTokens.isEmpty()) {
 			userToken = new SmartCultureUserToken();
 			userToken.setUserId(user.getUserId());
-			userToken.setToken(IdUtils.initUuid() + "," + System.currentTimeMillis());
+			userToken.setToken(IdUtils.initUuid() + System.currentTimeMillis());
 			userToken.setCreateAt(now);
 			userToken.setLastVisitAt(now);
 			userToken.setOverdueAt(DateUtil.offset(now, DateField.HOUR, TOKEN_VALID_TIME));
@@ -127,7 +127,7 @@ public class BasicApiCommonController {
 	@SmartCultureTokenCheck
 	@PostMapping("/logout")
 	public Result<?> logout(HttpServletRequest request) {
-		return ResultGenerator.genSuccessResult(request.getAttribute("userId"));
+		return ResultGenerator.genSuccessResult("suc");
 	}
 
 	// public static void main(String[] args) {

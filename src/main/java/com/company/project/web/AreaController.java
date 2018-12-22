@@ -251,7 +251,7 @@ public class AreaController {
 			if (area == null) {
 				return ResultGenerator.genFailResult("无效的表单02");
 			}
-			sysAreaService.deleteById(area.getId());
+			sysAreaService.deleteById(area.getId().longValue());
 			return ResultGenerator.genSuccessResult();
 		} else if (model.getIds() != null && model.getIds().length > 0) {
 			String[] ids = model.getIds();
@@ -266,7 +266,7 @@ public class AreaController {
 				if (area == null) {
 					return ResultGenerator.genFailResult("无效的表单04");
 				}
-				sysAreaService.deleteById(area.getId());
+				sysAreaService.deleteById(area.getId().longValue());
 			}
 			return ResultGenerator.genSuccessResult();
 		}

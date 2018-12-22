@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by SiZhongXia on 2018/12/21.
+ * Created by SiZhongXia on 2018/12/22.
  */
 public interface SmartCultureUserService extends Service<SmartCultureUser> {
 

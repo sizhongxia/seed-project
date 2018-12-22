@@ -37,6 +37,7 @@ public class SmartCultureTokenCheckInterceptor extends HandlerInterceptorAdapter
 				// 等到请求头信息authorization信息
 				final String token = request.getHeader("token");
 				if (StringUtils.isBlank(token)) {
+					response.setStatus(401);
 					return false;
 				}
 				Date now = new Date();
@@ -45,6 +46,7 @@ public class SmartCultureTokenCheckInterceptor extends HandlerInterceptorAdapter
 						.andGreaterThan("overdueAt", now);
 				List<SmartCultureUserToken> tokens = smartCultureUserTokenService.findByCondition(condition);
 				if (tokens == null || tokens.isEmpty()) {
+					response.setStatus(401);
 					return false;
 				}
 				SmartCultureUserToken userToken = tokens.get(0);
