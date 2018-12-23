@@ -29,6 +29,7 @@ import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.SmartCultureUserIdentity;
 import com.company.project.model.param.basic.BasicRequestParam;
+import com.company.project.model.param.basic.BasicUserFarmAuthParam;
 import com.company.project.model.param.basic.BasicUserParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureFarmService;
@@ -124,7 +125,7 @@ public class SmartCultureUserController {
 	@SmartCultureTokenCheck
 	@PostMapping("/upinsert")
 	public Result<?> upinsert(HttpServletRequest request, @RequestBody BasicUserParam param) {
-		if(StringUtils.isBlank(param.getUserName())) {
+		if (StringUtils.isBlank(param.getUserName())) {
 			return ResultGenerator.genFailResult("E5000");
 		}
 		String userId = param.getUserId();
@@ -332,11 +333,11 @@ public class SmartCultureUserController {
 				item.put("farmName", farm.getFarmName());
 				item.put("farmCode", farm.getFarmCode());
 				item.put("identity", af.getIdentity());
-				item.put("applyAt", af.getApplyAt());
+				item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
 				item.put("applyRemark", af.getApplyRemark());
 				item.put("applyState", af.getApplyState());
-				item.put("handleAt", af.getHandleAt());
-				item.put("handleUserId", af.getHandleUserId());
+				item.put("handleAt", af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("handleUserId", af.getHandleUserId() == null ? "" : af.getHandleUserId());
 				list.add(item);
 			}
 		}
@@ -348,11 +349,10 @@ public class SmartCultureUserController {
 	public Result<?> query(HttpServletRequest request, @RequestBody BasicRequestParam param) {
 		List<Map<String, Object>> list = new ArrayList<>();
 		Condition condition = new Condition(SmartCultureUser.class);
-		if (StringUtils.isBlank(param.getSearchValue())) {
-			return ResultGenerator.genSuccessResult(list);
+		if (StringUtils.isNotBlank(param.getSearchValue())) {
+			String kw = String.format("%%%s%%", param.getSearchValue().trim());
+			condition.createCriteria().orLike("userName", kw).orLike("phoneNo", kw).orLike("email", kw);
 		}
-		String kw = String.format("%%%s%%", param.getSearchValue().trim());
-		condition.createCriteria().orLike("userName", kw).orLike("phoneNo", kw).orLike("email", kw);
 		condition.orderBy("userName").asc();
 		PageHelper.startPage(1, 20);
 		List<SmartCultureUser> users = smartCultureUserService.findByCondition(condition);
@@ -368,5 +368,35 @@ public class SmartCultureUserController {
 			}
 		}
 		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/authFarm")
+	public Result<?> authFarm(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
+		if (StringUtils.isBlank(param.getUserId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		if (StringUtils.isBlank(param.getIdentity())) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+				.andEqualTo("farmId", param.getFarmId().trim()).andNotEqualTo("applyState", "N");
+		List<SmartCultureUserFarm> ufarms = smartCultureUserFarmService.findByCondition(condition);
+		if (ufarms != null && ufarms.size() > 0) {
+			return ResultGenerator.genFailResult("E5004");
+		}
+		SmartCultureUserFarm uf = new SmartCultureUserFarm();
+		uf.setUserId(param.getUserId().trim());
+		uf.setFarmId(param.getFarmId().trim());
+		uf.setIdentity(param.getIdentity().trim());
+		uf.setApplyAt(new Date());
+		uf.setApplyRemark(param.getApplyRemark() == null ? "" : param.getApplyRemark().trim());
+		uf.setApplyState("D");
+		smartCultureUserFarmService.save(uf);
+		return ResultGenerator.genSuccessResult();
 	}
 }

@@ -3,8 +3,10 @@ package com.company.project.web.basic;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -25,12 +27,14 @@ import com.company.project.model.SmartCultureBasicCity;
 import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureFarmArea;
 import com.company.project.model.SmartCultureUser;
+import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.param.basic.BasicFarmParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureBasicCityService;
 import com.company.project.service.SmartCultureFarmAreaService;
 import com.company.project.service.SmartCultureFarmService;
+import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
@@ -55,6 +59,8 @@ public class SmartCultureFarmController {
 	SmartCultureBasicCityService smartCultureBasicCityService;
 	@Resource
 	SmartCultureUserService smartCultureUserService;
+	@Resource
+	SmartCultureUserFarmService smartCultureUserFarmService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -295,6 +301,7 @@ public class SmartCultureFarmController {
 			return ResultGenerator.genFailResult("E5002");
 		}
 		Map<String, Object> map = new HashMap<>();
+		map.put("farmId", farm.getFarmId());
 		map.put("ownerUserId", farm.getOwnerUserId());
 		map.put("ownerUserName", "无");
 		map.put("ownerUserPhone", "-");
@@ -321,5 +328,48 @@ public class SmartCultureFarmController {
 		farm.setOwnerUserId(param.getOwnerUserId() == null ? "" : param.getOwnerUserId());
 		smartCultureFarmService.update(farm);
 		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/authUsers")
+	public Result<?> authUsers(HttpServletRequest request, @RequestBody BasicRequestParam param) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("farmId", param.getResultId());
+		condition.orderBy("applyAt").desc();
+		List<SmartCultureUserFarm> authFarms = smartCultureUserFarmService.findByCondition(condition);
+		Set<String> userIds = new HashSet<String>();
+		if (authFarms != null && authFarms.size() > 0) {
+			for (SmartCultureUserFarm af : authFarms) {
+				userIds.add(af.getUserId());
+			}
+			Map<String, SmartCultureUser> idMaps = new HashMap<>();
+			if (userIds.size() > 0) {
+				condition = new Condition(SmartCultureUser.class);
+				condition.createCriteria().andIn("userId", userIds);
+				List<SmartCultureUser> users = smartCultureUserService.findByCondition(condition);
+				for (SmartCultureUser u : users) {
+					idMaps.put(u.getUserId(), u);
+				}
+			}
+			Map<String, Object> item = null;
+			for (SmartCultureUserFarm af : authFarms) {
+				item = new HashMap<>();
+				SmartCultureUser user = idMaps.get(af.getUserId());
+				item.put("userId", af.getUserId());
+				item.put("farmId", af.getFarmId());
+				item.put("userName", user.getUserName());
+				item.put("userPhoneNo", user.getPhoneNo());
+				item.put("identity", af.getIdentity());
+				item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("applyRemark", af.getApplyRemark());
+				item.put("applyState", af.getApplyState());
+				item.put("handleAt",
+						af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("handleUserId", af.getHandleUserId() == null ? "" : af.getHandleUserId());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 }
