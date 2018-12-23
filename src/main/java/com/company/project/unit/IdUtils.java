@@ -23,6 +23,9 @@ public class IdUtils {
 		System.out.println(initObjectId().length());
 		Snowflake snowflake = IdUtil.createSnowflake(1, 1);
 		long id = snowflake.nextId();
-		System.out.println((id+"").length());
+		System.out.println((id+""));
+		//1076768774914445312
+		//1076768846813204480
+		//1076769159385321472
 	}
 }

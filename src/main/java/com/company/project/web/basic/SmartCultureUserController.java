@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,11 +24,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureUser;
+import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.SmartCultureUserIdentity;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.param.basic.BasicUserParam;
 import com.company.project.model.returns.basic.BasicPageResult;
+import com.company.project.service.SmartCultureFarmService;
+import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserIdentityService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.unit.IdUtils;
@@ -49,6 +55,10 @@ public class SmartCultureUserController {
 	SmartCultureUserService smartCultureUserService;
 	@Resource
 	SmartCultureUserIdentityService smartCultureUserIdentityService;
+	@Resource
+	SmartCultureUserFarmService smartCultureUserFarmService;
+	@Resource
+	SmartCultureFarmService smartCultureFarmService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -114,12 +124,21 @@ public class SmartCultureUserController {
 	@SmartCultureTokenCheck
 	@PostMapping("/upinsert")
 	public Result<?> upinsert(HttpServletRequest request, @RequestBody BasicUserParam param) {
+		if(StringUtils.isBlank(param.getUserName())) {
+			return ResultGenerator.genFailResult("E5000");
+		}
 		String userId = param.getUserId();
 		if (StringUtils.isBlank(userId)) {
 			// 新增
 			Condition condition = new Condition(SmartCultureUser.class);
-			condition.createCriteria().andEqualTo("phoneNo", param.getPhoneNo());
+			condition.createCriteria().andEqualTo("userName", param.getUserName());
 			List<SmartCultureUser> scos = smartCultureUserService.findByCondition(condition);
+			if (scos != null && scos.size() > 0) {
+				return ResultGenerator.genFailResult("E5006");
+			}
+			condition = new Condition(SmartCultureUser.class);
+			condition.createCriteria().andEqualTo("phoneNo", param.getPhoneNo());
+			scos = smartCultureUserService.findByCondition(condition);
 			if (scos != null && scos.size() > 0) {
 				return ResultGenerator.genFailResult("E5001");
 			}
@@ -131,9 +150,9 @@ public class SmartCultureUserController {
 			}
 			SmartCultureUser user = new SmartCultureUser();
 			user.setUserId(IdUtils.initObjectId());
-			user.setUserName(param.getUserName());
-			user.setPassword(Md5Util.md5("181121", param.getUserName()));
-			user.setUserAvator("defalut-avator.png-yeetong");
+			user.setUserName(param.getUserName().trim());
+			user.setPassword(Md5Util.md5("181121", param.getUserName().trim()));
+			user.setUserAvator("http://static.yeetong.cn/defalut-avator.png-yeetong");
 			user.setPhoneNo(param.getPhoneNo());
 			user.setEmail(param.getEmail());
 			user.setOrganizeId(param.getOrganizeId());
@@ -167,10 +186,9 @@ public class SmartCultureUserController {
 					}
 				}
 			}
-			user.setUserName(param.getUserName());
 			user.setPhoneNo(param.getPhoneNo());
 			user.setEmail(param.getEmail());
-			user.setOrganizeId(param.getOrganizeId() == null ? "" : param.getOrganizeId());
+			user.setOrganizeId(param.getOrganizeId() == null ? "" : param.getOrganizeId().trim());
 			user.setVersion(user.getVersion() + 1);
 			user.setUpdateAt(new Date());
 			smartCultureUserService.update(user);
@@ -281,5 +299,74 @@ public class SmartCultureUserController {
 			}
 		}
 		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/authFarms")
+	public Result<?> authFarms(HttpServletRequest request, @RequestBody BasicRequestParam param) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", param.getResultId());
+		condition.orderBy("applyAt").desc();
+		List<SmartCultureUserFarm> authFarms = smartCultureUserFarmService.findByCondition(condition);
+		Set<String> farmIds = new HashSet<String>();
+		if (authFarms != null && authFarms.size() > 0) {
+			for (SmartCultureUserFarm af : authFarms) {
+				farmIds.add(af.getFarmId());
+			}
+			Map<String, SmartCultureFarm> idMaps = new HashMap<>();
+			if (farmIds.size() > 0) {
+				condition = new Condition(SmartCultureFarm.class);
+				condition.createCriteria().andIn("farmId", farmIds);
+				List<SmartCultureFarm> farmls = smartCultureFarmService.findByCondition(condition);
+				for (SmartCultureFarm f : farmls) {
+					idMaps.put(f.getFarmId(), f);
+				}
+			}
+			Map<String, Object> item = null;
+			for (SmartCultureUserFarm af : authFarms) {
+				item = new HashMap<>();
+				SmartCultureFarm farm = idMaps.get(af.getFarmId());
+				item.put("userId", af.getUserId());
+				item.put("farmId", af.getFarmId());
+				item.put("farmName", farm.getFarmName());
+				item.put("farmCode", farm.getFarmCode());
+				item.put("identity", af.getIdentity());
+				item.put("applyAt", af.getApplyAt());
+				item.put("applyRemark", af.getApplyRemark());
+				item.put("applyState", af.getApplyState());
+				item.put("handleAt", af.getHandleAt());
+				item.put("handleUserId", af.getHandleUserId());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/query")
+	public Result<?> query(HttpServletRequest request, @RequestBody BasicRequestParam param) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureUser.class);
+		if (StringUtils.isBlank(param.getSearchValue())) {
+			return ResultGenerator.genSuccessResult(list);
+		}
+		String kw = String.format("%%%s%%", param.getSearchValue().trim());
+		condition.createCriteria().orLike("userName", kw).orLike("phoneNo", kw).orLike("email", kw);
+		condition.orderBy("userName").asc();
+		PageHelper.startPage(1, 20);
+		List<SmartCultureUser> users = smartCultureUserService.findByCondition(condition);
+		if (users != null && users.size() > 0) {
+			Map<String, Object> map = null;
+			for (SmartCultureUser obj : users) {
+				map = new HashMap<>();
+				map.put("label", obj.getUserName());
+				map.put("value", obj.getUserId());
+				map.put("phoneNo", obj.getPhoneNo());
+				map.put("email", obj.getEmail());
+				list.add(map);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
 	}
 }

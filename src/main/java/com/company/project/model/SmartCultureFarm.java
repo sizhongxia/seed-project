@@ -24,15 +24,58 @@ public class SmartCultureFarm {
     private String farmName;
 
     /**
+     * 农场编号
+     */
+    @Column(name = "farm_code")
+    private String farmCode;
+
+    /**
+     * 所属组织
+     */
+    @Column(name = "organize_id")
+    private String organizeId;
+
+    /**
      * 农场所属用户
      */
     @Column(name = "owner_user_id")
     private String ownerUserId;
 
     /**
-     * 农场地址
+     * 所在省编码
      */
-    private String address;
+    @Column(name = "province_code")
+    private String provinceCode;
+
+    /**
+     * 所在省名称
+     */
+    @Column(name = "province_name")
+    private String provinceName;
+
+    /**
+     * 所在市/区编码
+     */
+    @Column(name = "city_code")
+    private String cityCode;
+
+    /**
+     * 所在市/区名称
+     */
+    @Column(name = "city_name")
+    private String cityName;
+
+    /**
+     * 所在乡/镇编码
+     */
+    @Column(name = "county_code")
+    private String countyCode;
+
+    /**
+     * 所在乡/镇名称
+     */
+    @Column(name = "county_name")
+    private String countyName;
 
     /**
      * 经度
@@ -43,6 +86,23 @@ public class SmartCultureFarm {
      * 纬度
      */
     private String latitude;
+
+    /**
+     * 农场地址
+     */
+    private String address;
+
+    private String logo;
+
+    /**
+     * 网站链接
+     */
+    private String website;
+
+    /**
+     * 备注说明
+     */
+    private String remark;
 
     /**
      * 版本
@@ -116,6 +176,42 @@ public class SmartCultureFarm {
     }
 
     /**
+     * 获取农场编号
+     *
+     * @return farm_code - 农场编号
+     */
+    public String getFarmCode() {
+        return farmCode;
+    }
+
+    /**
+     * 设置农场编号
+     *
+     * @param farmCode 农场编号
+     */
+    public void setFarmCode(String farmCode) {
+        this.farmCode = farmCode;
+    }
+
+    /**
+     * 获取所属组织
+     *
+     * @return organize_id - 所属组织
+     */
+    public String getOrganizeId() {
+        return organizeId;
+    }
+
+    /**
+     * 设置所属组织
+     *
+     * @param organizeId 所属组织
+     */
+    public void setOrganizeId(String organizeId) {
+        this.organizeId = organizeId;
+    }
+
+    /**
      * 获取农场所属用户
      *
      * @return owner_user_id - 农场所属用户
@@ -134,21 +230,111 @@ public class SmartCultureFarm {
     }
 
     /**
-     * 获取农场地址
+     * 获取所在省编码
      *
-     * @return address - 农场地址
+     * @return province_code - 所在省编码
      */
-    public String getAddress() {
-        return address;
+    public String getProvinceCode() {
+        return provinceCode;
     }
 
     /**
-     * 设置农场地址
+     * 设置所在省编码
      *
-     * @param address 农场地址
+     * @param provinceCode 所在省编码
      */
-    public void setAddress(String address) {
-        this.address = address;
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    /**
+     * 获取所在省名称
+     *
+     * @return province_name - 所在省名称
+     */
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    /**
+     * 设置所在省名称
+     *
+     * @param provinceName 所在省名称
+     */
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    /**
+     * 获取所在市/区编码
+     *
+     * @return city_code - 所在市/区编码
+     */
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    /**
+     * 设置所在市/区编码
+     *
+     * @param cityCode 所在市/区编码
+     */
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    /**
+     * 获取所在市/区名称
+     *
+     * @return city_name - 所在市/区名称
+     */
+    public String getCityName() {
+        return cityName;
+    }
+
+    /**
+     * 设置所在市/区名称
+     *
+     * @param cityName 所在市/区名称
+     */
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    /**
+     * 获取所在乡/镇编码
+     *
+     * @return county_code - 所在乡/镇编码
+     */
+    public String getCountyCode() {
+        return countyCode;
+    }
+
+    /**
+     * 设置所在乡/镇编码
+     *
+     * @param countyCode 所在乡/镇编码
+     */
+    public void setCountyCode(String countyCode) {
+        this.countyCode = countyCode;
+    }
+
+    /**
+     * 获取所在乡/镇名称
+     *
+     * @return county_name - 所在乡/镇名称
+     */
+    public String getCountyName() {
+        return countyName;
+    }
+
+    /**
+     * 设置所在乡/镇名称
+     *
+     * @param countyName 所在乡/镇名称
+     */
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 
     /**
@@ -185,6 +371,74 @@ public class SmartCultureFarm {
      */
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    /**
+     * 获取农场地址
+     *
+     * @return address - 农场地址
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * 设置农场地址
+     *
+     * @param address 农场地址
+     */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /**
+     * @return logo
+     */
+    public String getLogo() {
+        return logo;
+    }
+
+    /**
+     * @param logo
+     */
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    /**
+     * 获取网站链接
+     *
+     * @return website - 网站链接
+     */
+    public String getWebsite() {
+        return website;
+    }
+
+    /**
+     * 设置网站链接
+     *
+     * @param website 网站链接
+     */
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    /**
+     * 获取备注说明
+     *
+     * @return remark - 备注说明
+     */
+    public String getRemark() {
+        return remark;
+    }
+
+    /**
+     * 设置备注说明
+     *
+     * @param remark 备注说明
+     */
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     /**

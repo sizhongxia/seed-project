@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SmartCultureUserFarmMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.SmartCultureUserFarm">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="farm_id" jdbcType="VARCHAR" property="farmId" />
+    <result column="identity" jdbcType="VARCHAR" property="identity" />
+    <result column="apply_at" jdbcType="TIMESTAMP" property="applyAt" />
+    <result column="apply_remark" jdbcType="VARCHAR" property="applyRemark" />
+    <result column="apply_state" jdbcType="CHAR" property="applyState" />
+    <result column="handle_user_id" jdbcType="VARCHAR" property="handleUserId" />
+    <result column="handle_at" jdbcType="TIMESTAMP" property="handleAt" />
+  </resultMap>
+</mapper>

@@ -3,6 +3,7 @@ package com.company.project.web.basic;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.SmartCultureBasicCity;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserIdentity;
 import com.company.project.model.SmartCultureUserToken;
 import com.company.project.model.param.basic.BasicLoginParam;
+import com.company.project.model.returns.basic.AreaResult;
+import com.company.project.service.SmartCultureBasicCityService;
 import com.company.project.service.SmartCultureUserIdentityService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureUserTokenService;
@@ -48,6 +52,8 @@ public class BasicApiCommonController {
 	SmartCultureUserIdentityService smartCultureUserIdentityService;
 	@Resource
 	SmartCultureUserTokenService smartCultureUserTokenService;
+	@Resource
+	SmartCultureBasicCityService smartCultureBasicCityService;
 
 	// PC登陆
 	@PostMapping("/login")
@@ -128,6 +134,75 @@ public class BasicApiCommonController {
 	@PostMapping("/logout")
 	public Result<?> logout(HttpServletRequest request) {
 		return ResultGenerator.genSuccessResult("suc");
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/areas")
+	public Result<?> areas(HttpServletRequest request) {
+		List<AreaResult> roots = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureBasicCity.class);
+		condition.setOrderByClause("code asc");
+		List<SmartCultureBasicCity> alls = smartCultureBasicCityService.findByCondition(condition);
+		if (alls != null && alls.size() > 0) {
+			AreaResult e = null;
+			Iterator<SmartCultureBasicCity> it = alls.iterator();
+			while (it.hasNext()) {
+				SmartCultureBasicCity x = it.next();
+				if (x.getPcode() == null || x.getPcode().equals("0")) {
+					e = new AreaResult();
+					e.setValue(x.getCode().toString());
+					e.setLabel(x.getName());
+					e.setChildren(new ArrayList<>());
+					roots.add(e);
+					it.remove();
+				}
+			}
+			if (roots.size() > 0) {
+				for (AreaResult alm : roots) {
+					Iterator<SmartCultureBasicCity> it2 = alls.iterator();
+					while (it2.hasNext()) {
+						SmartCultureBasicCity x = it2.next();
+						if (alm.getValue().equals(x.getPcode().toString())) {
+							e = new AreaResult();
+							e.setValue(x.getCode().toString());
+							e.setLabel(x.getName());
+							e.setChildren(new ArrayList<>());
+							alm.getChildren().add(e);
+						}
+					}
+					List<AreaResult> almLasts = alm.getChildren();
+					for (AreaResult almLast : almLasts) {
+						Iterator<SmartCultureBasicCity> it3 = alls.iterator();
+						while (it3.hasNext()) {
+							SmartCultureBasicCity x = it3.next();
+							if (almLast.getValue().equals(x.getPcode().toString())) {
+								e = new AreaResult();
+								e.setValue(x.getCode().toString());
+								e.setLabel(x.getName());
+								e.setChildren(new ArrayList<>());
+								almLast.getChildren().add(e);
+							}
+						}
+					}
+				}
+			}
+		}
+		for (AreaResult ar : roots) {
+			if (ar.getChildren() == null || ar.getChildren().isEmpty()) {
+				ar.setLeaf(true);
+				continue;
+			}
+			for (AreaResult ar2 : ar.getChildren()) {
+				if (ar2.getChildren() == null || ar2.getChildren().isEmpty()) {
+					ar2.setLeaf(true);
+					continue;
+				}
+				for (AreaResult ar3 : ar2.getChildren()) {
+					ar3.setLeaf(true);
+				}
+			}
+		}
+		return ResultGenerator.genSuccessResult(roots);
 	}
 
 	// public static void main(String[] args) {

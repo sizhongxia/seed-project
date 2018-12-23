@@ -7,6 +7,13 @@ public class BasicRequestParam {
 	private String orderType;
 	private String searchValue;
 
+	// farm
+	private String name;
+	private String code;
+
+	// farmArea
+	private String farmId;
+
 	private String resultId;
 
 	public String getPage() {
@@ -55,6 +62,30 @@ public class BasicRequestParam {
 
 	public void setResultId(String resultId) {
 		this.resultId = resultId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getFarmId() {
+		return farmId;
+	}
+
+	public void setFarmId(String farmId) {
+		this.farmId = farmId;
 	}
 
 }

@@ -8,10 +8,21 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="farm_id" jdbcType="VARCHAR" property="farmId" />
     <result column="farm_name" jdbcType="VARCHAR" property="farmName" />
+    <result column="farm_code" jdbcType="VARCHAR" property="farmCode" />
+    <result column="organize_id" jdbcType="VARCHAR" property="organizeId" />
     <result column="owner_user_id" jdbcType="VARCHAR" property="ownerUserId" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="province_code" jdbcType="CHAR" property="provinceCode" />
+    <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+    <result column="city_code" jdbcType="CHAR" property="cityCode" />
+    <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+    <result column="county_code" jdbcType="CHAR" property="countyCode" />
+    <result column="county_name" jdbcType="VARCHAR" property="countyName" />
     <result column="longitude" jdbcType="VARCHAR" property="longitude" />
     <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="logo" jdbcType="VARCHAR" property="logo" />
+    <result column="website" jdbcType="VARCHAR" property="website" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="version" jdbcType="BIGINT" property="version" />
     <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
     <result column="update_at" jdbcType="TIMESTAMP" property="updateAt" />
