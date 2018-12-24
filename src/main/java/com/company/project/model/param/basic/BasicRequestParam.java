@@ -10,8 +10,6 @@ public class BasicRequestParam {
 	// farm
 	private String name;
 	private String code;
-
-	// farmArea
 	private String farmId;
 
 	private String resultId;

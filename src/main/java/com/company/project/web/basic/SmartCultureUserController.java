@@ -336,7 +336,8 @@ public class SmartCultureUserController {
 				item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
 				item.put("applyRemark", af.getApplyRemark());
 				item.put("applyState", af.getApplyState());
-				item.put("handleAt", af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("handleAt",
+						af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
 				item.put("handleUserId", af.getHandleUserId() == null ? "" : af.getHandleUserId());
 				list.add(item);
 			}
@@ -397,6 +398,33 @@ public class SmartCultureUserController {
 		uf.setApplyRemark(param.getApplyRemark() == null ? "" : param.getApplyRemark().trim());
 		uf.setApplyState("D");
 		smartCultureUserFarmService.save(uf);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/handleAuthApply")
+	public Result<?> handleAuthApply(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
+		if (StringUtils.isBlank(param.getUserId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		if (StringUtils.isBlank(param.getApplyState())) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", param.getUserId().trim()).andEqualTo("farmId",
+				param.getFarmId().trim());
+		List<SmartCultureUserFarm> ufarms = smartCultureUserFarmService.findByCondition(condition);
+		if (ufarms == null || ufarms.isEmpty()) {
+			return ResultGenerator.genFailResult("E5004");
+		}
+		SmartCultureUserFarm uf = ufarms.get(0);
+		uf.setApplyState(param.getApplyState().trim());
+		uf.setHandleAt(new Date());
+		uf.setHandleUserId(request.getAttribute("userId").toString());
+		smartCultureUserFarmService.update(uf);
 		return ResultGenerator.genSuccessResult();
 	}
 }

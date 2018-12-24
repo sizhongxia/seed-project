@@ -6,6 +6,8 @@ public class BasicUserFarmAuthParam {
 	private String identity;
 	private String applyRemark;
 
+	private String applyState;
+
 	public String getFarmId() {
 		return farmId;
 	}
@@ -36,6 +38,14 @@ public class BasicUserFarmAuthParam {
 
 	public void setApplyRemark(String applyRemark) {
 		this.applyRemark = applyRemark;
+	}
+
+	public String getApplyState() {
+		return applyState;
+	}
+
+	public void setApplyState(String applyState) {
+		this.applyState = applyState;
 	}
 
 }
