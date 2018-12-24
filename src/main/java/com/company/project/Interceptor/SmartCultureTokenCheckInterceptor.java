@@ -13,7 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.company.project.annotation.SmartCultureTokenCheck;
+import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserToken;
+import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureUserTokenService;
 import com.company.project.web.basic.BasicApiCommonController;
 
@@ -25,6 +27,8 @@ public class SmartCultureTokenCheckInterceptor extends HandlerInterceptorAdapter
 
 	@Resource
 	SmartCultureUserTokenService smartCultureUserTokenService;
+	@Resource
+	SmartCultureUserService smartCultureUserService;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -50,6 +54,15 @@ public class SmartCultureTokenCheckInterceptor extends HandlerInterceptorAdapter
 					return false;
 				}
 				SmartCultureUserToken userToken = tokens.get(0);
+				SmartCultureUser cu = smartCultureUserService.findBy("userId", userToken.getUserId());
+				if (cu == null) {
+					response.setStatus(401);
+					return false;
+				}
+				if (cu.getAccountState().intValue() != 0) {
+					response.setStatus(401);
+					return false;
+				}
 				userToken.setLastVisitAt(now);
 				if (request.getRequestURI().contains("logout")) {
 					userToken.setIsForbidden(1);
