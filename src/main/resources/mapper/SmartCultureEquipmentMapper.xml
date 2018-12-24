@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SmartCultureEquipmentMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.SmartCultureEquipment">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="equipment_id" jdbcType="VARCHAR" property="equipmentId" />
+    <result column="equipment_name" jdbcType="VARCHAR" property="equipmentName" />
+    <result column="equipment_code" jdbcType="VARCHAR" property="equipmentCode" />
+    <result column="equipment_sn" jdbcType="VARCHAR" property="equipmentSn" />
+    <result column="equipment_type_id" jdbcType="VARCHAR" property="equipmentTypeId" />
+    <result column="equipment_type_name" jdbcType="VARCHAR" property="equipmentTypeName" />
+    <result column="equipment_model_id" jdbcType="VARCHAR" property="equipmentModelId" />
+    <result column="equipment_model_name" jdbcType="VARCHAR" property="equipmentModelName" />
+    <result column="farm_id" jdbcType="VARCHAR" property="farmId" />
+    <result column="farm_area_id" jdbcType="VARCHAR" property="farmAreaId" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="version" jdbcType="BIGINT" property="version" />
+    <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
+    <result column="update_at" jdbcType="TIMESTAMP" property="updateAt" />
+  </resultMap>
+</mapper>

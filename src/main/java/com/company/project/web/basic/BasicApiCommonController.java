@@ -55,6 +55,8 @@ public class BasicApiCommonController {
 	@Resource
 	SmartCultureBasicCityService smartCultureBasicCityService;
 
+	private static List<AreaResult> ROOTAREARESULT = null;
+
 	// PC登陆
 	@PostMapping("/login")
 	public Result<?> login(@RequestBody BasicLoginParam param) {
@@ -142,6 +144,9 @@ public class BasicApiCommonController {
 	@SmartCultureTokenCheck
 	@PostMapping("/areas")
 	public Result<?> areas(HttpServletRequest request) {
+		if (ROOTAREARESULT != null && ROOTAREARESULT.size() > 0) {
+			return ResultGenerator.genSuccessResult(ROOTAREARESULT);
+		}
 		List<AreaResult> roots = new ArrayList<>();
 		Condition condition = new Condition(SmartCultureBasicCity.class);
 		condition.setOrderByClause("code asc");
@@ -205,6 +210,7 @@ public class BasicApiCommonController {
 				}
 			}
 		}
+		ROOTAREARESULT = roots;
 		return ResultGenerator.genSuccessResult(roots);
 	}
 

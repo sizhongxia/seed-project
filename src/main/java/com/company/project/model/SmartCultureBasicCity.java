@@ -8,7 +8,7 @@ public class SmartCultureBasicCity {
      * 主键
      */
     @Id
-    private String id;
+    private Long id;
 
     /**
      * 城市编码
@@ -40,7 +40,7 @@ public class SmartCultureBasicCity {
      *
      * @return id - 主键
      */
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -49,7 +49,7 @@ public class SmartCultureBasicCity {
      *
      * @param id 主键
      */
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
