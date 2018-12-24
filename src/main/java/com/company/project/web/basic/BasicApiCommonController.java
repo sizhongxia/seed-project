@@ -68,6 +68,9 @@ public class BasicApiCommonController {
 		if (user == null) {
 			return ResultGenerator.genFailResult("E5003");
 		}
+		if (user.getAccountState().intValue() != 0) {
+			return ResultGenerator.genFailResult("EState" + user.getAccountState().intValue());
+		}
 		String password = Md5Util.md5(param.getPassword(), user.getUserName());
 		if (!user.getPassword().equals(password)) {
 			return ResultGenerator.genFailResult("E5004");
