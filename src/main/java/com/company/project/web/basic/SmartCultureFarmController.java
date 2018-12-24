@@ -24,6 +24,7 @@ import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureBasicCity;
+import com.company.project.model.SmartCultureEquipment;
 import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureFarmArea;
 import com.company.project.model.SmartCultureUser;
@@ -32,6 +33,7 @@ import com.company.project.model.param.basic.BasicFarmParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureBasicCityService;
+import com.company.project.service.SmartCultureEquipmentService;
 import com.company.project.service.SmartCultureFarmAreaService;
 import com.company.project.service.SmartCultureFarmService;
 import com.company.project.service.SmartCultureUserFarmService;
@@ -61,6 +63,8 @@ public class SmartCultureFarmController {
 	SmartCultureUserService smartCultureUserService;
 	@Resource
 	SmartCultureUserFarmService smartCultureUserFarmService;
+	@Resource
+	SmartCultureEquipmentService smartCultureEquipmentService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -225,6 +229,12 @@ public class SmartCultureFarmController {
 		List<SmartCultureFarmArea> cfas = smartCultureFarmAreaService.findByCondition(condition);
 		if (cfas != null && cfas.size() > 0) {
 			return ResultGenerator.genFailResult("E5003");
+		}
+		condition = new Condition(SmartCultureEquipment.class);
+		condition.createCriteria().andEqualTo("farmId", farm.getFarmId());
+		List<SmartCultureEquipment> ces = smartCultureEquipmentService.findByCondition(condition);
+		if (ces != null && ces.size() > 0) {
+			return ResultGenerator.genFailResult("E5004");
 		}
 		smartCultureFarmService.deleteById(farm.getId());
 		return ResultGenerator.genSuccessResult();

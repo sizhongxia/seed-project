@@ -7,9 +7,9 @@ public class BasicRequestParam {
 	private String orderType;
 	private String searchValue;
 
-	// farm
 	private String name;
 	private String code;
+	private String sn;
 	private String farmId;
 
 	private String resultId;
@@ -76,6 +76,14 @@ public class BasicRequestParam {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getSn() {
+		return sn;
+	}
+
+	public void setSn(String sn) {
+		this.sn = sn;
 	}
 
 	public String getFarmId() {

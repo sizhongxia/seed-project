@@ -21,12 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
+import com.company.project.model.SmartCultureEquipment;
+import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureFarmArea;
 import com.company.project.model.param.basic.BasicFarmAreaParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureBasicCityService;
+import com.company.project.service.SmartCultureEquipmentService;
 import com.company.project.service.SmartCultureFarmAreaService;
+import com.company.project.service.SmartCultureFarmService;
 import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -44,7 +48,11 @@ public class SmartCultureFarmAreaController {
 	@Resource
 	SmartCultureFarmAreaService smartCultureFarmAreaService;
 	@Resource
+	SmartCultureFarmService smartCultureFarmService;
+	@Resource
 	SmartCultureBasicCityService smartCultureBasicCityService;
+	@Resource
+	SmartCultureEquipmentService smartCultureEquipmentService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -106,6 +114,9 @@ public class SmartCultureFarmAreaController {
 	@SmartCultureTokenCheck
 	@PostMapping("/upinsert")
 	public Result<?> upinsert(HttpServletRequest request, @RequestBody BasicFarmAreaParam param) {
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
 		String areaId = param.getAreaId();
 		Date now = new Date();
 		SmartCultureFarmArea farmArea = null;
@@ -113,7 +124,11 @@ public class SmartCultureFarmAreaController {
 			// 新增
 			farmArea = new SmartCultureFarmArea();
 			farmArea.setAreaId(IdUtils.initObjectId());
-			farmArea.setFarmId(param.getFarmId());
+			SmartCultureFarm cf = smartCultureFarmService.findBy("farmId", param.getFarmId());
+			if (cf == null) {
+				return ResultGenerator.genFailResult("E5003");
+			}
+			farmArea.setFarmId(cf.getFarmId());
 			farmArea.setVersion(1L);
 			farmArea.setCreateAt(now);
 			farmArea.setUpdateAt(now);
@@ -149,7 +164,12 @@ public class SmartCultureFarmAreaController {
 		if (farmArea == null) {
 			return ResultGenerator.genFailResult("E5002");
 		}
-
+		Condition condition = new Condition(SmartCultureEquipment.class);
+		condition.createCriteria().andEqualTo("farmAreaId", farmArea.getAreaId());
+		List<SmartCultureEquipment> ces = smartCultureEquipmentService.findByCondition(condition);
+		if (ces != null && ces.size() > 0) {
+			return ResultGenerator.genFailResult("E5003");
+		}
 		smartCultureFarmAreaService.deleteById(farmArea.getId());
 		return ResultGenerator.genSuccessResult();
 	}
