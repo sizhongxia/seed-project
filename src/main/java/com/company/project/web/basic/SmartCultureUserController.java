@@ -326,8 +326,12 @@ public class SmartCultureUserController {
 			}
 			Map<String, Object> item = null;
 			for (SmartCultureUserFarm af : authFarms) {
-				item = new HashMap<>();
 				SmartCultureFarm farm = idMaps.get(af.getFarmId());
+				if (farm == null) {
+					smartCultureUserFarmService.deleteById(af.getId());
+					continue;
+				}
+				item = new HashMap<>();
 				item.put("userId", af.getUserId());
 				item.put("farmId", af.getFarmId());
 				item.put("farmName", farm.getFarmName());
