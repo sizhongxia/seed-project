@@ -220,7 +220,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("输入的身份证号无效");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -274,7 +274,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -339,7 +339,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -377,7 +377,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -507,7 +507,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -549,7 +549,7 @@ public class PersonnelController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		PersonnelIdentity identity = personnelIdentityService.findById(Integer.parseInt(readId.trim()));
+		PersonnelIdentity identity = personnelIdentityService.findById(Long.parseLong(readId.trim()));
 		if (identity == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -567,7 +567,8 @@ public class PersonnelController {
 		if (bindingResult.hasErrors()) {
 			return ResultGenerator.genFailResult(bindingResult.getFieldError().getDefaultMessage());
 		}
-		List<GroupStatisticsResult> personnelResults = personnelIdentityService.selectWorkTypeStatistics(param.getPid());
+		List<GroupStatisticsResult> personnelResults = personnelIdentityService
+				.selectWorkTypeStatistics(param.getPid());
 		if (personnelResults == null) {
 			personnelResults = new ArrayList<>();
 		}

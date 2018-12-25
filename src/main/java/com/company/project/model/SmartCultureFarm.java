@@ -78,6 +78,12 @@ public class SmartCultureFarm {
     private String countyName;
 
     /**
+     * 天气城市编码
+     */
+    @Column(name = "weather_city_code")
+    private String weatherCityCode;
+
+    /**
      * 经度
      */
     private String longitude;
@@ -335,6 +341,24 @@ public class SmartCultureFarm {
      */
     public void setCountyName(String countyName) {
         this.countyName = countyName;
+    }
+
+    /**
+     * 获取天气城市编码
+     *
+     * @return weather_city_code - 天气城市编码
+     */
+    public String getWeatherCityCode() {
+        return weatherCityCode;
+    }
+
+    /**
+     * 设置天气城市编码
+     *
+     * @param weatherCityCode 天气城市编码
+     */
+    public void setWeatherCityCode(String weatherCityCode) {
+        this.weatherCityCode = weatherCityCode;
     }
 
     /**

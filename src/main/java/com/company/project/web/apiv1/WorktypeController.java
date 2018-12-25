@@ -67,7 +67,7 @@ public class WorktypeController {
 		if (!NumberUtils.isParsable(param.getId())) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
-		UnitWorkType unitWorkType = unitWorkTypeService.findById(Integer.parseInt(param.getId().trim()));
+		UnitWorkType unitWorkType = unitWorkTypeService.findById(Long.parseLong(param.getId().trim()));
 		if (unitWorkType == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -131,7 +131,7 @@ public class WorktypeController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		UnitWorkType _unitWorkType = unitWorkTypeService.findById(Integer.parseInt(model.getId().trim()));
+		UnitWorkType _unitWorkType = unitWorkTypeService.findById(Long.parseLong(model.getId().trim()));
 		if (_unitWorkType == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -182,7 +182,7 @@ public class WorktypeController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		UnitWorkType _unitWorkType = unitWorkTypeService.findById(Integer.parseInt(param.getId().trim()));
+		UnitWorkType _unitWorkType = unitWorkTypeService.findById(Long.parseLong(param.getId().trim()));
 		if (_unitWorkType == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}

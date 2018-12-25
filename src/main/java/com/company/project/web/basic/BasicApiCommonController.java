@@ -24,15 +24,21 @@ import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureBasicCity;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserIdentity;
+import com.company.project.model.SmartCultureUserMenu;
 import com.company.project.model.SmartCultureUserToken;
+import com.company.project.model.SmartCultureWeatherCity;
 import com.company.project.model.param.basic.BasicLoginParam;
+import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.AreaResult;
 import com.company.project.service.SmartCultureBasicCityService;
 import com.company.project.service.SmartCultureUserIdentityService;
+import com.company.project.service.SmartCultureUserMenuService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureUserTokenService;
+import com.company.project.service.SmartCultureWeatherCityService;
 import com.company.project.unit.IdUtils;
 import com.company.project.unit.Md5Util;
+import com.github.pagehelper.PageHelper;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
@@ -54,6 +60,10 @@ public class BasicApiCommonController {
 	SmartCultureUserTokenService smartCultureUserTokenService;
 	@Resource
 	SmartCultureBasicCityService smartCultureBasicCityService;
+	@Resource
+	SmartCultureUserMenuService smartCultureUserMenuService;
+	@Resource
+	SmartCultureWeatherCityService smartCultureWeatherCityService;
 
 	private static List<AreaResult> ROOTAREARESULT = null;
 
@@ -117,6 +127,15 @@ public class BasicApiCommonController {
 				accesses.add(identity.getIdentity());
 			}
 		}
+		Condition userMenuCondition = new Condition(SmartCultureUserMenu.class);
+		userMenuCondition.createCriteria().andEqualTo("userId", userId).andEqualTo("validState", 1);
+		List<SmartCultureUserMenu> userMenus = smartCultureUserMenuService.findByCondition(userMenuCondition);
+		if (userMenus != null && userMenus.size() > 0) {
+			for (SmartCultureUserMenu um : userMenus) {
+				accesses.add(um.getMenuAccessKey());
+			}
+		}
+
 		return accesses;
 	}
 
@@ -212,6 +231,32 @@ public class BasicApiCommonController {
 		}
 		ROOTAREARESULT = roots;
 		return ResultGenerator.genSuccessResult(roots);
+	}
+
+	// HE1608112120041912 ecea64c0a5d74ae5aabd36f1af33920a 通用
+	// HE1812252357101084 64b71686e5014d5cb3f6cc4a6581e984 Web
+	@SmartCultureTokenCheck
+	@PostMapping("/weatherCities")
+	public Result<?> weatherCities(HttpServletRequest request, @RequestBody BasicRequestParam param) {
+		List<Map<String, String>> cities = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureWeatherCity.class);
+		if (StringUtils.isNotBlank(param.getSearchValue())) {
+			String kw = String.format("%%%s%%", param.getSearchValue().trim());
+			condition.createCriteria().orLike("cityName", kw).orLike("cityPinyin", kw).orLike("provinceName", kw)
+					.orLike("provincePinyin", kw);
+		}
+		condition.orderBy("cityCode").asc();
+		PageHelper.startPage(1, 20);
+		List<SmartCultureWeatherCity> wcs = smartCultureWeatherCityService.findByCondition(condition);
+		if (wcs != null && wcs.size() > 0) {
+			Map<String, String> item = null;
+			for (SmartCultureWeatherCity wc : wcs) {
+				item = new HashMap<>();
+				item.put("value", wc.getCityCode());
+				item.put("name", String.format("%s - %s", wc.getProvinceName(), wc.getCityName()));
+			}
+		}
+		return ResultGenerator.genSuccessResult(cities);
 	}
 
 	// public static void main(String[] args) {

@@ -450,12 +450,26 @@ public class SmartCultureUserController {
 			return ResultGenerator.genFailResult("E5001");
 		}
 
+		List<Map<String, Object>> data = new ArrayList<>();
+
+		Condition userIdentityCondition = new Condition(SmartCultureUserIdentity.class);
+		userIdentityCondition.createCriteria().andEqualTo("userId", param.getUserId().trim()).andEqualTo("useState", 1);
+		List<SmartCultureUserIdentity> identities = smartCultureUserIdentityService
+				.findByCondition(userIdentityCondition);
+		if (identities != null && identities.size() > 0) {
+			for (SmartCultureUserIdentity identity : identities) {
+				if (identity.getIdentity().equals("super_admin")) {
+					return ResultGenerator.genSuccessResult(data);
+				}
+			}
+		}
+
 		Condition condition = new Condition(SmartCultureMenu.class);
 		condition.orderBy("sortNum").asc();
 		List<SmartCultureMenu> menus = smartCultureMenuService.findByCondition(condition);
 
 		Condition userMenuCondition = new Condition(SmartCultureUserMenu.class);
-		userMenuCondition.createCriteria().andEqualTo("userId", param.getUserId()).andEqualTo("validState", 1);
+		userMenuCondition.createCriteria().andEqualTo("userId", param.getUserId().trim()).andEqualTo("validState", 1);
 		List<SmartCultureUserMenu> userMenuAuths = smartCultureUserMenuService.findByCondition(userMenuCondition);
 
 		Set<String> menuKeys = new HashSet<>();
@@ -465,7 +479,6 @@ public class SmartCultureUserController {
 			}
 		}
 
-		List<Map<String, Object>> data = new ArrayList<>();
 		if (menus != null && menus.size() > 0) {
 			Map<String, Object> item = null;
 			for (SmartCultureMenu menu : menus) {
@@ -477,6 +490,7 @@ public class SmartCultureUserController {
 					item.put("id", menu.getId());
 					item.put("userId", param.getUserId());
 					item.put("expand", true);
+					// item.put("disabled", true);
 					item.put("children", new ArrayList<>());
 					data.add(item);
 				}
@@ -513,6 +527,13 @@ public class SmartCultureUserController {
 		if (StringUtils.isBlank(param.getChecked())) {
 			return ResultGenerator.genFailResult("E5003");
 		}
+
+		SmartCultureMenu smartCultureMenu = smartCultureMenuService.findBy("menuAccessKey",
+				param.getMenuAccessKey().trim());
+		if (smartCultureMenu == null) {
+			return ResultGenerator.genFailResult("E5006");
+		}
+
 		Condition condition = new Condition(SmartCultureUserMenu.class);
 		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
 				.andEqualTo("menuAccessKey", param.getMenuAccessKey().trim()).andEqualTo("validState", 1);
@@ -526,6 +547,48 @@ public class SmartCultureUserController {
 				um.setCreateAt(new Date());
 				um.setUpdateAt(new Date());
 				smartCultureUserMenuService.save(um);
+				if (smartCultureMenu.getPid() == null) {
+					// 是一级菜单
+					condition = new Condition(SmartCultureMenu.class);
+					condition.createCriteria().andEqualTo("pid", smartCultureMenu.getId());
+					List<SmartCultureMenu> childMenus = smartCultureMenuService.findByCondition(condition);
+					if (childMenus != null && childMenus.size() > 0) {
+						for (SmartCultureMenu cm : childMenus) {
+							condition = new Condition(SmartCultureUserMenu.class);
+							condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+									.andEqualTo("menuAccessKey", cm.getMenuAccessKey()).andEqualTo("validState", 1);
+							uMenus = smartCultureUserMenuService.findByCondition(condition);
+							if (uMenus == null || uMenus.isEmpty()) {
+								um = new SmartCultureUserMenu();
+								um.setMenuAccessKey(cm.getMenuAccessKey());
+								um.setUserId(param.getUserId().trim());
+								um.setValidState(1);
+								um.setCreateAt(new Date());
+								um.setUpdateAt(new Date());
+								smartCultureUserMenuService.save(um);
+							}
+						}
+					}
+				} else {
+					// 不是一级菜单
+					SmartCultureMenu scm = smartCultureMenuService.findById(smartCultureMenu.getPid());
+					if (scm == null) {
+						return ResultGenerator.genFailResult("E5007");
+					}
+					condition = new Condition(SmartCultureUserMenu.class);
+					condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+							.andEqualTo("menuAccessKey", scm.getMenuAccessKey()).andEqualTo("validState", 1);
+					uMenus = smartCultureUserMenuService.findByCondition(condition);
+					if (uMenus == null || uMenus.isEmpty()) {
+						um = new SmartCultureUserMenu();
+						um.setMenuAccessKey(scm.getMenuAccessKey());
+						um.setUserId(param.getUserId().trim());
+						um.setValidState(1);
+						um.setCreateAt(new Date());
+						um.setUpdateAt(new Date());
+						smartCultureUserMenuService.save(um);
+					}
+				}
 			} else {
 				return ResultGenerator.genFailResult("E5004");
 			}
@@ -535,6 +598,59 @@ public class SmartCultureUserController {
 				um.setValidState(0);
 				um.setUpdateAt(new Date());
 				smartCultureUserMenuService.update(um);
+				if (smartCultureMenu.getPid() == null) {
+					// 是一级菜单
+					condition = new Condition(SmartCultureMenu.class);
+					condition.createCriteria().andEqualTo("pid", smartCultureMenu.getId());
+					List<SmartCultureMenu> childMenus = smartCultureMenuService.findByCondition(condition);
+					if (childMenus != null && childMenus.size() > 0) {
+						for (SmartCultureMenu cm : childMenus) {
+							condition = new Condition(SmartCultureUserMenu.class);
+							condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+									.andEqualTo("menuAccessKey", cm.getMenuAccessKey()).andEqualTo("validState", 1);
+							uMenus = smartCultureUserMenuService.findByCondition(condition);
+							if (uMenus != null && uMenus.size() > 0) {
+								um = uMenus.get(0);
+								um.setValidState(0);
+								um.setUpdateAt(new Date());
+								smartCultureUserMenuService.update(um);
+							}
+						}
+					}
+				} else {
+					// 不是一级菜单
+					condition = new Condition(SmartCultureMenu.class);
+					condition.createCriteria().andEqualTo("pid", smartCultureMenu.getPid());
+					List<SmartCultureMenu> childMenus = smartCultureMenuService.findByCondition(condition);
+					boolean noChild = true;
+					if (childMenus != null && childMenus.size() > 0) {
+						for (SmartCultureMenu ccm : childMenus) {
+							condition = new Condition(SmartCultureUserMenu.class);
+							condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+									.andEqualTo("menuAccessKey", ccm.getMenuAccessKey()).andEqualTo("validState", 1);
+							uMenus = smartCultureUserMenuService.findByCondition(condition);
+							if (uMenus != null && uMenus.size() > 0) {
+								noChild = false;
+							}
+						}
+					}
+					SmartCultureMenu scm = smartCultureMenuService.findById(smartCultureMenu.getPid());
+					if (scm == null) {
+						return ResultGenerator.genFailResult("E5007");
+					}
+					if (noChild) {
+						condition = new Condition(SmartCultureUserMenu.class);
+						condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+								.andEqualTo("menuAccessKey", scm.getMenuAccessKey()).andEqualTo("validState", 1);
+						uMenus = smartCultureUserMenuService.findByCondition(condition);
+						if (uMenus != null && uMenus.size() > 0) {
+							um = uMenus.get(0);
+							um.setValidState(0);
+							um.setUpdateAt(new Date());
+							smartCultureUserMenuService.update(um);
+						}
+					}
+				}
 			} else {
 				return ResultGenerator.genFailResult("E5005");
 			}

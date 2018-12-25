@@ -351,7 +351,7 @@ public class MemorabiliaController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Integer.parseInt(realId.trim()));
+		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Long.parseLong(realId.trim()));
 		if (bmi == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -398,7 +398,7 @@ public class MemorabiliaController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Integer.parseInt(realId.trim()));
+		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Long.parseLong(realId.trim()));
 		if (bmi == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
@@ -430,7 +430,7 @@ public class MemorabiliaController {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}
 
-		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Integer.parseInt(realId.trim()));
+		BusinessMemorabiliaImg bmi = businessMemorabiliaImgService.findById(Long.parseLong(realId.trim()));
 		if (bmi == null) {
 			return ResultGenerator.genFailResult("无效的表单ID");
 		}

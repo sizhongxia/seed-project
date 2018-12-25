@@ -17,6 +17,7 @@
     <result column="city_name" jdbcType="VARCHAR" property="cityName" />
     <result column="county_code" jdbcType="CHAR" property="countyCode" />
     <result column="county_name" jdbcType="VARCHAR" property="countyName" />
+    <result column="weather_city_code" jdbcType="VARCHAR" property="weatherCityCode" />
     <result column="longitude" jdbcType="VARCHAR" property="longitude" />
     <result column="latitude" jdbcType="VARCHAR" property="latitude" />
     <result column="address" jdbcType="VARCHAR" property="address" />
