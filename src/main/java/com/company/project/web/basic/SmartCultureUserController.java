@@ -25,16 +25,21 @@ import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureFarm;
+import com.company.project.model.SmartCultureMenu;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.SmartCultureUserIdentity;
+import com.company.project.model.SmartCultureUserMenu;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.param.basic.BasicUserFarmAuthParam;
+import com.company.project.model.param.basic.BasicUserMenuAuthParam;
 import com.company.project.model.param.basic.BasicUserParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureFarmService;
+import com.company.project.service.SmartCultureMenuService;
 import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserIdentityService;
+import com.company.project.service.SmartCultureUserMenuService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.unit.IdUtils;
 import com.company.project.unit.Md5Util;
@@ -50,6 +55,7 @@ import tk.mybatis.mapper.entity.Example.OrderBy;
 @RestController
 @RequestMapping("/basic/api/user")
 public class SmartCultureUserController {
+
 	final Logger logger = LoggerFactory.getLogger(SmartCultureUserController.class);
 
 	@Resource
@@ -60,6 +66,10 @@ public class SmartCultureUserController {
 	SmartCultureUserFarmService smartCultureUserFarmService;
 	@Resource
 	SmartCultureFarmService smartCultureFarmService;
+	@Resource
+	SmartCultureMenuService smartCultureMenuService;
+	@Resource
+	SmartCultureUserMenuService smartCultureUserMenuService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -303,6 +313,36 @@ public class SmartCultureUserController {
 	}
 
 	@SmartCultureTokenCheck
+	@PostMapping("/authFarm")
+	public Result<?> authFarm(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
+		if (StringUtils.isBlank(param.getUserId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		if (StringUtils.isBlank(param.getIdentity())) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+				.andEqualTo("farmId", param.getFarmId().trim()).andNotEqualTo("applyState", "N");
+		List<SmartCultureUserFarm> ufarms = smartCultureUserFarmService.findByCondition(condition);
+		if (ufarms != null && ufarms.size() > 0) {
+			return ResultGenerator.genFailResult("E5004");
+		}
+		SmartCultureUserFarm uf = new SmartCultureUserFarm();
+		uf.setUserId(param.getUserId().trim());
+		uf.setFarmId(param.getFarmId().trim());
+		uf.setIdentity(param.getIdentity().trim());
+		uf.setApplyAt(new Date());
+		uf.setApplyRemark(param.getApplyRemark() == null ? "" : param.getApplyRemark().trim());
+		uf.setApplyState("D");
+		smartCultureUserFarmService.save(uf);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
 	@PostMapping("/authFarms")
 	public Result<?> authFarms(HttpServletRequest request, @RequestBody BasicRequestParam param) {
 		List<Map<String, Object>> list = new ArrayList<>();
@@ -376,36 +416,6 @@ public class SmartCultureUserController {
 	}
 
 	@SmartCultureTokenCheck
-	@PostMapping("/authFarm")
-	public Result<?> authFarm(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
-		if (StringUtils.isBlank(param.getUserId())) {
-			return ResultGenerator.genFailResult("E5001");
-		}
-		if (StringUtils.isBlank(param.getFarmId())) {
-			return ResultGenerator.genFailResult("E5002");
-		}
-		if (StringUtils.isBlank(param.getIdentity())) {
-			return ResultGenerator.genFailResult("E5003");
-		}
-		Condition condition = new Condition(SmartCultureUserFarm.class);
-		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
-				.andEqualTo("farmId", param.getFarmId().trim()).andNotEqualTo("applyState", "N");
-		List<SmartCultureUserFarm> ufarms = smartCultureUserFarmService.findByCondition(condition);
-		if (ufarms != null && ufarms.size() > 0) {
-			return ResultGenerator.genFailResult("E5004");
-		}
-		SmartCultureUserFarm uf = new SmartCultureUserFarm();
-		uf.setUserId(param.getUserId().trim());
-		uf.setFarmId(param.getFarmId().trim());
-		uf.setIdentity(param.getIdentity().trim());
-		uf.setApplyAt(new Date());
-		uf.setApplyRemark(param.getApplyRemark() == null ? "" : param.getApplyRemark().trim());
-		uf.setApplyState("D");
-		smartCultureUserFarmService.save(uf);
-		return ResultGenerator.genSuccessResult();
-	}
-
-	@SmartCultureTokenCheck
 	@PostMapping("/handleAuthApply")
 	public Result<?> handleAuthApply(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
 		if (StringUtils.isBlank(param.getUserId())) {
@@ -429,6 +439,106 @@ public class SmartCultureUserController {
 		uf.setHandleAt(new Date());
 		uf.setHandleUserId(request.getAttribute("userId").toString());
 		smartCultureUserFarmService.update(uf);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SuppressWarnings("unchecked")
+	@SmartCultureTokenCheck
+	@PostMapping("/authMenus")
+	public Result<?> authMenus(HttpServletRequest request, @RequestBody BasicUserMenuAuthParam param) {
+		if (StringUtils.isBlank(param.getUserId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+
+		Condition condition = new Condition(SmartCultureMenu.class);
+		condition.orderBy("sortNum").asc();
+		List<SmartCultureMenu> menus = smartCultureMenuService.findByCondition(condition);
+
+		Condition userMenuCondition = new Condition(SmartCultureUserMenu.class);
+		userMenuCondition.createCriteria().andEqualTo("userId", param.getUserId()).andEqualTo("validState", 1);
+		List<SmartCultureUserMenu> userMenuAuths = smartCultureUserMenuService.findByCondition(userMenuCondition);
+
+		Set<String> menuKeys = new HashSet<>();
+		if (userMenuAuths != null && userMenuAuths.size() > 0) {
+			for (SmartCultureUserMenu ma : userMenuAuths) {
+				menuKeys.add(ma.getMenuAccessKey());
+			}
+		}
+
+		List<Map<String, Object>> data = new ArrayList<>();
+		if (menus != null && menus.size() > 0) {
+			Map<String, Object> item = null;
+			for (SmartCultureMenu menu : menus) {
+				if (menu.getPid() == null || menu.getPid().longValue() < 1) {
+					item = new HashMap<>();
+					item.put("title", menu.getMenuName());
+					item.put("key", menu.getMenuAccessKey());
+					item.put("checked", menuKeys.contains(menu.getMenuAccessKey()));
+					item.put("id", menu.getId());
+					item.put("userId", param.getUserId());
+					item.put("expand", true);
+					item.put("children", new ArrayList<>());
+					data.add(item);
+				}
+			}
+			if (data.size() > 0) {
+				for (Map<String, Object> i : data) {
+					for (SmartCultureMenu menu : menus) {
+						if (menu.getPid() != null && menu.getPid().longValue() > 0) {
+							if (i.get("id").toString().equals(menu.getPid().toString())) {
+								item = new HashMap<>();
+								item.put("title", menu.getMenuName());
+								item.put("userId", param.getUserId());
+								item.put("key", menu.getMenuAccessKey());
+								item.put("checked", menuKeys.contains(menu.getMenuAccessKey()));
+								((ArrayList<Map<String, Object>>) i.get("children")).add(item);
+							}
+						}
+					}
+				}
+			}
+		}
+		return ResultGenerator.genSuccessResult(data);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/handleMenuAuth")
+	public Result<?> handleMenuAuth(HttpServletRequest request, @RequestBody BasicUserMenuAuthParam param) {
+		if (StringUtils.isBlank(param.getUserId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		if (StringUtils.isBlank(param.getMenuAccessKey())) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		if (StringUtils.isBlank(param.getChecked())) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		Condition condition = new Condition(SmartCultureUserMenu.class);
+		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
+				.andEqualTo("menuAccessKey", param.getMenuAccessKey().trim()).andEqualTo("validState", 1);
+		List<SmartCultureUserMenu> uMenus = smartCultureUserMenuService.findByCondition(condition);
+		if (uMenus == null || uMenus.isEmpty()) {
+			if ("Y".equals(param.getChecked())) {
+				SmartCultureUserMenu um = new SmartCultureUserMenu();
+				um.setMenuAccessKey(param.getMenuAccessKey().trim());
+				um.setUserId(param.getUserId().trim());
+				um.setValidState(1);
+				um.setCreateAt(new Date());
+				um.setUpdateAt(new Date());
+				smartCultureUserMenuService.save(um);
+			} else {
+				return ResultGenerator.genFailResult("E5004");
+			}
+		} else {
+			if ("N".equals(param.getChecked())) {
+				SmartCultureUserMenu um = uMenus.get(0);
+				um.setValidState(0);
+				um.setUpdateAt(new Date());
+				smartCultureUserMenuService.update(um);
+			} else {
+				return ResultGenerator.genFailResult("E5005");
+			}
+		}
 		return ResultGenerator.genSuccessResult();
 	}
 }
