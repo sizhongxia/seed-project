@@ -149,6 +149,7 @@ public class SmartCultureFarmController {
 			} while (scf != null);
 
 			farm.setFarmCode(farmCode);
+			farm.setWeatherCityCode("");
 			farm.setOwnerUserId(param.getOwnerUserId() == null ? "" : param.getOwnerUserId().trim());
 			farm.setLogo("http://static.yeetong.cn/default-farm.png-yeetong");
 			farm.setVersion(1L);
