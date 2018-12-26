@@ -29,6 +29,7 @@ import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureFarmArea;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserFarm;
+import com.company.project.model.SmartCultureWeatherCity;
 import com.company.project.model.param.basic.BasicFarmParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.BasicPageResult;
@@ -38,6 +39,7 @@ import com.company.project.service.SmartCultureFarmAreaService;
 import com.company.project.service.SmartCultureFarmService;
 import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserService;
+import com.company.project.service.SmartCultureWeatherCityService;
 import com.company.project.unit.IdUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -65,6 +67,8 @@ public class SmartCultureFarmController {
 	SmartCultureUserFarmService smartCultureUserFarmService;
 	@Resource
 	SmartCultureEquipmentService smartCultureEquipmentService;
+	@Resource
+	SmartCultureWeatherCityService smartCultureWeatherCityService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -117,6 +121,7 @@ public class SmartCultureFarmController {
 				map.put("provinceName", obj.getProvinceName());
 				map.put("cityName", obj.getCityName());
 				map.put("countyName", obj.getCountyName());
+				map.put("weatherCityName", obj.getWeatherCityName());
 				map.put("address", obj.getAddress());
 				map.put("createAt", DateUtil.format(obj.getCreateAt(), "yyyy-MM-dd HH:mm:ss"));
 				map.put("updateAt", DateUtil.format(obj.getUpdateAt(), "yyyy-MM-dd HH:mm:ss"));
@@ -147,9 +152,7 @@ public class SmartCultureFarmController {
 				farmCode = String.format("%s%s", DateUtil.format(now, "yyMMddHHmmSSSS"), RandomUtil.randomNumbers(4));
 				scf = smartCultureFarmService.findBy("farmCode", farmCode);
 			} while (scf != null);
-
 			farm.setFarmCode(farmCode);
-			farm.setWeatherCityCode("");
 			farm.setOwnerUserId(param.getOwnerUserId() == null ? "" : param.getOwnerUserId().trim());
 			farm.setLogo("http://static.yeetong.cn/default-farm.png-yeetong");
 			farm.setVersion(1L);
@@ -158,7 +161,7 @@ public class SmartCultureFarmController {
 		} else {
 			farm = smartCultureFarmService.findBy("farmId", param.getFarmId());
 			if (farm == null) {
-				return ResultGenerator.genFailResult("E5002");
+				return ResultGenerator.genFailResult("E5001");
 			}
 			farm.setVersion(farm.getVersion() + 1);
 			farm.setUpdateAt(now);
@@ -166,6 +169,18 @@ public class SmartCultureFarmController {
 
 		farm.setFarmName(param.getFarmName());
 		farm.setOrganizeId(param.getOrganizeId() == null ? "" : param.getOrganizeId().trim());
+		if (StringUtils.isBlank(param.getWeatherCityCode())) {
+			farm.setWeatherCityCode("");
+			farm.setWeatherCityName("");
+		} else {
+			SmartCultureWeatherCity wc = smartCultureWeatherCityService.findBy("cityCode",
+					param.getWeatherCityCode().trim());
+			if (wc == null) {
+				return ResultGenerator.genFailResult("E5002");
+			}
+			farm.setWeatherCityCode(wc.getCityCode());
+			farm.setWeatherCityName(wc.getCityName());
+		}
 		farm.setProvinceCode("");
 		farm.setProvinceName("");
 		farm.setCityCode("");
@@ -290,6 +305,8 @@ public class SmartCultureFarmController {
 		map.put("provinceName", farm.getProvinceName());
 		map.put("cityName", farm.getCityName());
 		map.put("countyName", farm.getCountyName());
+		map.put("weatherCityCode", farm.getWeatherCityCode());
+		map.put("weatherCityName", farm.getWeatherCityName());
 		map.put("logo", farm.getLogo());
 		map.put("longitude", farm.getLongitude());
 		map.put("latitude", farm.getLatitude());

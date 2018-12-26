@@ -3,7 +3,6 @@ package com.company.project.web.basic;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ import com.company.project.model.SmartCultureUserToken;
 import com.company.project.model.SmartCultureWeatherCity;
 import com.company.project.model.param.basic.BasicLoginParam;
 import com.company.project.model.param.basic.BasicRequestParam;
-import com.company.project.model.returns.basic.AreaResult;
 import com.company.project.service.SmartCultureBasicCityService;
 import com.company.project.service.SmartCultureUserIdentityService;
 import com.company.project.service.SmartCultureUserMenuService;
@@ -64,8 +62,6 @@ public class BasicApiCommonController {
 	SmartCultureUserMenuService smartCultureUserMenuService;
 	@Resource
 	SmartCultureWeatherCityService smartCultureWeatherCityService;
-
-	private static List<AreaResult> ROOTAREARESULT = null;
 
 	// PC登陆
 	@PostMapping("/login")
@@ -160,76 +156,108 @@ public class BasicApiCommonController {
 		return ResultGenerator.genSuccessResult("suc");
 	}
 
+	// @SmartCultureTokenCheck
+	// @PostMapping("/areaRoots")
+	// public Result<?> areas(HttpServletRequest request) {
+	// List<AreaResult> roots = new ArrayList<>();
+	// Condition condition = new Condition(SmartCultureBasicCity.class);
+	// condition.setOrderByClause("code asc");
+	// List<SmartCultureBasicCity> alls =
+	// smartCultureBasicCityService.findByCondition(condition);
+	// if (alls != null && alls.size() > 0) {
+	// // for (SmartCultureBasicCity a : alls) {
+	// // String pinyin = "";
+	// // try {
+	// // pinyin = PinyinHelper.convertToPinyinString(a.getName(), "",
+	// // PinyinFormat.WITHOUT_TONE);
+	// // } catch (PinyinException e1) {
+	// // e1.printStackTrace();
+	// // }
+	// // a.setPinyin(pinyin);
+	// // try {
+	// // a.setJianpin(PinyinHelper.getShortPinyin(a.getName()));
+	// // } catch (PinyinException e1) {
+	// // a.setJianpin("");
+	// // }
+	// // smartCultureBasicCityService.update(a);
+	// // }
+	// AreaResult e = null;
+	// Iterator<SmartCultureBasicCity> it = alls.iterator();
+	// while (it.hasNext()) {
+	// SmartCultureBasicCity x = it.next();
+	// if (x.getPcode() == null || x.getPcode().equals("86")) {
+	// e = new AreaResult();
+	// e.setValue(x.getCode().toString());
+	// e.setLabel(x.getName());
+	// e.setChildren(new ArrayList<>());
+	// e.setLeaf(false);
+	// roots.add(e);
+	// it.remove();
+	// }
+	// }
+	// if (roots.size() > 0) {
+	// for (AreaResult alm : roots) {
+	// Iterator<SmartCultureBasicCity> it2 = alls.iterator();
+	// while (it2.hasNext()) {
+	// SmartCultureBasicCity x = it2.next();
+	// if (alm.getValue().equals(x.getPcode().toString())) {
+	// e = new AreaResult();
+	// e.setValue(x.getCode().toString());
+	// e.setLabel(x.getName());
+	// e.setChildren(new ArrayList<>());
+	// e.setLeaf(false);
+	// alm.getChildren().add(e);
+	// }
+	// }
+	// List<AreaResult> almLasts = alm.getChildren();
+	// for (AreaResult almLast : almLasts) {
+	// Iterator<SmartCultureBasicCity> it3 = alls.iterator();
+	// while (it3.hasNext()) {
+	// SmartCultureBasicCity x = it3.next();
+	// if (almLast.getValue().equals(x.getPcode().toString())) {
+	// e = new AreaResult();
+	// e.setValue(x.getCode().toString());
+	// e.setLabel(x.getName());
+	// e.setChildren(new ArrayList<>());
+	// e.setLeaf(true);
+	// almLast.getChildren().add(e);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return ResultGenerator.genSuccessResult(roots);
+	// }
+
 	@SmartCultureTokenCheck
-	@PostMapping("/areas")
-	public Result<?> areas(HttpServletRequest request) {
-		if (ROOTAREARESULT != null && ROOTAREARESULT.size() > 0) {
-			return ResultGenerator.genSuccessResult(ROOTAREARESULT);
-		}
-		List<AreaResult> roots = new ArrayList<>();
+	@PostMapping("/areaLevels")
+	public Result<?> areaLevels(HttpServletRequest request, @RequestBody BasicRequestParam param) {
+		List<Map<String, Object>> roots = new ArrayList<>();
 		Condition condition = new Condition(SmartCultureBasicCity.class);
+		if (StringUtils.isNotBlank(param.getSearchValue())) {
+			condition.createCriteria().andEqualTo("pcode", param.getSearchValue());
+		} else {
+			condition.createCriteria().andEqualTo("pcode", 86);
+		}
 		condition.setOrderByClause("code asc");
-		List<SmartCultureBasicCity> alls = smartCultureBasicCityService.findByCondition(condition);
-		if (alls != null && alls.size() > 0) {
-			AreaResult e = null;
-			Iterator<SmartCultureBasicCity> it = alls.iterator();
-			while (it.hasNext()) {
-				SmartCultureBasicCity x = it.next();
-				if (x.getPcode() == null || x.getPcode().equals("0")) {
-					e = new AreaResult();
-					e.setValue(x.getCode().toString());
-					e.setLabel(x.getName());
-					e.setChildren(new ArrayList<>());
-					roots.add(e);
-					it.remove();
+		List<SmartCultureBasicCity> bcs = smartCultureBasicCityService.findByCondition(condition);
+		if (bcs != null && bcs.size() > 0) {
+			Map<String, Object> e = null;
+			for (SmartCultureBasicCity x : bcs) {
+				e = new HashMap<>();
+				e.put("value", x.getCode());
+				e.put("label", x.getName());
+				if (x.getLevelNo() < 3) {
+					e.put("isLeaf", false);
+					e.put("loading", false);
+					e.put("children", new ArrayList<>());
+				} else {
+					e.put("isLeaf", true);
 				}
-			}
-			if (roots.size() > 0) {
-				for (AreaResult alm : roots) {
-					Iterator<SmartCultureBasicCity> it2 = alls.iterator();
-					while (it2.hasNext()) {
-						SmartCultureBasicCity x = it2.next();
-						if (alm.getValue().equals(x.getPcode().toString())) {
-							e = new AreaResult();
-							e.setValue(x.getCode().toString());
-							e.setLabel(x.getName());
-							e.setChildren(new ArrayList<>());
-							alm.getChildren().add(e);
-						}
-					}
-					List<AreaResult> almLasts = alm.getChildren();
-					for (AreaResult almLast : almLasts) {
-						Iterator<SmartCultureBasicCity> it3 = alls.iterator();
-						while (it3.hasNext()) {
-							SmartCultureBasicCity x = it3.next();
-							if (almLast.getValue().equals(x.getPcode().toString())) {
-								e = new AreaResult();
-								e.setValue(x.getCode().toString());
-								e.setLabel(x.getName());
-								e.setChildren(new ArrayList<>());
-								almLast.getChildren().add(e);
-							}
-						}
-					}
-				}
+				roots.add(e);
 			}
 		}
-		for (AreaResult ar : roots) {
-			if (ar.getChildren() == null || ar.getChildren().isEmpty()) {
-				ar.setLeaf(true);
-				continue;
-			}
-			for (AreaResult ar2 : ar.getChildren()) {
-				if (ar2.getChildren() == null || ar2.getChildren().isEmpty()) {
-					ar2.setLeaf(true);
-					continue;
-				}
-				for (AreaResult ar3 : ar2.getChildren()) {
-					ar3.setLeaf(true);
-				}
-			}
-		}
-		ROOTAREARESULT = roots;
 		return ResultGenerator.genSuccessResult(roots);
 	}
 
@@ -242,8 +270,8 @@ public class BasicApiCommonController {
 		Condition condition = new Condition(SmartCultureWeatherCity.class);
 		if (StringUtils.isNotBlank(param.getSearchValue())) {
 			String kw = String.format("%%%s%%", param.getSearchValue().trim());
-			condition.createCriteria().orLike("cityName", kw).orLike("cityPinyin", kw).orLike("provinceName", kw)
-					.orLike("provincePinyin", kw);
+			condition.createCriteria().orLike("cityCode", kw).orLike("cityName", kw).orLike("cityPinyin", kw)
+					.orLike("provinceName", kw).orLike("provincePinyin", kw);
 		}
 		condition.orderBy("cityCode").asc();
 		PageHelper.startPage(1, 20);
@@ -253,7 +281,11 @@ public class BasicApiCommonController {
 			for (SmartCultureWeatherCity wc : wcs) {
 				item = new HashMap<>();
 				item.put("value", wc.getCityCode());
-				item.put("name", String.format("%s - %s", wc.getProvinceName(), wc.getCityName()));
+				item.put("label", String.format("%s/%s (%s/%s)", wc.getProvinceName(), wc.getCityName(),
+						wc.getProvincePinyin(), wc.getCityPinyin()));
+				item.put("cityName", wc.getCityName());
+				item.put("provinceName", wc.getProvinceName());
+				cities.add(item);
 			}
 		}
 		return ResultGenerator.genSuccessResult(cities);

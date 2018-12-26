@@ -12,6 +12,7 @@ public class BasicFarmParam {
 	private String organizeId;
 	private String organizeName;
 	private String farmRemark;
+	private String weatherCityCode;
 
 	public String getFarmId() {
 		return farmId;
@@ -99,6 +100,14 @@ public class BasicFarmParam {
 
 	public void setFarmRemark(String farmRemark) {
 		this.farmRemark = farmRemark;
+	}
+
+	public String getWeatherCityCode() {
+		return weatherCityCode;
+	}
+
+	public void setWeatherCityCode(String weatherCityCode) {
+		this.weatherCityCode = weatherCityCode;
 	}
 
 }

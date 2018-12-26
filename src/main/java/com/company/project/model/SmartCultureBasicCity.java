@@ -26,6 +26,12 @@ public class SmartCultureBasicCity {
     private String name;
 
     /**
+     * 级别
+     */
+    @Column(name = "level_no")
+    private Integer levelNo;
+
+    /**
      * 拼音
      */
     private String pinyin;
@@ -105,6 +111,24 @@ public class SmartCultureBasicCity {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * 获取级别
+     *
+     * @return level_no - 级别
+     */
+    public Integer getLevelNo() {
+        return levelNo;
+    }
+
+    /**
+     * 设置级别
+     *
+     * @param levelNo 级别
+     */
+    public void setLevelNo(Integer levelNo) {
+        this.levelNo = levelNo;
     }
 
     /**
