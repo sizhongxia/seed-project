@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SmartCultureCommonMapper">
+	<select id="getFarmWeatherCities" resultType="java.lang.String">
+		select f.weather_city_code from smart_culture_farm f where
+		f.weather_city_code != '' group by f.weather_city_code
+	</select>
+</mapper>

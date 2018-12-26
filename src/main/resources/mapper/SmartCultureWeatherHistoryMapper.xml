@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.project.dao.SmartCultureWeatherHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.company.project.model.SmartCultureWeatherHistory">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="basic_cid" jdbcType="VARCHAR" property="basicCid" />
+    <result column="update_loc" jdbcType="VARCHAR" property="updateLoc" />
+    <result column="update_utc" jdbcType="VARCHAR" property="updateUtc" />
+    <result column="now_cloud" jdbcType="VARCHAR" property="nowCloud" />
+    <result column="now_cond_code" jdbcType="VARCHAR" property="nowCondCode" />
+    <result column="now_cond_txt" jdbcType="VARCHAR" property="nowCondTxt" />
+    <result column="now_fl" jdbcType="VARCHAR" property="nowFl" />
+    <result column="now_tmp" jdbcType="VARCHAR" property="nowTmp" />
+    <result column="now_wind_deg" jdbcType="VARCHAR" property="nowWindDeg" />
+    <result column="now_wind_dir" jdbcType="VARCHAR" property="nowWindDir" />
+    <result column="now_wind_spd" jdbcType="VARCHAR" property="nowWindSpd" />
+    <result column="now_wind_sc" jdbcType="VARCHAR" property="nowWindSc" />
+    <result column="now_hum" jdbcType="VARCHAR" property="nowHum" />
+    <result column="now_pcpn" jdbcType="VARCHAR" property="nowPcpn" />
+    <result column="now_pres" jdbcType="VARCHAR" property="nowPres" />
+    <result column="now_vis" jdbcType="VARCHAR" property="nowVis" />
+    <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
+  </resultMap>
+</mapper>
