@@ -1,7 +1,9 @@
 package com.company.project.web.basic;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +61,18 @@ public class SmartCultureWeatherController {
 			smartCultureWeatherNowService.save(wn);
 			smartCultureWeatherHistoryService.save(wh);
 		}
-		return ResultGenerator.genSuccessResult(wn);
+		Map<String, String> weather = new HashMap<>();
+		weather.put("location", wn.getBasicLocation());
+		weather.put("updateLoc", wn.getUpdateLoc());
+		weather.put("tmp", String.format("%s℃", wn.getNowTmp()));
+		weather.put("tmpFl", String.format("%s℃", wn.getNowFl()));
+		weather.put("windInfo", String.format("%s风%s级", wn.getNowWindDir().replaceAll("风", ""), wn.getNowWindSc()));
+		weather.put("weather", wn.getNowCondTxt());
+		weather.put("pic",
+				String.format("https://static.yeetong.cn/weather/hefeng/v1/%s.png-yeetong", wn.getNowCondCode()));
+		weather.put("hum", String.format("%s%%", wn.getNowHum()));
+		weather.put("pcpn", String.format("%smm", wn.getNowPcpn()));
+		return ResultGenerator.genSuccessResult(weather);
 	}
 
 	@RequestMapping("/update")
