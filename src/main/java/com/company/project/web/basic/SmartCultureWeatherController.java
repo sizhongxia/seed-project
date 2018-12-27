@@ -71,7 +71,7 @@ public class SmartCultureWeatherController {
 		int num = 0;
 		for (String cid : wcs) {
 			SmartCultureWeatherNow wn = smartCultureWeatherNowService.findBy("basicCid", cid);
-			if (wn != null && System.currentTimeMillis() - wn.getUpdateAt().getTime() < ((6 * 60 * 60 - 1) * 1000)) {
+			if (wn != null && System.currentTimeMillis() - wn.getUpdateAt().getTime() < ((3 * 60 * 60 - 1) * 1000)) {
 				continue;
 			}
 			SmartCultureWeatherNow nwn = HeFengWeather.queryNow(cid);
@@ -84,7 +84,7 @@ public class SmartCultureWeatherController {
 				}
 				BeanUtils.copyProperties(nwn, wn);
 				wn.setId(id);
-				smartCultureWeatherNowService.update(nwn);
+				smartCultureWeatherNowService.update(wn);
 			}
 			SmartCultureWeatherHistory wh = new SmartCultureWeatherHistory();
 			BeanUtils.copyProperties(nwn, wh);
