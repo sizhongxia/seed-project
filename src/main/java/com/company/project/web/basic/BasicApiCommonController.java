@@ -1,5 +1,7 @@
 package com.company.project.web.basic;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.company.project.annotation.SmartCultureTokenCheck;
 import com.company.project.core.Result;
@@ -29,6 +34,8 @@ import com.company.project.model.SmartCultureWeatherCity;
 import com.company.project.model.param.basic.BasicLoginParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.service.SmartCultureBasicCityService;
+import com.company.project.service.SmartCultureFarmPicService;
+import com.company.project.service.SmartCultureFarmService;
 import com.company.project.service.SmartCultureUserIdentityService;
 import com.company.project.service.SmartCultureUserMenuService;
 import com.company.project.service.SmartCultureUserService;
@@ -36,7 +43,15 @@ import com.company.project.service.SmartCultureUserTokenService;
 import com.company.project.service.SmartCultureWeatherCityService;
 import com.company.project.unit.IdUtils;
 import com.company.project.unit.Md5Util;
+import com.company.project.unit.SmartCulturePicturePrefix;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
@@ -62,6 +77,10 @@ public class BasicApiCommonController {
 	SmartCultureUserMenuService smartCultureUserMenuService;
 	@Resource
 	SmartCultureWeatherCityService smartCultureWeatherCityService;
+	@Resource
+	SmartCultureFarmService smartCultureFarmService;
+	@Resource
+	SmartCultureFarmPicService smartCultureFarmPicService;
 
 	// PC登陆
 	@PostMapping("/login")
@@ -291,6 +310,69 @@ public class BasicApiCommonController {
 		return ResultGenerator.genSuccessResult(cities);
 	}
 
+	@ResponseBody
+	@PostMapping("/upload")
+	public Result<?> upload(HttpServletRequest request, @RequestParam("file") MultipartFile multipartFile)
+			throws IOException {
+		String type = request.getHeader("type");
+		// String objectId = request.getHeader("objectId");
+		// String fileTitle = "";
+		SmartCulturePicturePrefix prefix = SmartCulturePicturePrefix.EMPTY;
+		if ("farm".equals(type)) {
+			// if (StringUtils.isBlank(objectId)) {
+			// return ResultGenerator.genFailResult("E5001");
+			// }
+			prefix = SmartCulturePicturePrefix.FARM;
+			// SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", objectId);
+			// if (farm == null) {
+			// return ResultGenerator.genFailResult("E5002");
+			// }
+			// fileTitle = farm.getFarmName();
+		}
+
+		String path = uploadQNImg((FileInputStream) multipartFile.getInputStream(), prefix);
+		if (path != null) {
+
+			// if ("farm".equals(type)) {
+			// SmartCultureFarmPic farmPic = new SmartCultureFarmPic();
+			// farmPic.setFarmId(objectId);
+			// farmPic.setFarmAreaId("");
+			// farmPic.setCreateAt(new Date());
+			// farmPic.setPicTitle(fileTitle);
+			// farmPic.setPicUrl(path);
+			// farmPic.setSortNum(1);
+			// smartCultureFarmPicService.save(farmPic);
+			// }
+
+			return ResultGenerator.genSuccessResult(path);
+		}
+		return ResultGenerator.genFailResult("E500");
+	}
+
+	/**
+	 * 将图片上传到七牛云
+	 */
+	private String uploadQNImg(FileInputStream file, SmartCulturePicturePrefix prefix) {
+		String key = prefix.getPrefix() + IdUtils.initObjectId();
+		// 构造一个带指定Zone对象的配置类
+		Configuration cfg = new Configuration(Zone.huabei());
+		// 其他参数参考类注释
+		UploadManager uploadManager = new UploadManager(cfg);
+		// 生成上传凭证，然后准备上传
+		try {
+			Auth auth = Auth.create("hJfg24zwwvk0Ke1cjBKc6Gbq_MCJfxobI8inqDbf",
+					"9Dff82AznRQ764H4Sm1t4JrC9Q-Cf_HDCh-vUsM7");
+			String upToken = auth.uploadToken("yeetong-guanwang");
+			Response response = uploadManager.put(file, key, upToken, null, null);
+			// 解析上传成功的结果
+			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+			logger.debug("Upload File Success: key={}, hash={}", putRet.key, putRet.hash);
+			return String.format("https://static.yeetong.cn/%s-yeetong", key);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	// public static void main(String[] args) {
 	// System.out.println(Md5Util.md5("123456", "sizhongxia"));
 	// // 5c1b4f857ba94f15347cc6e6

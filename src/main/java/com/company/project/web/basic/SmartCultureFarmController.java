@@ -27,15 +27,18 @@ import com.company.project.model.SmartCultureBasicCity;
 import com.company.project.model.SmartCultureEquipment;
 import com.company.project.model.SmartCultureFarm;
 import com.company.project.model.SmartCultureFarmArea;
+import com.company.project.model.SmartCultureFarmPic;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.SmartCultureWeatherCity;
 import com.company.project.model.param.basic.BasicFarmParam;
+import com.company.project.model.param.basic.BasicFarmPictureParam;
 import com.company.project.model.param.basic.BasicRequestParam;
 import com.company.project.model.returns.basic.BasicPageResult;
 import com.company.project.service.SmartCultureBasicCityService;
 import com.company.project.service.SmartCultureEquipmentService;
 import com.company.project.service.SmartCultureFarmAreaService;
+import com.company.project.service.SmartCultureFarmPicService;
 import com.company.project.service.SmartCultureFarmService;
 import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserService;
@@ -69,6 +72,8 @@ public class SmartCultureFarmController {
 	SmartCultureEquipmentService smartCultureEquipmentService;
 	@Resource
 	SmartCultureWeatherCityService smartCultureWeatherCityService;
+	@Resource
+	SmartCultureFarmPicService smartCultureFarmPicService;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -399,5 +404,55 @@ public class SmartCultureFarmController {
 			}
 		}
 		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/savePictures")
+	public Result<?> savePictures(HttpServletRequest request, @RequestBody BasicFarmPictureParam param) {
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		if (param.getFileList() == null || param.getFileList().length < 1) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", param.getFarmId());
+		if (farm == null) {
+			return ResultGenerator.genFailResult("E5003");
+		}
+		SmartCultureFarmArea fa = null;
+		if (StringUtils.isNotBlank(param.getFarmAreaId())) {
+			fa = smartCultureFarmAreaService.findBy("areaId", param.getFarmAreaId());
+			if (fa == null) {
+				return ResultGenerator.genFailResult("E5003");
+			}
+		}
+		String title = param.getTitle();
+		if (StringUtils.isBlank(title)) {
+			title = farm.getFarmName();
+			if (fa != null) {
+				title += "-" + fa.getAreaName();
+			}
+		}
+		String sortNum = param.getSortNum();
+		if (!NumberUtils.isParsable(sortNum)) {
+			sortNum = "1";
+		}
+		List<SmartCultureFarmPic> cfps = new ArrayList<>();
+		SmartCultureFarmPic farmPic = null;
+		for (String url : param.getFileList()) {
+			farmPic = new SmartCultureFarmPic();
+			farmPic.setFarmId(farm.getFarmId());
+			farmPic.setFarmAreaId("");
+			if (fa != null) {
+				farmPic.setFarmAreaId(fa.getAreaId());
+			}
+			farmPic.setCreateAt(new Date());
+			farmPic.setPicTitle(title);
+			farmPic.setPicUrl(url);
+			farmPic.setSortNum(Integer.parseInt(sortNum));
+			cfps.add(farmPic);
+		}
+		smartCultureFarmPicService.save(cfps);
+		return ResultGenerator.genSuccessResult();
 	}
 }
