@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -35,14 +34,11 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.company.project.Interceptor.SmartCultureTokenCheckInterceptor;
-import com.company.project.Interceptor.TokenCheckInterceptor;
 import com.company.project.core.Result;
 import com.company.project.core.ResultCode;
 import com.company.project.core.ServiceException;
-import com.company.project.filter.JwtFilter;
 import com.company.project.unit.IdWorker;
 import com.company.project.unit.SystemLocal;
-import com.google.common.collect.Lists;
 
 /**
  * Spring MVC 配置
@@ -127,14 +123,8 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		return new SmartCultureTokenCheckInterceptor();
 	}
 
-	@Bean
-	TokenCheckInterceptor tokenCheckInterceptor() {
-		return new TokenCheckInterceptor();
-	}
-
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(tokenCheckInterceptor());
 		registry.addInterceptor(smartCultureTokenCheckInterceptor());
 		super.addInterceptors(registry);
 	}
@@ -187,22 +177,6 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 		SystemLocal systemLocal = new SystemLocal();
 		systemLocal.init(local);
 		return systemLocal;
-	}
-
-	@Bean
-	public FilterRegistrationBean jwtFilter() {
-		final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-		registrationBean.setFilter(new JwtFilter());
-		// 添加需要拦截的url
-		List<String> urlPatterns = Lists.newArrayList();
-		urlPatterns.add("/check");
-		urlPatterns.add("/device/**");
-		urlPatterns.add("/dictionary/**");
-		urlPatterns.add("/loginaccount/**");
-		urlPatterns.add("/sys/**");
-		urlPatterns.add("/unit/**");
-		registrationBean.addUrlPatterns(urlPatterns.toArray(new String[urlPatterns.size()]));
-		return registrationBean;
 	}
 
 	public void MethodArgumentNotValidException(Exception ex, HttpServletRequest request,

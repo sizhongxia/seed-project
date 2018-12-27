@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.company.project.annotation.SmartCultureTokenCheck;
+import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureBasicCity;
@@ -81,6 +82,8 @@ public class BasicApiCommonController {
 	SmartCultureFarmService smartCultureFarmService;
 	@Resource
 	SmartCultureFarmPicService smartCultureFarmPicService;
+	@Resource
+	QiniuConstant qiniuConstant;
 
 	// PC登陆
 	@PostMapping("/login")
@@ -323,7 +326,8 @@ public class BasicApiCommonController {
 			// return ResultGenerator.genFailResult("E5001");
 			// }
 			prefix = SmartCulturePicturePrefix.FARM;
-			// SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", objectId);
+			// SmartCultureFarm farm = smartCultureFarmService.findBy("farmId",
+			// objectId);
 			// if (farm == null) {
 			// return ResultGenerator.genFailResult("E5002");
 			// }
@@ -360,14 +364,13 @@ public class BasicApiCommonController {
 		UploadManager uploadManager = new UploadManager(cfg);
 		// 生成上传凭证，然后准备上传
 		try {
-			Auth auth = Auth.create("hJfg24zwwvk0Ke1cjBKc6Gbq_MCJfxobI8inqDbf",
-					"9Dff82AznRQ764H4Sm1t4JrC9Q-Cf_HDCh-vUsM7");
-			String upToken = auth.uploadToken("yeetong-guanwang");
+			Auth auth = Auth.create(qiniuConstant.getAccessKey(), qiniuConstant.getSecretKey());
+			String upToken = auth.uploadToken(qiniuConstant.getBucket());
 			Response response = uploadManager.put(file, key, upToken, null, null);
 			// 解析上传成功的结果
 			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
 			logger.debug("Upload File Success: key={}, hash={}", putRet.key, putRet.hash);
-			return String.format("https://static.yeetong.cn/%s-yeetong", key);
+			return String.format("%s%s-yeetong", qiniuConstant.getPath(), key);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -435,12 +435,13 @@ public class SmartCultureFarmController {
 		}
 		String sortNum = param.getSortNum();
 		if (!NumberUtils.isParsable(sortNum)) {
-			sortNum = "1";
+			sortNum = "999";
 		}
 		List<SmartCultureFarmPic> cfps = new ArrayList<>();
 		SmartCultureFarmPic farmPic = null;
 		for (String url : param.getFileList()) {
 			farmPic = new SmartCultureFarmPic();
+			farmPic.setPicId(IdUtils.initObjectId());
 			farmPic.setFarmId(farm.getFarmId());
 			farmPic.setFarmAreaId("");
 			if (fa != null) {
@@ -453,6 +454,79 @@ public class SmartCultureFarmController {
 			cfps.add(farmPic);
 		}
 		smartCultureFarmPicService.save(cfps);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/pictures")
+	public Result<?> pictures(HttpServletRequest request, @RequestBody BasicFarmPictureParam param) {
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", param.getFarmId());
+		if (farm == null) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		Condition condition = new Condition(SmartCultureFarmPic.class);
+		Criteria criteria = condition.createCriteria().andEqualTo("farmId", param.getFarmId());
+
+		if (StringUtils.isNotBlank(param.getFarmAreaId())) {
+			criteria.andEqualTo("farmAreaId", param.getFarmAreaId());
+		}
+
+		condition.setOrderByClause("sort_num asc, id asc");
+		List<SmartCultureFarmPic> pics = smartCultureFarmPicService.findByCondition(condition);
+		List<Map<String, Object>> list = new ArrayList<>();
+		if (pics != null && pics.size() > 0) {
+			Map<String, Object> item = null;
+			for (SmartCultureFarmPic farmPic : pics) {
+				item = new HashMap<>();
+				item.put("farmId", farmPic.getFarmId());
+				item.put("farmAreaId", farmPic.getFarmAreaId());
+				item.put("picId", farmPic.getPicId());
+				item.put("picUrl", farmPic.getPicUrl());
+				item.put("picTitle", farmPic.getPicTitle());
+				item.put("sortNum", farmPic.getSortNum());
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/deletePicture")
+	public Result<?> deletePicture(HttpServletRequest request, @RequestBody BasicFarmPictureParam param) {
+		if (StringUtils.isBlank(param.getPicId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		SmartCultureFarmPic farmPic = smartCultureFarmPicService.findBy("picId", param.getPicId());
+		if (farmPic == null) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		smartCultureFarmPicService.deleteById(farmPic.getId());
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/updatePicture")
+	public Result<?> updatePicture(HttpServletRequest request, @RequestBody BasicFarmPictureParam param) {
+		if (StringUtils.isBlank(param.getPicId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		SmartCultureFarmPic farmPic = smartCultureFarmPicService.findBy("picId", param.getPicId());
+		if (farmPic == null) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+		String sortNum = param.getSortNum();
+		if (!NumberUtils.isParsable(sortNum)) {
+			sortNum = "999";
+		}
+		String title = param.getTitle();
+		String farmAreaId = param.getFarmAreaId();
+		farmPic.setSortNum(Integer.parseInt(sortNum));
+		farmPic.setPicTitle(title == null ? "" : title.trim());
+		farmPic.setFarmAreaId(farmAreaId == null ? "" : farmAreaId.trim());
+		smartCultureFarmPicService.update(farmPic);
 		return ResultGenerator.genSuccessResult();
 	}
 }

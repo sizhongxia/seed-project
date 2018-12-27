@@ -1,4 +1,4 @@
-package com.company.project.web.yeetong.miniapp.zhyz;
+package com.company.project.web.zhyz.mp;
 
 import java.io.File;
 import java.util.Objects;
@@ -31,8 +31,8 @@ import me.chanjar.weixin.common.error.WxErrorException;
 
 @RestController
 @RequestMapping("/zhyz/miniapp/api")
-public class ZhyzMiniAppApiController {
-	final Logger logger = LoggerFactory.getLogger(ZhyzMiniAppApiController.class);
+public class ZhyzMpApiController {
+	final Logger logger = LoggerFactory.getLogger(ZhyzMpApiController.class);
 
 	final String APP_ID = "wxb4bab327bf7710a4";
 	final String APP_SECRET = "ad3fbc9a1a0cc7c6718a3df15671d41e";
@@ -104,13 +104,10 @@ public class ZhyzMiniAppApiController {
 		logger.info(inMessage.toString());
 
 		WxMaMessageRouter router = new WxMaMessageRouter(wxService);
-		router
-			.rule().handler(logHandler).next()
-			.rule().async(false).content("模板").handler(templateMsgHandler).end()
-			.rule().async(false).content("文本").handler(textHandler).end()
-			.rule().async(false).content("图片").handler(picHandler).end()
-			.rule().async(false).content("二维码").handler(qrcodeHandler).end();
-        return "success";
+		router.rule().handler(logHandler).next().rule().async(false).content("模板").handler(templateMsgHandler).end()
+				.rule().async(false).content("文本").handler(textHandler).end().rule().async(false).content("图片")
+				.handler(picHandler).end().rule().async(false).content("二维码").handler(qrcodeHandler).end();
+		return "success";
 	}
 
 	private final WxMaMessageHandler templateMsgHandler = (wxMessage, context, service, sessionManager) -> service

@@ -12,6 +12,12 @@ public class SmartCultureFarmPic {
     private Long id;
 
     /**
+     * 图片ID
+     */
+    @Column(name = "pic_id")
+    private String picId;
+
+    /**
      * 农场ID
      */
     @Column(name = "farm_id")
@@ -63,6 +69,24 @@ public class SmartCultureFarmPic {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * 获取图片ID
+     *
+     * @return pic_id - 图片ID
+     */
+    public String getPicId() {
+        return picId;
+    }
+
+    /**
+     * 设置图片ID
+     *
+     * @param picId 图片ID
+     */
+    public void setPicId(String picId) {
+        this.picId = picId;
     }
 
     /**

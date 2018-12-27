@@ -1,9 +1,11 @@
 package com.company.project.model.param.basic;
 
 public class BasicFarmPictureParam {
+	private String picId;
+
 	private String farmId;
-	private String[] fileList;
 	private String farmAreaId;
+	private String[] fileList;
 	private String title;
 	private String sortNum;
 
@@ -45,6 +47,14 @@ public class BasicFarmPictureParam {
 
 	public void setSortNum(String sortNum) {
 		this.sortNum = sortNum;
+	}
+
+	public String getPicId() {
+		return picId;
+	}
+
+	public void setPicId(String picId) {
+		this.picId = picId;
 	}
 
 }
