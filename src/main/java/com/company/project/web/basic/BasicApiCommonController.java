@@ -115,6 +115,7 @@ public class BasicApiCommonController {
 			userToken = new SmartCultureUserToken();
 			userToken.setUserId(user.getUserId());
 			userToken.setToken(IdUtils.initUuid() + System.currentTimeMillis());
+			userToken.setSourceType("PC");
 			userToken.setCreateAt(now);
 			userToken.setLastVisitAt(now);
 			userToken.setOverdueAt(DateUtil.offset(now, DateField.HOUR, TOKEN_VALID_TIME));
