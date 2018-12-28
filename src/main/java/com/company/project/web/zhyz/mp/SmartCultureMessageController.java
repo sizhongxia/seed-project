@@ -31,8 +31,8 @@ import me.chanjar.weixin.common.error.WxErrorException;
 
 @RestController
 @RequestMapping("/zhyz/miniapp/api")
-public class ZhyzMpApiController {
-	final Logger logger = LoggerFactory.getLogger(ZhyzMpApiController.class);
+public class SmartCultureMessageController {
+	final Logger logger = LoggerFactory.getLogger(SmartCultureMessageController.class);
 
 	final String APP_ID = "wxb4bab327bf7710a4";
 	final String APP_SECRET = "ad3fbc9a1a0cc7c6718a3df15671d41e";
