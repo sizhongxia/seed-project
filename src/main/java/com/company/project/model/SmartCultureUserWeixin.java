@@ -36,6 +36,38 @@ public class SmartCultureUserWeixin {
     private String unionId;
 
     /**
+     * 微信昵称
+     */
+    @Column(name = "nicke_name")
+    private String nickeName;
+
+    /**
+     * 头像
+     */
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    /**
+     * 国家
+     */
+    private String country;
+
+    /**
+     * 省份
+     */
+    private String province;
+
+    /**
+     * 城市
+     */
+    private String city;
+
+    /**
+     * 性别
+     */
+    private Integer gender;
+
+    /**
      * 创建时间
      */
     @Column(name = "create_at")
@@ -145,6 +177,114 @@ public class SmartCultureUserWeixin {
      */
     public void setUnionId(String unionId) {
         this.unionId = unionId;
+    }
+
+    /**
+     * 获取微信昵称
+     *
+     * @return nicke_name - 微信昵称
+     */
+    public String getNickeName() {
+        return nickeName;
+    }
+
+    /**
+     * 设置微信昵称
+     *
+     * @param nickeName 微信昵称
+     */
+    public void setNickeName(String nickeName) {
+        this.nickeName = nickeName;
+    }
+
+    /**
+     * 获取头像
+     *
+     * @return avatar_url - 头像
+     */
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    /**
+     * 设置头像
+     *
+     * @param avatarUrl 头像
+     */
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    /**
+     * 获取国家
+     *
+     * @return country - 国家
+     */
+    public String getCountry() {
+        return country;
+    }
+
+    /**
+     * 设置国家
+     *
+     * @param country 国家
+     */
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    /**
+     * 获取省份
+     *
+     * @return province - 省份
+     */
+    public String getProvince() {
+        return province;
+    }
+
+    /**
+     * 设置省份
+     *
+     * @param province 省份
+     */
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    /**
+     * 获取城市
+     *
+     * @return city - 城市
+     */
+    public String getCity() {
+        return city;
+    }
+
+    /**
+     * 设置城市
+     *
+     * @param city 城市
+     */
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    /**
+     * 获取性别
+     *
+     * @return gender - 性别
+     */
+    public Integer getGender() {
+        return gender;
+    }
+
+    /**
+     * 设置性别
+     *
+     * @param gender 性别
+     */
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 
     /**

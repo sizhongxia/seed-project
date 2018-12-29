@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by SiZhongXia on 2018/12/28.
+ * Created by SiZhongXia on 2018/12/29.
  */
 public interface SmartCultureUserWeixinService extends Service<SmartCultureUserWeixin> {
 

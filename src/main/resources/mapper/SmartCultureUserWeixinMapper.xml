@@ -11,6 +11,12 @@
     <result column="session_key" jdbcType="VARCHAR" property="sessionKey" />
     <result column="open_id" jdbcType="VARCHAR" property="openId" />
     <result column="union_id" jdbcType="VARCHAR" property="unionId" />
+    <result column="nicke_name" jdbcType="VARCHAR" property="nickeName" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="country" jdbcType="VARCHAR" property="country" />
+    <result column="province" jdbcType="VARCHAR" property="province" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
     <result column="create_at" jdbcType="TIMESTAMP" property="createAt" />
     <result column="update_at" jdbcType="TIMESTAMP" property="updateAt" />
   </resultMap>
