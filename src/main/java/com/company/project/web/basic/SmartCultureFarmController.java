@@ -330,6 +330,7 @@ public class SmartCultureFarmController {
 		map.put("farmId", farm.getFarmId());
 		map.put("farmName", farm.getFarmName());
 		map.put("farmCode", farm.getFarmCode());
+		map.put("qrCodeUrl", farm.getQrCodeUrl());
 		map.put("organizeId", farm.getOrganizeId());
 		map.put("ownerUserId", farm.getOwnerUserId());
 		List<String> areaCodes = new ArrayList<>();
