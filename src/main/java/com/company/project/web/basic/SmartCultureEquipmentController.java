@@ -176,10 +176,11 @@ public class SmartCultureEquipmentController {
 		if (equipment != null && !equipment.getEquipmentId().equals(equipmentId)) {
 			return ResultGenerator.genFailResult("E5004");
 		}
-		equipment = smartCultureEquipmentService.findBy("equipmentSn", param.getEquipmentSn().trim());
-		if (equipment != null && !equipment.getEquipmentId().equals(equipmentId)) {
-			return ResultGenerator.genFailResult("E5005");
-		}
+		// equipment = smartCultureEquipmentService.findBy("equipmentSn",
+		// param.getEquipmentSn().trim());
+		// if (equipment != null && !equipment.getEquipmentId().equals(equipmentId)) {
+		// return ResultGenerator.genFailResult("E5005");
+		// }
 		if (StringUtils.isBlank(equipmentId)) {
 			// 新增
 			equipment = new SmartCultureEquipment();
