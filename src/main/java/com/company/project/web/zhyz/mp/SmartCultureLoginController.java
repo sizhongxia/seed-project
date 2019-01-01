@@ -43,6 +43,9 @@ import tk.mybatis.mapper.entity.Condition;
 public class SmartCultureLoginController {
 
 	private final Logger logger = LoggerFactory.getLogger(SmartCultureLoginController.class);
+	
+	// token有效时长
+	public final static int TOKEN_VALID_TIME = 24 * 7;
 
 	@Resource
 	SmartCultureUserWeixinService smartCultureUserWeixinService;
@@ -84,13 +87,13 @@ public class SmartCultureLoginController {
 			userToken.setSourceType("MP");
 			userToken.setCreateAt(now);
 			userToken.setLastVisitAt(now);
-			userToken.setOverdueAt(DateUtil.offset(now, DateField.MONTH, 1));
+			userToken.setOverdueAt(DateUtil.offset(now, DateField.HOUR, TOKEN_VALID_TIME));
 			userToken.setIsForbidden(0);
 			smartCultureUserTokenService.save(userToken);
 		} else {
 			userToken = userTokens.get(0);
 			userToken.setLastVisitAt(now);
-			userToken.setOverdueAt(DateUtil.offset(now, DateField.MONTH, 1));
+			userToken.setOverdueAt(DateUtil.offset(now, DateField.HOUR, TOKEN_VALID_TIME));
 			smartCultureUserTokenService.update(userToken);
 		}
 		Map<String, Object> result = new HashMap<>();

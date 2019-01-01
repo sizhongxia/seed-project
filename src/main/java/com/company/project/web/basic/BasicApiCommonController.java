@@ -64,7 +64,7 @@ public class BasicApiCommonController {
 	final Logger logger = LoggerFactory.getLogger(BasicApiCommonController.class);
 
 	// token有效时长
-	public final static int TOKEN_VALID_TIME = 2;
+	public final static int TOKEN_VALID_TIME = 24 * 7;
 
 	@Resource
 	SmartCultureUserService smartCultureUserService;
