@@ -9,6 +9,7 @@
     <result column="farm_id" jdbcType="VARCHAR" property="farmId" />
     <result column="farm_name" jdbcType="VARCHAR" property="farmName" />
     <result column="farm_code" jdbcType="VARCHAR" property="farmCode" />
+    <result column="qr_code_url" jdbcType="VARCHAR" property="qrCodeUrl" />
     <result column="organize_id" jdbcType="VARCHAR" property="organizeId" />
     <result column="owner_user_id" jdbcType="VARCHAR" property="ownerUserId" />
     <result column="province_code" jdbcType="CHAR" property="provinceCode" />

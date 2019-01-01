@@ -30,6 +30,12 @@ public class SmartCultureFarm {
     private String farmCode;
 
     /**
+     * 二维码地址（生成规则：https://zhyz.yeetong.cn/farm/:code）
+     */
+    @Column(name = "qr_code_url")
+    private String qrCodeUrl;
+
+    /**
      * 所属组织
      */
     @Column(name = "organize_id")
@@ -203,6 +209,24 @@ public class SmartCultureFarm {
      */
     public void setFarmCode(String farmCode) {
         this.farmCode = farmCode;
+    }
+
+    /**
+     * 获取二维码地址（生成规则：https://zhyz.yeetong.cn/farm/:code）
+     *
+     * @return qr_code_url - 二维码地址（生成规则：https://zhyz.yeetong.cn/farm/:code）
+     */
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
+    }
+
+    /**
+     * 设置二维码地址（生成规则：https://zhyz.yeetong.cn/farm/:code）
+     *
+     * @param qrCodeUrl 二维码地址（生成规则：https://zhyz.yeetong.cn/farm/:code）
+     */
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
     }
 
     /**

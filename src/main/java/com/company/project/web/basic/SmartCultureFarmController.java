@@ -1,5 +1,6 @@
 package com.company.project.web.basic;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.project.annotation.SmartCultureTokenCheck;
+import com.company.project.configurer.QiniuConstant;
 import com.company.project.core.Result;
 import com.company.project.core.ResultGenerator;
 import com.company.project.model.SmartCultureBasicCity;
@@ -44,8 +46,17 @@ import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureWeatherCityService;
 import com.company.project.unit.IdUtils;
+import com.company.project.unit.QRCodeUtil;
+import com.company.project.unit.SmartCulturePicturePrefix;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import com.qiniu.common.Zone;
+import com.qiniu.http.Response;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.storage.model.DefaultPutRet;
+import com.qiniu.util.Auth;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -74,6 +85,8 @@ public class SmartCultureFarmController {
 	SmartCultureWeatherCityService smartCultureWeatherCityService;
 	@Resource
 	SmartCultureFarmPicService smartCultureFarmPicService;
+	@Resource
+	QiniuConstant qiniuConstant;
 
 	@SmartCultureTokenCheck
 	@PostMapping("/list")
@@ -158,6 +171,29 @@ public class SmartCultureFarmController {
 				scf = smartCultureFarmService.findBy("farmCode", farmCode);
 			} while (scf != null);
 			farm.setFarmCode(farmCode);
+			String qrCodeUrl = "";
+			String key = SmartCulturePicturePrefix.FARM_QR + IdUtils.initObjectId();
+			// 构造一个带指定Zone对象的配置类
+			Configuration cfg = new Configuration(Zone.huabei());
+			// 其他参数参考类注释
+			UploadManager uploadManager = new UploadManager(cfg);
+			// 生成上传凭证，然后准备上传
+			try {
+				Auth auth = Auth.create(qiniuConstant.getAccessKey(), qiniuConstant.getSecretKey());
+				String upToken = auth.uploadToken(qiniuConstant.getBucket());
+				Response response = uploadManager.put(
+						new ByteArrayInputStream(QRCodeUtil
+								.createQrCodeBytes(String.format("%s%s", "https://farm.yeetong.cn/", farmCode), 280)),
+						key, upToken, null, null);
+				// 解析上传成功的结果
+				DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+				logger.debug("Upload File Success: key={}, hash={}", putRet.key, putRet.hash);
+				qrCodeUrl = String.format("%s%s-yeetong", qiniuConstant.getPath(), key);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResultGenerator.genFailResult("E5003");
+			}
+			farm.setQrCodeUrl(qrCodeUrl);
 			farm.setOwnerUserId(param.getOwnerUserId() == null ? "" : param.getOwnerUserId().trim());
 			farm.setLogo("http://static.yeetong.cn/default-farm.png-yeetong");
 			farm.setVersion(1L);
@@ -359,6 +395,44 @@ public class SmartCultureFarmController {
 			return ResultGenerator.genFailResult("E5002");
 		}
 		farm.setOwnerUserId(param.getOwnerUserId() == null ? "" : param.getOwnerUserId());
+		smartCultureFarmService.update(farm);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/refreshQr")
+	public Result<?> refreshQr(HttpServletRequest request, @RequestBody BasicFarmParam param) {
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("E5001");
+		}
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", param.getFarmId());
+		if (farm == null) {
+			return ResultGenerator.genFailResult("E5002");
+		}
+
+		String qrCodeUrl = "";
+		String key = SmartCulturePicturePrefix.FARM_QR + IdUtils.initObjectId();
+		// 构造一个带指定Zone对象的配置类
+		Configuration cfg = new Configuration(Zone.huabei());
+		// 其他参数参考类注释
+		UploadManager uploadManager = new UploadManager(cfg);
+		// 生成上传凭证，然后准备上传
+		try {
+			Auth auth = Auth.create(qiniuConstant.getAccessKey(), qiniuConstant.getSecretKey());
+			String upToken = auth.uploadToken(qiniuConstant.getBucket());
+			Response response = uploadManager.put(
+					new ByteArrayInputStream(QRCodeUtil.createQrCodeBytes(
+							String.format("%s%s", "https://farm.yeetong.cn/", farm.getFarmCode()), 280)),
+					key, upToken, null, null);
+			// 解析上传成功的结果
+			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+			logger.debug("Upload File Success: key={}, hash={}", putRet.key, putRet.hash);
+			qrCodeUrl = String.format("%s%s-yeetong", qiniuConstant.getPath(), key);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResultGenerator.genFailResult("E5003");
+		}
+		farm.setQrCodeUrl(qrCodeUrl);
 		smartCultureFarmService.update(farm);
 		return ResultGenerator.genSuccessResult();
 	}
