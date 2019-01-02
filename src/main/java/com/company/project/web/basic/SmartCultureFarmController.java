@@ -172,7 +172,7 @@ public class SmartCultureFarmController {
 			} while (scf != null);
 			farm.setFarmCode(farmCode);
 			String qrCodeUrl = "";
-			String key = SmartCulturePicturePrefix.FARM_QR + IdUtils.initObjectId();
+			String key = SmartCulturePicturePrefix.FARM_QR.getPrefix() + IdUtils.initObjectId();
 			// 构造一个带指定Zone对象的配置类
 			Configuration cfg = new Configuration(Zone.huabei());
 			// 其他参数参考类注释
@@ -412,7 +412,7 @@ public class SmartCultureFarmController {
 		}
 
 		String qrCodeUrl = "";
-		String key = SmartCulturePicturePrefix.FARM_QR + IdUtils.initObjectId();
+		String key = SmartCulturePicturePrefix.FARM_QR.getPrefix() + IdUtils.initObjectId();
 		// 构造一个带指定Zone对象的配置类
 		Configuration cfg = new Configuration(Zone.huabei());
 		// 其他参数参考类注释
