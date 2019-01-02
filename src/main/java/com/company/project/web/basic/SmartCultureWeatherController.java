@@ -77,17 +77,17 @@ public class SmartCultureWeatherController {
 
 	@RequestMapping("/update")
 	public Result<?> update(HttpServletRequest request) {
-		List<String> wcs = smartCultureCommonService.getFarmWeatherCities();
+		List<SmartCultureWeatherCity> wcs = smartCultureWeatherCityService.findAll();
 		if (wcs == null) {
 			return ResultGenerator.genFailResult("E5001");
 		}
 		int num = 0;
-		for (String cid : wcs) {
-			SmartCultureWeatherNow wn = smartCultureWeatherNowService.findBy("basicCid", cid);
-			if (wn != null && System.currentTimeMillis() - wn.getUpdateAt().getTime() < ((3 * 60 * 60 - 1) * 1000)) {
+		for (SmartCultureWeatherCity cid : wcs) {
+			SmartCultureWeatherNow wn = smartCultureWeatherNowService.findBy("basicCid", cid.getCityCode());
+			if (wn != null && System.currentTimeMillis() - wn.getUpdateAt().getTime() < ((2 * 60 * 60 - 1) * 1000)) {
 				continue;
 			}
-			SmartCultureWeatherNow nwn = HeFengWeather.queryNow(cid);
+			SmartCultureWeatherNow nwn = HeFengWeather.queryNow(cid.getCityCode());
 			if (wn == null) {
 				smartCultureWeatherNowService.save(nwn);
 			} else {
