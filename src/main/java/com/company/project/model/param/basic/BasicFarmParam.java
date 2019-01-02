@@ -13,6 +13,7 @@ public class BasicFarmParam {
 	private String organizeName;
 	private String farmRemark;
 	private String weatherCityCode;
+	private String acreage;
 
 	public String getFarmId() {
 		return farmId;
@@ -108,6 +109,14 @@ public class BasicFarmParam {
 
 	public void setWeatherCityCode(String weatherCityCode) {
 		this.weatherCityCode = weatherCityCode;
+	}
+
+	public String getAcreage() {
+		return acreage;
+	}
+
+	public void setAcreage(String acreage) {
+		this.acreage = acreage;
 	}
 
 }

@@ -43,7 +43,7 @@ import tk.mybatis.mapper.entity.Condition;
 public class SmartCultureLoginController {
 
 	private final Logger logger = LoggerFactory.getLogger(SmartCultureLoginController.class);
-	
+
 	// token有效时长
 	public final static int TOKEN_VALID_TIME = 24 * 7;
 
@@ -141,7 +141,10 @@ public class SmartCultureLoginController {
 		}
 		SmartCultureUser user = smartCultureUserService.findBy("userName", param.getUsername());
 		if (user == null) {
-			return ResultGenerator.genFailResult("无效的平台账号");
+			user = smartCultureUserService.findBy("phoneNo", param.getUsername());
+			if (user == null) {
+				return ResultGenerator.genFailResult("无效的平台账号");
+			}
 		}
 		if (user.getAccountState().intValue() != 0) {
 			return ResultGenerator.genFailResult("当前账户已被禁止登陆");

@@ -14,6 +14,11 @@ public class BasicWeiXinRequestParam {
 	private String nickName;
 	private String province;
 
+	private String farmId;
+	private String farmCode;
+
+	private String weatherCityCode;
+
 	public String getCode() {
 		return code;
 	}
@@ -92,6 +97,30 @@ public class BasicWeiXinRequestParam {
 
 	public void setProvince(String province) {
 		this.province = province;
+	}
+
+	public String getFarmId() {
+		return farmId;
+	}
+
+	public void setFarmId(String farmId) {
+		this.farmId = farmId;
+	}
+
+	public String getFarmCode() {
+		return farmCode;
+	}
+
+	public void setFarmCode(String farmCode) {
+		this.farmCode = farmCode;
+	}
+
+	public String getWeatherCityCode() {
+		return weatherCityCode;
+	}
+
+	public void setWeatherCityCode(String weatherCityCode) {
+		this.weatherCityCode = weatherCityCode;
 	}
 
 }

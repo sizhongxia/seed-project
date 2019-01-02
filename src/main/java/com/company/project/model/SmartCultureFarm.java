@@ -110,6 +110,11 @@ public class SmartCultureFarm {
      */
     private String address;
 
+    /**
+     * 农场面积
+     */
+    private String acreage;
+
     private String logo;
 
     /**
@@ -461,6 +466,24 @@ public class SmartCultureFarm {
      */
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    /**
+     * 获取农场面积
+     *
+     * @return acreage - 农场面积
+     */
+    public String getAcreage() {
+        return acreage;
+    }
+
+    /**
+     * 设置农场面积
+     *
+     * @param acreage 农场面积
+     */
+    public void setAcreage(String acreage) {
+        this.acreage = acreage;
     }
 
     /**

@@ -23,6 +23,7 @@
     <result column="longitude" jdbcType="VARCHAR" property="longitude" />
     <result column="latitude" jdbcType="VARCHAR" property="latitude" />
     <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="acreage" jdbcType="VARCHAR" property="acreage" />
     <result column="logo" jdbcType="VARCHAR" property="logo" />
     <result column="website" jdbcType="VARCHAR" property="website" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />

@@ -141,6 +141,7 @@ public class SmartCultureFarmController {
 				map.put("countyName", obj.getCountyName());
 				map.put("weatherCityName", obj.getWeatherCityName());
 				map.put("address", obj.getAddress());
+				map.put("acreage", obj.getAcreage());
 				map.put("createAt", DateUtil.format(obj.getCreateAt(), "yyyy-MM-dd HH:mm:ss"));
 				map.put("updateAt", DateUtil.format(obj.getUpdateAt(), "yyyy-MM-dd HH:mm:ss"));
 				list.add(map);
@@ -255,6 +256,7 @@ public class SmartCultureFarmController {
 		farm.setLongitude(param.getLongitude() == null ? "" : param.getLongitude().trim());
 		farm.setLatitude(param.getLatitude() == null ? "" : param.getLatitude().trim());
 		farm.setAddress(param.getFarmAddress() == null ? "" : param.getFarmAddress().trim());
+		farm.setAcreage(param.getAcreage() == null ? "" : param.getAcreage().trim());
 		farm.setWebsite(param.getWebsite() == null ? "" : param.getWebsite().trim());
 		farm.setRemark(param.getFarmRemark() == null ? "" : param.getFarmRemark().trim());
 
@@ -353,6 +355,7 @@ public class SmartCultureFarmController {
 		map.put("longitude", farm.getLongitude());
 		map.put("latitude", farm.getLatitude());
 		map.put("farmAddress", farm.getAddress());
+		map.put("acreage", farm.getAcreage());
 		map.put("website", farm.getWebsite());
 		map.put("farmRemark", farm.getRemark());
 		map.put("createAt", DateUtil.format(farm.getCreateAt(), "yyyy-MM-dd HH:mm:ss"));
