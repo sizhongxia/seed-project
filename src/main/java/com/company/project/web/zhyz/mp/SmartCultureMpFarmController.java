@@ -24,6 +24,7 @@ import com.company.project.model.SmartCultureFarmPic;
 import com.company.project.model.SmartCultureUser;
 import com.company.project.model.SmartCultureUserFarm;
 import com.company.project.model.SmartCultureWeatherNow;
+import com.company.project.model.param.basic.BasicFarmParam;
 import com.company.project.model.param.basic.BasicWeiXinRequestParam;
 import com.company.project.service.SmartCultureFarmPicService;
 import com.company.project.service.SmartCultureFarmService;
@@ -52,10 +53,13 @@ public class SmartCultureMpFarmController {
 	@SmartCultureTokenCheck
 	@RequestMapping("/detail")
 	public Result<?> detail(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
-		String farmCode = param.getFarmCode();
-		SmartCultureFarm farm = smartCultureFarmService.findBy("farmCode", farmCode);
+		String farmId = param.getFarmId();
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", farmId);
 		if (farm == null) {
-			return ResultGenerator.genFailResult("无效的农场编码");
+			farm = smartCultureFarmService.findBy("farmCode", farmId);
+			if (farm == null) {
+				return ResultGenerator.genFailResult("无效的农场标识");
+			}
 		}
 		Map<String, Object> map = new HashMap<>();
 		map.put("farmId", farm.getFarmId());
@@ -78,6 +82,7 @@ public class SmartCultureMpFarmController {
 		map.put("countyName", farm.getCountyName());
 		map.put("website", farm.getWebsite());
 		map.put("acreage", farm.getAcreage());
+		map.put("remark", farm.getRemark());
 		return ResultGenerator.genSuccessResult(map);
 	}
 
@@ -206,4 +211,36 @@ public class SmartCultureMpFarmController {
 		return ResultGenerator.genSuccessResult(status);
 	}
 
+	@SmartCultureTokenCheck
+	@RequestMapping("/update")
+	public Result<?> update(HttpServletRequest request, @RequestBody BasicFarmParam param) {
+		String userId = request.getAttribute("userId").toString();
+		String farmId = param.getFarmId();
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", farmId);
+		if (farm == null) {
+			return ResultGenerator.genFailResult("无效的表单");
+		}
+
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", userId).andEqualTo("farmId", farmId).andEqualTo("applyState",
+				"Y");
+		List<SmartCultureUserFarm> ufs = smartCultureUserFarmService.findByCondition(condition);
+		if (ufs == null || ufs.isEmpty()) {
+			return ResultGenerator.genFailResult("暂未授权修改");
+		}
+		SmartCultureUserFarm uf = ufs.get(0);
+		if ("visitor".equals(uf.getIdentity())) {
+			return ResultGenerator.genFailResult("当前身份不允许修改");
+		}
+		farm.setFarmName(param.getFarmName());
+		farm.setAcreage(param.getAcreage());
+		farm.setAddress(param.getFarmAddress());
+		farm.setRemark(param.getFarmRemark());
+		farm.setWebsite(param.getWebsite());
+		farm.setLogo(param.getFarmLogo());
+		farm.setVersion(farm.getVersion() + 1);
+		farm.setUpdateAt(new Date());
+		smartCultureFarmService.update(farm);
+		return ResultGenerator.genSuccessResult("SUC");
+	}
 }

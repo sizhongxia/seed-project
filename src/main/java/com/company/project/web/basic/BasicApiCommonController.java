@@ -333,6 +333,8 @@ public class BasicApiCommonController {
 			// return ResultGenerator.genFailResult("E5002");
 			// }
 			// fileTitle = farm.getFarmName();
+		} else if ("farm_logo".equals(type)) {
+			prefix = SmartCulturePicturePrefix.FARM_LOGO;
 		}
 
 		String path = uploadQNImg((FileInputStream) multipartFile.getInputStream(), prefix);

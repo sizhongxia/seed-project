@@ -14,6 +14,7 @@ public class BasicFarmParam {
 	private String farmRemark;
 	private String weatherCityCode;
 	private String acreage;
+	private String farmLogo;
 
 	public String getFarmId() {
 		return farmId;
@@ -117,6 +118,14 @@ public class BasicFarmParam {
 
 	public void setAcreage(String acreage) {
 		this.acreage = acreage;
+	}
+
+	public String getFarmLogo() {
+		return farmLogo;
+	}
+
+	public void setFarmLogo(String farmLogo) {
+		this.farmLogo = farmLogo;
 	}
 
 }
