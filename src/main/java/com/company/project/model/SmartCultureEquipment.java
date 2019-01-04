@@ -30,7 +30,19 @@ public class SmartCultureEquipment {
     private String equipmentCode;
 
     /**
-     * 设备序列号
+     * 外接dtu的编号
+     */
+    @Column(name = "equipment_dtu_id")
+    private String equipmentDtuId;
+
+    /**
+     * dtu下485的地址
+     */
+    @Column(name = "equipment_485_addr")
+    private String equipment485Addr;
+
+    /**
+     * 产品出厂序列号
      */
     @Column(name = "equipment_sn")
     private String equipmentSn;
@@ -80,6 +92,12 @@ public class SmartCultureEquipment {
      * 备注
      */
     private String remark;
+
+    /**
+     * 最后一次更新的时间在线离线用
+     */
+    @Column(name = "last_update_time")
+    private Date lastUpdateTime;
 
     /**
      * 版本
@@ -171,18 +189,54 @@ public class SmartCultureEquipment {
     }
 
     /**
-     * 获取设备序列号
+     * 获取外接dtu的编号
      *
-     * @return equipment_sn - 设备序列号
+     * @return equipment_dtu_id - 外接dtu的编号
+     */
+    public String getEquipmentDtuId() {
+        return equipmentDtuId;
+    }
+
+    /**
+     * 设置外接dtu的编号
+     *
+     * @param equipmentDtuId 外接dtu的编号
+     */
+    public void setEquipmentDtuId(String equipmentDtuId) {
+        this.equipmentDtuId = equipmentDtuId;
+    }
+
+    /**
+     * 获取dtu下485的地址
+     *
+     * @return equipment_485_addr - dtu下485的地址
+     */
+    public String getEquipment485Addr() {
+        return equipment485Addr;
+    }
+
+    /**
+     * 设置dtu下485的地址
+     *
+     * @param equipment485Addr dtu下485的地址
+     */
+    public void setEquipment485Addr(String equipment485Addr) {
+        this.equipment485Addr = equipment485Addr;
+    }
+
+    /**
+     * 获取产品出厂序列号
+     *
+     * @return equipment_sn - 产品出厂序列号
      */
     public String getEquipmentSn() {
         return equipmentSn;
     }
 
     /**
-     * 设置设备序列号
+     * 设置产品出厂序列号
      *
-     * @param equipmentSn 设备序列号
+     * @param equipmentSn 产品出厂序列号
      */
     public void setEquipmentSn(String equipmentSn) {
         this.equipmentSn = equipmentSn;
@@ -330,6 +384,24 @@ public class SmartCultureEquipment {
      */
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    /**
+     * 获取最后一次更新的时间在线离线用
+     *
+     * @return last_update_time - 最后一次更新的时间在线离线用
+     */
+    public Date getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    /**
+     * 设置最后一次更新的时间在线离线用
+     *
+     * @param lastUpdateTime 最后一次更新的时间在线离线用
+     */
+    public void setLastUpdateTime(Date lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     /**

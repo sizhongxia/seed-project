@@ -5,6 +5,8 @@ public class BasicEquipmentParam {
 	private String equipmentName;
 	private String equipmentCode;
 	private String equipmentSn;
+	private String equipmentDtuId;
+	private String equipment485Addr;
 	private String typeId;
 	private String typeName;
 	private String modelId;
@@ -44,6 +46,22 @@ public class BasicEquipmentParam {
 
 	public void setEquipmentSn(String equipmentSn) {
 		this.equipmentSn = equipmentSn;
+	}
+
+	public String getEquipmentDtuId() {
+		return equipmentDtuId;
+	}
+
+	public void setEquipmentDtuId(String equipmentDtuId) {
+		this.equipmentDtuId = equipmentDtuId;
+	}
+
+	public String getEquipment485Addr() {
+		return equipment485Addr;
+	}
+
+	public void setEquipment485Addr(String equipment485Addr) {
+		this.equipment485Addr = equipment485Addr;
 	}
 
 	public String getTypeId() {

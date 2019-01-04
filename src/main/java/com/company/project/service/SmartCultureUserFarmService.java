@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by SiZhongXia on 2018/12/23.
+ * Created by SiZhongXia on 2019/01/04.
  */
 public interface SmartCultureUserFarmService extends Service<SmartCultureUserFarm> {
 

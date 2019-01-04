@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,9 @@ import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureWeatherNowService;
 import com.github.pagehelper.PageHelper;
 
+import cn.hutool.core.date.DateUtil;
 import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
 @RequestMapping("/zhyz/miniapp/api/farm")
@@ -132,44 +135,6 @@ public class SmartCultureMpFarmController {
 	}
 
 	@SmartCultureTokenCheck
-	@RequestMapping("/auths")
-	public Result<?> auths(HttpServletRequest request) {
-		String userId = request.getAttribute("userId").toString();
-		Condition condition = new Condition(SmartCultureUserFarm.class);
-		condition.createCriteria().andEqualTo("userId", userId).andEqualTo("applyState", "Y");
-		List<SmartCultureUserFarm> ufs = smartCultureUserFarmService.findByCondition(condition);
-		List<Map<String, Object>> list = new ArrayList<>();
-		if (ufs == null || ufs.isEmpty()) {
-			return ResultGenerator.genSuccessResult(list);
-		}
-		Set<String> farmIds = new HashSet<>();
-		for (SmartCultureUserFarm uf : ufs) {
-			farmIds.add(uf.getFarmId());
-		}
-		Condition farmCondition = new Condition(SmartCultureFarm.class);
-		farmCondition.createCriteria().andIn("farmId", farmIds);
-		List<SmartCultureFarm> farms = smartCultureFarmService.findByCondition(farmCondition);
-		Map<String, Object> item = null;
-		for (SmartCultureFarm farm : farms) {
-			String identity = null;
-			for (SmartCultureUserFarm uf : ufs) {
-				if (uf.getFarmId().equals(farm.getFarmId())) {
-					identity = uf.getIdentity();
-				}
-			}
-			if (identity == null) {
-				continue;
-			}
-			item = new HashMap<>();
-			item.put("farmId", farm.getFarmId());
-			item.put("farmName", farm.getFarmName());
-			item.put("farmIdentity", identity);
-			list.add(item);
-		}
-		return ResultGenerator.genSuccessResult(list);
-	}
-
-	@SmartCultureTokenCheck
 	@RequestMapping("/toApply")
 	public Result<?> toApply(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
 		String farmId = param.getFarmId();
@@ -241,6 +206,177 @@ public class SmartCultureMpFarmController {
 		farm.setVersion(farm.getVersion() + 1);
 		farm.setUpdateAt(new Date());
 		smartCultureFarmService.update(farm);
-		return ResultGenerator.genSuccessResult("SUC");
+		return ResultGenerator.genSuccessResult();
 	}
+
+	@SmartCultureTokenCheck
+	@RequestMapping("/auths")
+	public Result<?> auths(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
+		String userId = request.getAttribute("userId").toString();
+		String state = param.getState();
+		if (StringUtils.isBlank(state)) {
+			state = "Y";
+		}
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("userId", userId).andEqualTo("applyState", state);
+		condition.orderBy("applyAt").desc();
+		List<SmartCultureUserFarm> ufs = smartCultureUserFarmService.findByCondition(condition);
+
+		List<Map<String, Object>> list = new ArrayList<>();
+		if (ufs == null || ufs.isEmpty()) {
+			return ResultGenerator.genSuccessResult(list);
+		}
+		Set<String> farmIds = new HashSet<>();
+		for (SmartCultureUserFarm uf : ufs) {
+			farmIds.add(uf.getFarmId());
+		}
+		Map<String, SmartCultureFarm> idMaps = new HashMap<>();
+		if (farmIds.size() > 0) {
+			if (farmIds.size() > 0) {
+				condition = new Condition(SmartCultureFarm.class);
+				condition.createCriteria().andIn("farmId", farmIds);
+				List<SmartCultureFarm> farmls = smartCultureFarmService.findByCondition(condition);
+				for (SmartCultureFarm f : farmls) {
+					idMaps.put(f.getFarmId(), f);
+				}
+			}
+		}
+		Map<String, Object> item = null;
+		for (SmartCultureUserFarm af : ufs) {
+			SmartCultureFarm farm = idMaps.get(af.getFarmId());
+			if (farm == null) {
+				smartCultureUserFarmService.deleteById(af.getId());
+				continue;
+			}
+			item = new HashMap<>();
+			item.put("resId", af.getResId());
+			item.put("farmId", af.getFarmId());
+			item.put("farmName", farm.getFarmName());
+			item.put("farmCode", farm.getFarmCode());
+			item.put("farmLogo", farm.getLogo());
+			item.put("address", farm.getAddress());
+			item.put("farmIdentity", af.getIdentity());
+			item.put("farmIdentityTxt",
+					af.getIdentity().equals("admin") ? "管理员" : af.getIdentity().equals("manager") ? "运维人员" : "访客");
+			item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
+			item.put("applyRemark", af.getApplyRemark());
+			item.put("applyState", af.getApplyState());
+			item.put("applyStateTxt",
+					af.getApplyState().equals("Y") ? "已授权" : af.getApplyState().equals("D") ? "待审核" : "已拒绝");
+			item.put("handleAt",
+					af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+			item.put("handleUserId", af.getHandleUserId() == null ? "" : af.getHandleUserId());
+			list.add(item);
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@RequestMapping("/userApplys")
+	public Result<?> userApplys(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
+		List<Map<String, Object>> list = new ArrayList<>();
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		Criteria criteria = condition.createCriteria().andEqualTo("farmId", param.getFarmId());
+		String state = param.getState();
+		if ("D".equals(state)) {
+			criteria.andEqualTo("applyState", "D");
+		} else {
+			Set<String> values = new HashSet<>();
+			values.add("Y");
+			values.add("N");
+			criteria.andIn("applyState", values);
+		}
+		condition.orderBy("applyAt").desc();
+		List<SmartCultureUserFarm> authFarms = smartCultureUserFarmService.findByCondition(condition);
+		Set<String> userIds = new HashSet<String>();
+		if (authFarms != null && authFarms.size() > 0) {
+			// 获取用户ID
+			for (SmartCultureUserFarm af : authFarms) {
+				userIds.add(af.getUserId());
+			}
+			Map<String, SmartCultureUser> idMaps = new HashMap<>();
+			if (userIds.size() > 0) {
+				condition = new Condition(SmartCultureUser.class);
+				condition.createCriteria().andIn("userId", userIds);
+				List<SmartCultureUser> users = smartCultureUserService.findByCondition(condition);
+				for (SmartCultureUser u : users) {
+					idMaps.put(u.getUserId(), u);
+				}
+			}
+			Map<String, Object> item = null;
+			for (SmartCultureUserFarm af : authFarms) {
+				item = new HashMap<>();
+				SmartCultureUser user = idMaps.get(af.getUserId());
+				item.put("resId", af.getResId());
+				item.put("userId", af.getUserId());
+				item.put("userName", user.getUserName());
+				item.put("userAvator", user.getUserAvator());
+				item.put("userPhoneNo", user.getPhoneNo());
+				item.put("applyRemark", af.getApplyRemark());
+				item.put("farmIdentity", af.getIdentity());
+				item.put("farmIdentityTxt",
+						af.getIdentity().equals("admin") ? "管理员" : af.getIdentity().equals("manager") ? "运维人员" : "访客");
+				item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("applyRemark", af.getApplyRemark());
+				item.put("applyState", af.getApplyState());
+				item.put("applyStateTxt",
+						af.getApplyState().equals("Y") ? "已授权" : af.getApplyState().equals("D") ? "待审核" : "已拒绝");
+				item.put("handleAt",
+						af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+				list.add(item);
+			}
+		}
+		return ResultGenerator.genSuccessResult(list);
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/userApplyHandle")
+	public Result<?> userApplyHandle(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
+		if (StringUtils.isBlank(param.getResId())) {
+			return ResultGenerator.genFailResult("无效的记录");
+		}
+		if (StringUtils.isBlank(param.getState())) {
+			return ResultGenerator.genFailResult("无效的数据");
+		}
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("resId", param.getResId().trim());
+		SmartCultureUserFarm ufarm = smartCultureUserFarmService.findBy("resId", param.getResId().trim());
+		if (ufarm == null) {
+			return ResultGenerator.genFailResult("无效的数据");
+		}
+		String cUserId = request.getAttribute("userId").toString();
+		if (ufarm.getUserId().equals(cUserId)) {
+			return ResultGenerator.genFailResult("暂不允许当前操作");
+		}
+		ufarm.setApplyState(param.getState().trim());
+		ufarm.setHandleAt(new Date());
+		ufarm.setHandleUserId(cUserId);
+		smartCultureUserFarmService.update(ufarm);
+		return ResultGenerator.genSuccessResult();
+	}
+
+	@SmartCultureTokenCheck
+	@PostMapping("/mineBaseInfo")
+	public Result<?> mineBaseInfo(HttpServletRequest request, @RequestBody BasicWeiXinRequestParam param) {
+		if (StringUtils.isBlank(param.getFarmId())) {
+			return ResultGenerator.genFailResult("无效的记录");
+		}
+		SmartCultureFarm farm = smartCultureFarmService.findBy("farmId", param.getFarmId());
+		if (farm == null) {
+			return ResultGenerator.genFailResult("无效的数据");
+		}
+		Map<String, Object> data = new HashMap<>();
+		data.put("farmName", farm.getFarmName());
+
+		Condition condition = new Condition(SmartCultureUserFarm.class);
+		condition.createCriteria().andEqualTo("farmId", param.getFarmId()).andEqualTo("applyState", "D");
+		List<SmartCultureUserFarm> authFarms = smartCultureUserFarmService.findByCondition(condition);
+		int auditsNum = 0;
+		if (authFarms != null && authFarms.size() > 0) {
+			auditsNum = authFarms.size();
+		}
+		data.put("auditsNum", auditsNum);
+		return ResultGenerator.genSuccessResult(data);
+	}
+
 }

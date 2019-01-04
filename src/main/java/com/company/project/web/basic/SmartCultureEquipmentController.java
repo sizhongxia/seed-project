@@ -109,6 +109,8 @@ public class SmartCultureEquipmentController {
 				map.put("equipmentName", obj.getEquipmentName());
 				map.put("equipmentCode", obj.getEquipmentCode());
 				map.put("equipmentSn", obj.getEquipmentSn());
+				map.put("equipmentDtuId", obj.getEquipmentDtuId());
+				map.put("equipment485Addr", obj.getEquipment485Addr());
 				map.put("typeName", obj.getEquipmentTypeName());
 				map.put("modelName", obj.getEquipmentModelName());
 				map.put("operator", obj.getOperator());
@@ -215,6 +217,8 @@ public class SmartCultureEquipmentController {
 		equipment.setEquipmentTypeName(ems.getEquipmentTypeName());
 		equipment.setEquipmentModelId(ems.getModelId());
 		equipment.setEquipmentModelName(ems.getModelName());
+		equipment.setEquipment485Addr(param.getEquipment485Addr() == null ? "" : param.getEquipment485Addr().trim());
+		equipment.setEquipmentDtuId(param.getEquipmentDtuId() == null ? "" : param.getEquipmentDtuId().trim());
 		equipment.setOperator(param.getOperator() == null ? "" : param.getOperator().trim());
 		equipment.setRemark(param.getRemark() == null ? "" : param.getRemark().trim());
 
@@ -241,6 +245,8 @@ public class SmartCultureEquipmentController {
 		map.put("equipmentName", equipment.getEquipmentName());
 		map.put("equipmentCode", equipment.getEquipmentCode());
 		map.put("equipmentSn", equipment.getEquipmentSn());
+		map.put("equipmentDtuId", equipment.getEquipmentDtuId());
+		map.put("equipment485Addr", equipment.getEquipment485Addr());
 		map.put("typeId", equipment.getEquipmentTypeId());
 		map.put("typeName", equipment.getEquipmentTypeName());
 		map.put("modelId", equipment.getEquipmentModelId());

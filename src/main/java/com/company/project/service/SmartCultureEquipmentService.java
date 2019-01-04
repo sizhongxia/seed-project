@@ -4,7 +4,7 @@ import com.company.project.core.Service;
 
 
 /**
- * Created by SiZhongXia on 2018/12/24.
+ * Created by SiZhongXia on 2019/01/04.
  */
 public interface SmartCultureEquipmentService extends Service<SmartCultureEquipment> {
 

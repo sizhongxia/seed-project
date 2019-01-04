@@ -18,6 +18,8 @@ public class BasicWeiXinRequestParam {
 	private String farmCode;
 
 	private String weatherCityCode;
+	private String resId;
+	private String state;
 
 	public String getCode() {
 		return code;
@@ -121,6 +123,22 @@ public class BasicWeiXinRequestParam {
 
 	public void setWeatherCityCode(String weatherCityCode) {
 		this.weatherCityCode = weatherCityCode;
+	}
+
+	public String getResId() {
+		return resId;
+	}
+
+	public void setResId(String resId) {
+		this.resId = resId;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 }

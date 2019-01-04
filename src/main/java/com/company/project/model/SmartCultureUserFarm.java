@@ -12,6 +12,12 @@ public class SmartCultureUserFarm {
     private Long id;
 
     /**
+     * 记录ID
+     */
+    @Column(name = "res_id")
+    private String resId;
+
+    /**
      * 用户ID
      */
     @Column(name = "user_id")
@@ -71,6 +77,24 @@ public class SmartCultureUserFarm {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * 获取记录ID
+     *
+     * @return res_id - 记录ID
+     */
+    public String getResId() {
+        return resId;
+    }
+
+    /**
+     * 设置记录ID
+     *
+     * @param resId 记录ID
+     */
+    public void setResId(String resId) {
+        this.resId = resId;
     }
 
     /**

@@ -332,6 +332,7 @@ public class SmartCultureUserController {
 			return ResultGenerator.genFailResult("E5004");
 		}
 		SmartCultureUserFarm uf = new SmartCultureUserFarm();
+		uf.setResId(IdUtils.initObjectId());
 		uf.setUserId(param.getUserId().trim());
 		uf.setFarmId(param.getFarmId().trim());
 		uf.setIdentity(param.getIdentity().trim());
@@ -372,6 +373,7 @@ public class SmartCultureUserController {
 					continue;
 				}
 				item = new HashMap<>();
+				item.put("resId", af.getResId());
 				item.put("userId", af.getUserId());
 				item.put("farmId", af.getFarmId());
 				item.put("farmName", farm.getFarmName());
@@ -418,35 +420,22 @@ public class SmartCultureUserController {
 	@SmartCultureTokenCheck
 	@PostMapping("/handleAuthApply")
 	public Result<?> handleAuthApply(HttpServletRequest request, @RequestBody BasicUserFarmAuthParam param) {
-		if (StringUtils.isBlank(param.getUserId())) {
+		if (StringUtils.isBlank(param.getResId())) {
 			return ResultGenerator.genFailResult("E5001");
-		}
-		if (StringUtils.isBlank(param.getFarmId())) {
-			return ResultGenerator.genFailResult("E5002");
 		}
 		if (StringUtils.isBlank(param.getApplyState())) {
 			return ResultGenerator.genFailResult("E5003");
 		}
 		Condition condition = new Condition(SmartCultureUserFarm.class);
-		condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
-				.andEqualTo("farmId", param.getFarmId().trim()).andEqualTo("applyState", "D");
-		List<SmartCultureUserFarm> ufarms = smartCultureUserFarmService.findByCondition(condition);
-		if (ufarms == null || ufarms.isEmpty()) {
-			if (param.getApplyState().equals("N")) {
-				condition = new Condition(SmartCultureUserFarm.class);
-				condition.createCriteria().andEqualTo("userId", param.getUserId().trim())
-						.andEqualTo("farmId", param.getFarmId().trim()).andEqualTo("applyState", "Y");
-				ufarms = smartCultureUserFarmService.findByCondition(condition);
-			}
-			if (ufarms == null || ufarms.isEmpty()) {
-				return ResultGenerator.genFailResult("E5004");
-			}
+		condition.createCriteria().andEqualTo("resId", param.getResId().trim());
+		SmartCultureUserFarm ufarm = smartCultureUserFarmService.findBy("resId", param.getResId().trim());
+		if (ufarm == null) {
+			return ResultGenerator.genFailResult("E5004");
 		}
-		SmartCultureUserFarm uf = ufarms.get(0);
-		uf.setApplyState(param.getApplyState().trim());
-		uf.setHandleAt(new Date());
-		uf.setHandleUserId(request.getAttribute("userId").toString());
-		smartCultureUserFarmService.update(uf);
+		ufarm.setApplyState(param.getApplyState().trim());
+		ufarm.setHandleAt(new Date());
+		ufarm.setHandleUserId(request.getAttribute("userId").toString());
+		smartCultureUserFarmService.update(ufarm);
 		return ResultGenerator.genSuccessResult();
 	}
 

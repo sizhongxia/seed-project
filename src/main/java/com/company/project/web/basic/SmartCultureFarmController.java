@@ -467,6 +467,7 @@ public class SmartCultureFarmController {
 			for (SmartCultureUserFarm af : authFarms) {
 				item = new HashMap<>();
 				SmartCultureUser user = idMaps.get(af.getUserId());
+				item.put("resId", af.getResId());
 				item.put("userId", af.getUserId());
 				item.put("farmId", af.getFarmId());
 				item.put("userName", user.getUserName());
@@ -475,8 +476,7 @@ public class SmartCultureFarmController {
 				item.put("applyAt", DateUtil.format(af.getApplyAt(), "yyyy-MM-dd HH:mm:ss"));
 				item.put("applyRemark", af.getApplyRemark());
 				item.put("applyState", af.getApplyState());
-				item.put("handleAt",
-						af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
+				item.put("handleAt", af.getHandleAt() == null ? "" : DateUtil.format(af.getHandleAt(), "yyyy-MM-dd HH:mm:ss"));
 				item.put("handleUserId", af.getHandleUserId() == null ? "" : af.getHandleUserId());
 				list.add(item);
 			}
