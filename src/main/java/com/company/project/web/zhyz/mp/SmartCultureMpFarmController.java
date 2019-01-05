@@ -32,6 +32,7 @@ import com.company.project.service.SmartCultureFarmService;
 import com.company.project.service.SmartCultureUserFarmService;
 import com.company.project.service.SmartCultureUserService;
 import com.company.project.service.SmartCultureWeatherNowService;
+import com.company.project.unit.IdUtils;
 import com.github.pagehelper.PageHelper;
 
 import cn.hutool.core.date.DateUtil;
@@ -162,12 +163,14 @@ public class SmartCultureMpFarmController {
 		}
 		if (ufs == null || ufs.isEmpty() || StringUtils.isBlank(status)) {
 			SmartCultureUserFarm userFarm = new SmartCultureUserFarm();
+			userFarm.setResId(IdUtils.initObjectId());
 			userFarm.setApplyAt(new Date());
 			userFarm.setApplyRemark("MP_SCAN");
 			userFarm.setApplyState("D");
 			userFarm.setFarmId(farmId);
 			userFarm.setHandleAt(null);
 			userFarm.setHandleUserId(null);
+			// 默认访客
 			userFarm.setIdentity("visitor");
 			userFarm.setUserId(userId);
 			smartCultureUserFarmService.save(userFarm);
